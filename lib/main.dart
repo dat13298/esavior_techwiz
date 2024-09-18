@@ -1,7 +1,11 @@
+import 'package:esavior_techwiz/connection/firebase_connection.dart';
 import 'package:esavior_techwiz/views/map_page.dart';
 import 'package:flutter/material.dart';
 
-void main(){
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  await FirestoreService.initializeFirebase();
+
   runApp(const MyApp());
 }
 
