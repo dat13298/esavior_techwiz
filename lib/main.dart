@@ -1,5 +1,7 @@
 import 'package:esavior_techwiz/connection/firebase_connection.dart';
+import 'package:esavior_techwiz/views/home/homepage.dart';
 import 'package:esavior_techwiz/views/map_screen.dart';
+import 'package:esavior_techwiz/views/profile/profile.dart';
 import 'package:esavior_techwiz/views/welcome/welcome_page.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
