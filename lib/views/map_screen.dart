@@ -1,67 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 
-import '../services/open_route_service.dart';
+class MapScreen extends StatelessWidget {
+  final LatLng currentPositionDevice;
+  final LatLng currentPosition;
+  final String role;
+  final double routeDistance;
+  final List<LatLng> routePoints;
 
-class MapScreen extends StatefulWidget {
-  @override
-  _MapScreenState createState() => _MapScreenState();
-}
-
-class _MapScreenState extends State<MapScreen> {
-  List<LatLng> routePoints = [];
-  late LatLng start;
-  final LatLng end = LatLng(21.035000, 105.825649); // Điểm kết thúc 21.035000, 105.825649
-  bool isLocationLoaded = false;  // Để kiểm tra xem vị trí hiện tại đã được lấy chưa
-
-  double routeDistance = 0.0;
-
-  @override
-  void initState() {
-    super.initState();
-    _getCurrentLocationAndLoadRoute();  // Lấy vị trí hiện tại và tải tuyến đường
-  }
-
-  Future<void> _getCurrentLocationAndLoadRoute() async {
-    start = await getCurrentLocation();
-    await _loadRoute();  // Sau khi có vị trí, tải tuyến đường
-    setState(() {
-      isLocationLoaded = true;  // Cập nhật trạng thái để hiển thị bản đồ
-    });
-  }
-
-  Future<LatLng> getCurrentLocation() async {
-    Position userPosition = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.bestForNavigation,
-    );
-    return LatLng(userPosition.latitude, userPosition.longitude);
-    _loadDistance();
-  }
-
-  Future<void> _loadRoute() async {
-    // Giả sử bạn đã có hàm getRouteCoordinates
-    List<LatLng> points = await getRouteCoordinates(start, end);
-    setState(() {
-      routePoints = points;
-    });
-  }
-
-  Future<void> _loadDistance() async {
-    routeDistance = await getRouteDistance(start, end);
-  }
+  const MapScreen({
+    Key? key,
+    required this.currentPositionDevice,
+    required this.currentPosition,
+    required this.role,
+    required this.routeDistance,
+    required this.routePoints,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final LatLng end = LatLng(21.035000, 105.825649); // Điểm kết thúc 21.035000, 105.825649
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Route Map: $routeDistance' ),
+        title: Text('Route Map: $routeDistance'),
       ),
-      body: isLocationLoaded
-          ? FlutterMap(
+      body: FlutterMap(
         options: MapOptions(
-          initialCenter: start,  // Sử dụng vị trí hiện tại làm initialCenter
+          initialCenter: currentPosition, // Sử dụng vị trí hiện tại làm initialCenter
           initialZoom: 13.0,
         ),
         children: [
@@ -81,7 +48,7 @@ class _MapScreenState extends State<MapScreen> {
           MarkerLayer(
             markers: [
               Marker(
-                point: start,
+                point: currentPosition,
                 width: 80,
                 height: 80,
                 child: Icon(Icons.person, color: Colors.red),
@@ -95,9 +62,6 @@ class _MapScreenState extends State<MapScreen> {
             ],
           ),
         ],
-      )
-          : Center(
-        child: CircularProgressIndicator(),  // Hiển thị vòng xoay khi chưa có vị trí
       ),
     );
   }
