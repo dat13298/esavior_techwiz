@@ -47,6 +47,7 @@ dependencies:
   latlong2:
   http:
   permission_handler:
+  url_launcher: ^6.3.0
 
 
 dev_dependencies:

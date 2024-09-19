@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 
 class CallEmergency extends StatefulWidget {
@@ -12,10 +14,47 @@ class CallEmergency extends StatefulWidget {
 class _CallEmergencyState extends State<CallEmergency> {
   double screenHeight = 0;
   double screenWidth = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _initialize();//TODO call dispatcher and get current location
+  }
+
+  Future<void> _initialize() async {
+    await _callDispatcher();///call Dispatcher when widget start
+    await _getCurrentLocation();
+  }
+
+  /// CALL HOT LINE
+  Future<void> _callDispatcher() async{
+    const phoneNumber = 'tel:1900601'; // HOT LINE
+    if (await canLaunch(phoneNumber)){
+      await launch(phoneNumber);
+    } else{
+      throw 'Could not launch $phoneNumber';
+    }
+  }
+
+  /// GET CURRENT LOCATION
+  Future<void> _getCurrentLocation() async {
+    try {
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.bestForNavigation,
+      );
+      print('Current location: ${position.latitude}, ${position.longitude}');
+      // Xử lý vị trí của người dùng ở đây, ví dụ lưu vào biến, gửi đến server, v.v.
+    } catch (e) {
+      print('Error getting location: $e');
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     screenHeight = MediaQuery.of(context).size.height;
     screenWidth = MediaQuery.of(context).size.width;
+
     return CupertinoPageScaffold(
       child: SafeArea(
         child: Padding(
