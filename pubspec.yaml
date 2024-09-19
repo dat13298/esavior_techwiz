@@ -46,6 +46,7 @@ dependencies:
   latlng:
   latlong2:
   http:
+  permission_handler:
 
 
 dev_dependencies:
