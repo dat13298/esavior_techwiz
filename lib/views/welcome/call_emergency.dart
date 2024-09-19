@@ -2,6 +2,7 @@ import 'package:esavior_techwiz/services/emergency_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 
@@ -24,19 +25,34 @@ class _CallEmergencyState extends State<CallEmergency> {
   }
 
   Future<void> _initialize() async {
-    // await _callDispatcher();///call Dispatcher when widget start
+    await _callDispatcher();///call Dispatcher when widget start
     await _getCurrentLocation();
   }
 
   /// CALL HOT LINE
-  Future<void> _callDispatcher() async{
-    const phoneNumber = 'tel:1900601'; // HOT LINE
-    if (await canLaunch(phoneNumber)){
-      await launch(phoneNumber);
-    } else{
-      throw 'Could not launch $phoneNumber';
+  Future<void> _callDispatcher() async {
+    // Yêu cầu quyền gọi điện thoại
+    final PermissionStatus status = await Permission.phone.request();
+    final PermissionStatus status2 = await Permission.phone.status;
+    print('Phone permission status: $status2');
+
+    // Kiểm tra xem quyền đã được cấp chưa
+    if (status.isGranted) {
+      final Uri phoneUri = Uri(scheme: 'tel', path: '0915799025'); // HOT LINE
+      try {
+        if (await canLaunchUrl(phoneUri)) {
+          await launchUrl(phoneUri);
+        } else {
+          print('Could not launch $phoneUri');
+        }
+      } catch (e) {
+        print('Error: $e');
+      }
+    } else {
+      print('Phone permission denied');
     }
   }
+
 
   /// GET CURRENT LOCATION
   Future<void> _getCurrentLocation() async {
