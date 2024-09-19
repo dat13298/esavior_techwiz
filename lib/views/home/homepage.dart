@@ -1,5 +1,6 @@
+import 'package:esavior_techwiz/views/profile/profile.dart';
 import 'package:flutter/material.dart';
-
+ // Import the ProfilePage to navigate to it
 
 class eSaviorHome extends StatelessWidget {
   const eSaviorHome({super.key});
@@ -150,6 +151,14 @@ class HomePage extends StatelessWidget {
       // Bottom navigation bar
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
+        onTap: (int index) {
+          if (index == 3) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => eSaviorProfile()), // Navigate to ProfilePage
+            );
+          }
+        },
         items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
