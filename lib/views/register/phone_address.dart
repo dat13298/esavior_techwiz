@@ -28,7 +28,7 @@ class _PhoneAddressPageState extends State<PhoneAddressPage> {
         _phoneError = 'Phone number cannot be empty';
       } else if (!RegExp(r'^[0-9]+$').hasMatch(phoneText)) {
         _phoneError = 'Phone number can only contain numbers';
-      } else if (phoneText.length > 10) {
+      } else if (phoneText.length != 10) {
         _phoneError = 'Phone number cannot exceed 10 digits';
       } else {
         _phoneError = null;
