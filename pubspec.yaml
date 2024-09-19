@@ -68,6 +68,7 @@ dev_dependencies:
 # The following section is specific to Flutter packages.
 flutter:
   assets:
+    - assets/emergency.mp3
 #    -assets/car1.png
 #    -assets/car2.png
     - assets/login.png
