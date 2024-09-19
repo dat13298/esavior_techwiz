@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../services/open_route_service.dart';
@@ -11,15 +12,31 @@ class MapScreen extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreen> {
   List<LatLng> routePoints = [];
-  final LatLng start = LatLng(40.748817, -73.985428); // Điểm bắt đầu
-  final LatLng end = LatLng(40.712776, -74.005974); // Điểm kết thúc
+  late LatLng start;
+  final LatLng end = LatLng(21.035000, 105.825649); // Điểm kết thúc 21.035000, 105.825649
+  bool isLocationLoaded = false;  // Để kiểm tra xem vị trí hiện tại đã được lấy chưa
 
   double routeDistance = 0.0;
 
   @override
   void initState() {
     super.initState();
-    _loadRoute();
+    _getCurrentLocationAndLoadRoute();  // Lấy vị trí hiện tại và tải tuyến đường
+  }
+
+  Future<void> _getCurrentLocationAndLoadRoute() async {
+    start = await getCurrentLocation();
+    await _loadRoute();  // Sau khi có vị trí, tải tuyến đường
+    setState(() {
+      isLocationLoaded = true;  // Cập nhật trạng thái để hiển thị bản đồ
+    });
+  }
+
+  Future<LatLng> getCurrentLocation() async {
+    Position userPosition = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.bestForNavigation,
+    );
+    return LatLng(userPosition.latitude, userPosition.longitude);
     _loadDistance();
   }
 
@@ -41,10 +58,10 @@ class _MapScreenState extends State<MapScreen> {
       appBar: AppBar(
         title: Text('Route Map: $routeDistance' ),
       ),
-      body: FlutterMap(
-        options: const MapOptions(
-          // initialCenter: LatLng(40.730610, -73.935242), // Sử dụng initialCenter thay cho center
-          initialCenter: LatLng(40.748817, -73.985428), // Sử dụng initialCenter thay cho center
+      body: isLocationLoaded
+          ? FlutterMap(
+        options: MapOptions(
+          initialCenter: start,  // Sử dụng vị trí hiện tại làm initialCenter
           initialZoom: 13.0,
         ),
         children: [
@@ -67,19 +84,20 @@ class _MapScreenState extends State<MapScreen> {
                 point: start,
                 width: 80,
                 height: 80,
-                child: Icon(Icons.location_on, color: Colors.red),
-                // builder: (ctx) => Icon(Icons.location_on, color: Colors.red), // Thay builder bằng widget
+                child: Icon(Icons.person, color: Colors.red),
               ),
               Marker(
                 point: end,
                 width: 80,
                 height: 80,
-                // widget: Icon(Icons.location_on, color: Colors.green), // Thay builder bằng widget
-                child: Icon(Icons.location_on, color: Colors.red), // Thay builder bằng widget
+                child: Icon(Icons.car_crash_rounded, color: Colors.green),
               ),
             ],
           ),
         ],
+      )
+          : Center(
+        child: CircularProgressIndicator(),  // Hiển thị vòng xoay khi chưa có vị trí
       ),
     );
   }
