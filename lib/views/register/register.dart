@@ -48,7 +48,7 @@ class _RegisterPageState extends State<RegisterPage> {
         CupertinoPageRoute(
           builder: (context) => PhoneAddressPage(
             currentStep: _currentStep,
-            fullName: _fullNameController,
+            fullName: _fullNameController.text,
           ),
         ),
       ).then((_) {
