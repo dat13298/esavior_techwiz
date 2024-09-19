@@ -1,12 +1,24 @@
+import 'package:bcrypt/bcrypt.dart';
+import 'package:esavior_techwiz/models/account.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
+import '../../services/account_service.dart';
 import '../login/login.dart';
 
 class AccountPage extends StatefulWidget {
   final int currentStep;
+  final String fullName;
+  final String phone_number;
+  final String address;
 
-  const AccountPage({super.key, required this.currentStep});
+
+  const AccountPage({
+    super.key,
+    required this.currentStep,
+    required this.fullName,
+    required this.phone_number,
+    required this.address
+  });
 
   @override
   State<AccountPage> createState() => _AccountPageState();
@@ -17,6 +29,7 @@ class _AccountPageState extends State<AccountPage> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
+
 
   String? _emailError;
   String? _passwordError;
@@ -62,18 +75,38 @@ class _AccountPageState extends State<AccountPage> {
     });
   }
 
-  void _handleRegister() {
+  Future<void> _handleRegister() async {
     if (_isButtonEnabled) {
-      // Handle the registration logic here
-      print("User registered successfully");
-
-      // After registration, navigate to the LoginPage
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => LoginPage()),
+      try {
+        final password = _passwordController.text;
+        final hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+      Account newAccount = Account(
+        fullName: widget.fullName,
+        phoneNumber: widget.phone_number,
+        passwordHash: hashedPassword,
+        email: _emailController.text,
+        addressHome: widget.address,
+        addressCompany: "",
+        feedbacks: [],
+        role: "user",
+        status: " ",
       );
+
+
+        await AccountService().addAccount(newAccount);
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => LoginPage()),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Đăng ký thất bại: $e')),
+        );
+      }
     }
   }
+
 
   @override
   void initState() {
