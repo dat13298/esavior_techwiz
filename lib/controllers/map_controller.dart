@@ -26,7 +26,7 @@ Future<void> showMapScreen(BuildContext context) async {
       builder: (context) => MapScreen(
         currentPositionDevice: currentPosition,
         currentPosition: currentPosition,
-        role: 'user', // Thay đổi nếu cần
+        role: 'driver', // Thay đổi nếu cần
         routeDistance: routeDistance,
         routePoints: routePoints,
       ),
