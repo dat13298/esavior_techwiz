@@ -1,4 +1,5 @@
 import 'package:esavior_techwiz/connection/firebase_connection.dart';
+import 'package:esavior_techwiz/views/about/about.dart';
 import 'package:esavior_techwiz/views/home/homepage.dart';
 import 'package:esavior_techwiz/views/map_screen.dart';
 import 'package:esavior_techwiz/views/profile/profile.dart';
@@ -15,7 +16,7 @@ void main() async {
 
   await FirestoreService.initializeFirebase();
 
-  runApp(const MyApp());
+  runApp(AboutPage());
 }
 
 class MyApp extends StatelessWidget {

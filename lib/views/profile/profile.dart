@@ -18,7 +18,7 @@ class ProfilePage extends StatelessWidget {
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(110.0), // Set the height of the AppBar
         child: ClipRRect(
-          borderRadius: BorderRadius.only(
+          borderRadius: const BorderRadius.only(
             bottomLeft: Radius.circular(30), // Rounded corners at bottom-left
             bottomRight: Radius.circular(30), // Rounded corners at bottom-right
           ),

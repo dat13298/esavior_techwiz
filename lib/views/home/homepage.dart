@@ -28,7 +28,7 @@ class HomePage extends StatelessWidget {
           ),
           child: AppBar(
             backgroundColor: Color(0xFF10CCC6),
-            title: Column(
+            title: const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
@@ -53,7 +53,7 @@ class HomePage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
               // Search bar
               TextField(
                 decoration: InputDecoration(
@@ -64,7 +64,7 @@ class HomePage extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // Emergency button
               Center(
@@ -89,10 +89,10 @@ class HomePage extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // Ambulance gallery
-              Text(
+              const Text(
                 'Ambulance gallery',
                 style: TextStyle(
                   fontSize: 18,
@@ -108,18 +108,18 @@ class HomePage extends StatelessWidget {
                       imagePath: 'assets/ford_transit.png',
                       title: 'Ford Transit',
                     ),
-                    SizedBox(width: 5),
+                    const SizedBox(width: 5),
                     AmbulanceCard(
                       imagePath: 'assets/mercedes_sprinter.png',
                       title: 'Mercedes-Benz Sprinter',
                     ),
-                    SizedBox(width: 10),
+                    const SizedBox(width: 10),
                     // Icon and "see more" button
                     Column(
                       children: [
                         IconButton(
                             onPressed: (){},
-                            icon: Icon(Icons.arrow_forward)
+                            icon: const Icon(Icons.arrow_forward)
                         ),// The ">" icon
                         TextButton(
                           onPressed: () {
