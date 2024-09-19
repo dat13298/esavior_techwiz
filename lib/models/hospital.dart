@@ -1,20 +1,23 @@
 class Hospital{
   final String id;
   final String name;
-  final String district;
+  final String address;
+  final String cityID;
 
 
   Hospital({
     required this.id,
     required this.name,
-    required this.district,
+    required this.address,
+    required this.cityID,
   });
 
   static Hospital fromMap(Map<String, dynamic> map) {
     return Hospital(
       id: map['id'] as String? ?? '',
       name: map['name'] as String? ?? '',
-      district: map['district'] as String? ?? '',
+      address: map['address'] as String? ?? '',
+      cityID: map['cityID'] as String? ?? '',
     );
   }
 
@@ -23,7 +26,8 @@ class Hospital{
     return {
       'id': id,
       'name': name,
-      'district': district,
+      'address': address,
+      'cityID':cityID,
     };
   }
 
