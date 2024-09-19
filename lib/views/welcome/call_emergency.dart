@@ -1,3 +1,4 @@
+import 'package:esavior_techwiz/services/emergency_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -14,6 +15,7 @@ class CallEmergency extends StatefulWidget {
 class _CallEmergencyState extends State<CallEmergency> {
   double screenHeight = 0;
   double screenWidth = 0;
+  final EmergencyService _emergencyService = EmergencyService();
 
   @override
   void initState() {
@@ -22,7 +24,7 @@ class _CallEmergencyState extends State<CallEmergency> {
   }
 
   Future<void> _initialize() async {
-    await _callDispatcher();///call Dispatcher when widget start
+    // await _callDispatcher();///call Dispatcher when widget start
     await _getCurrentLocation();
   }
 
@@ -44,6 +46,7 @@ class _CallEmergencyState extends State<CallEmergency> {
       );
       print('Current location: ${position.latitude}, ${position.longitude}');
       // Xử lý vị trí của người dùng ở đây, ví dụ lưu vào biến, gửi đến server, v.v.
+      await _emergencyService.sendLocationToFirebase(position.latitude, position.longitude);
     } catch (e) {
       print('Error getting location: $e');
     }
