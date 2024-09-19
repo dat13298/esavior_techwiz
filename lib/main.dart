@@ -1,8 +1,14 @@
 import 'package:esavior_techwiz/connection/firebase_connection.dart';
 import 'package:esavior_techwiz/views/map_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 void main() async{
+  await Permission.locationWhenInUse.isDenied.then((value) {
+    if(value){
+      Permission.locationWhenInUse.request();
+    }
+  });
   WidgetsFlutterBinding.ensureInitialized();
   await FirestoreService.initializeFirebase();
 
