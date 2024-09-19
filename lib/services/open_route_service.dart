@@ -25,7 +25,7 @@
   }
 
   Future<double> getRouteDistance(LatLng start, LatLng end) async {
-    const apiKey = '5b3ce3597851110001cf62487b52a77ea88c42fdafe9bffcc7690979'; // Thay YOUR_API_KEY bằng OpenRouteService API Key của bạn
+    const apiKey = '5b3ce3597851110001cf62487b52a77ea88c42fdafe9bffcc7690979';
 
     final String url =
         'https://api.openrouteservice.org/v2/directions/driving-car?api_key=$apiKey&start=${start.longitude},${start.latitude}&end=${end.longitude},${end.latitude}';
