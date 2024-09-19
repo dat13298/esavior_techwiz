@@ -1,15 +1,285 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+
+import '../login/login.dart';
 
 class AccountPage extends StatefulWidget {
-  const AccountPage({super.key});
+  final int currentStep;
+
+  const AccountPage({super.key, required this.currentStep});
 
   @override
   State<AccountPage> createState() => _AccountPageState();
 }
 
 class _AccountPageState extends State<AccountPage> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
+
+  String? _emailError;
+  String? _passwordError;
+  bool _passwordsMatch = true;
+  bool _isButtonEnabled = false;
+
+  void _checkFields() {
+    setState(() {
+      String email = _emailController.text.trim();
+      String password = _passwordController.text.trim();
+      String confirmPassword = _confirmPasswordController.text.trim();
+
+      // Validate email
+      if (email.isEmpty) {
+        _emailError = 'Email cannot be empty';
+      } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(email)) {
+        _emailError = 'Invalid email format';
+      } else if (email.length > 50) {
+        _emailError = 'Email cannot exceed 50 characters';
+      } else {
+        _emailError = null;
+      }
+      // Validate passwords
+      if (password.isEmpty || confirmPassword.isEmpty) {
+        _passwordError = 'Password cannot be empty';
+        _passwordsMatch = true;
+      } else if (password.length < 8) {
+        _passwordError = 'Password must be at least 8 characters';
+        _passwordsMatch = false;
+      } else if (password.length > 255) {
+        _passwordError = 'Password cannot exceed 255 characters';
+        _passwordsMatch = false;
+      } else if (password != confirmPassword) {
+        _passwordError = 'Passwords don\'t match. Try again!';
+        _passwordsMatch = false;
+      } else {
+        _passwordError = null;
+        _passwordsMatch = true;
+      }
+
+      _isButtonEnabled =
+          _emailError == null && _passwordError == null && _passwordsMatch;
+    });
+  }
+
+  void _handleRegister() {
+    if (_isButtonEnabled) {
+      // Handle the registration logic here
+      print("User registered successfully");
+
+      // After registration, navigate to the LoginPage
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => LoginPage()),
+      );
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _emailController.addListener(_checkFields);
+    _passwordController.addListener(_checkFields);
+    _confirmPasswordController.addListener(_checkFields);
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    var screenHeight = MediaQuery.of(context).size.height;
+    var screenWidth = MediaQuery.of(context).size.width;
+    return CupertinoPageScaffold(
+      child: Material(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.08),
+          child: Container(
+            height: screenHeight,
+            width: screenWidth,
+            alignment: Alignment.topCenter,
+            child: Column(
+              children: [
+                SizedBox(height: screenHeight * 0.1),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Icon(
+                      Icons.arrow_back_ios,
+                      color: Colors.black,
+                      size: 24,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 0.0, vertical: 50.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Step indicator
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: List.generate(3, (index) {
+                              return _buildStepIndicator(
+                                  isActive: index <= widget.currentStep);
+                            }),
+                          ),
+                          SizedBox(height: screenHeight * 0.05),
+                          const Text(
+                            'Enter your email',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 19,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 5),
+                          CupertinoTextField(
+                            controller: _emailController,
+                            keyboardType: TextInputType.emailAddress,
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 19, horizontal: 16),
+                            cursorColor: Colors.black,
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.black),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          if (_emailError != null)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 10),
+                              child: Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  _emailError!,
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    color: Color(0xFFF20202),
+                                    fontWeight: FontWeight.w400,
+                                    fontFamily: 'Inter',
+                                    decoration: TextDecoration.none,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          const SizedBox(height: 5),
+                          const Text(
+                            'Enter your password',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 19,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 5),
+                          CupertinoTextField(
+                            controller: _passwordController,
+                            obscureText: true,
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 19, horizontal: 16),
+                            cursorColor: Colors.black,
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.black),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          const SizedBox(height: 5),
+                          const Text(
+                            'Re-enter your password',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 19,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 5),
+                          CupertinoTextField(
+                            controller: _confirmPasswordController,
+                            obscureText: true,
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 19, horizontal: 16),
+                            cursorColor: Colors.black,
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.black),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          if (!_passwordsMatch)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 10),
+                              child: Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  _passwordError!,
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    color: Color(0xFFF20202),
+                                    fontWeight: FontWeight.w400,
+                                    fontFamily: 'Inter',
+                                    decoration: TextDecoration.none,
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(bottom: screenHeight * 0.06),
+                  child: GestureDetector(
+                    onTap: _isButtonEnabled ? _handleRegister : null,
+                    child: FractionallySizedBox(
+                      child: Container(
+                        height: screenHeight * 0.07,
+                        decoration: BoxDecoration(
+                          color: _isButtonEnabled
+                              ? const Color(0xFF10CCC6)
+                              : const Color(0xFF10CCC6).withOpacity(0.3),
+                          borderRadius: BorderRadius.circular(20.0),
+                        ),
+                        child: const Center(
+                          child: Text(
+                            'Register',
+                            style: TextStyle(
+                              fontSize: 30,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStepIndicator({required bool isActive}) {
+    return Container(
+      width: 90,
+      height: 8,
+      decoration: BoxDecoration(
+        color: isActive ? const Color(0xFF10CCC6) : Colors.grey[300],
+        borderRadius: BorderRadius.circular(5),
+      ),
+    );
   }
 }
