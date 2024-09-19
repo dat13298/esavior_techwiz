@@ -6,7 +6,10 @@ import 'account.dart';
 
 class PhoneAddressPage extends StatefulWidget {
   final int currentStep;
-  const PhoneAddressPage({super.key, required TextEditingController fullName, required this.currentStep});
+  final String fullName;
+
+  const PhoneAddressPage(
+      {super.key, required this.currentStep, required this.fullName});
 
   @override
   State<PhoneAddressPage> createState() => _PhoneAddressPageState();
@@ -55,6 +58,9 @@ class _PhoneAddressPageState extends State<PhoneAddressPage> {
           CupertinoPageRoute(
             builder: (context) => AccountPage(
               currentStep: widget.currentStep + 1,
+              fullName: widget.fullName,
+              phone_number: _phoneController.text,
+              address: _addressController.text,
             ),
           ),
         );
@@ -134,7 +140,6 @@ class _PhoneAddressPageState extends State<PhoneAddressPage> {
                               }),
                             ),
                             SizedBox(height: screenHeight * 0.05),
-
                             const Text(
                               'Enter your phone number',
                               style: TextStyle(
