@@ -24,7 +24,7 @@ class _AdminPageState extends State<AdminPage> {
     _tabs = [
       const HomeTab(),  // Tab Home
       const ActivityTab(),         // Tab Activity
-      const DriverManagerTab(),    // Tab Driver Manager
+      const ManagerTab(),    // Tab Manager
       const ProfileTab(),          // Tab Profile
     ];
   }
@@ -65,7 +65,7 @@ class _AdminPageState extends State<AdminPage> {
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.person_add),
-              label: "Driver manager",
+              label: "Manager",
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.person),
