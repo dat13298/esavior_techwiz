@@ -13,25 +13,36 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _fullNameController = TextEditingController();
 
-  final FocusNode _focusNode =
-      FocusNode(); // FocusNode để lắng nghe sự kiện bàn phím
+  final FocusNode _focusNode = FocusNode();
   bool _isButtonEnabled = false;
+  String? _fullNameError;
 
-  int _currentStep = 0; // Initialize the first step (Step 0)
+  int _currentStep = 0;
 
   void _checkFields() {
-    setState(() {
-      _isButtonEnabled = _fullNameController.text.trim().isNotEmpty;
-    });
+    final fullName = _fullNameController.text.trim();
+
+
+    if (fullName.isEmpty || fullName.length > 40 || !RegExp(r"^[a-zA-Z\s]+$").hasMatch(fullName)) {
+      setState(() {
+        _fullNameError = 'Invalid full name!';
+        _isButtonEnabled = false;
+      });
+    } else {
+      setState(() {
+        _fullNameError = null;
+        _isButtonEnabled = true;
+      });
+    }
   }
 
   void _handleContinue() async {
     if (_isButtonEnabled) {
       setState(() {
-        _currentStep++; // Move to the next step
+        _currentStep++;
       });
 
-      // Navigate to the Email page with the current step
+
       Navigator.push(
         context,
         CupertinoPageRoute(
@@ -41,7 +52,6 @@ class _RegisterPageState extends State<RegisterPage> {
           ),
         ),
       ).then((_) {
-        // When returning to this page, reset the step to 0
         setState(() {
           _currentStep = 0;
         });
@@ -67,117 +77,130 @@ class _RegisterPageState extends State<RegisterPage> {
     var screenHeight = MediaQuery.of(context).size.height;
     var screenWidth = MediaQuery.of(context).size.width;
     return CupertinoPageScaffold(
+      child: RawKeyboardListener(
+        focusNode: _focusNode,
+        onKey: (RawKeyEvent event) {
+          if (event is RawKeyDownEvent && event.logicalKey == LogicalKeyboardKey.enter) {
+            _handleContinue();
+          }
+        },
+        child: Material(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.08),
+            child: Container(
+              height: screenHeight,
+              width: screenWidth,
+              alignment: Alignment.topCenter,
+              child: Column(
+                children: [
+                  SizedBox(height: screenHeight * 0.1),
 
-        navigationBar: CupertinoNavigationBar(
-          backgroundColor: Colors.transparent,
-          leading: GestureDetector(
-            onTap: () {
-              Navigator.pop(context);
-            },
-            child: const Icon(
-              Icons.arrow_back_ios,
-              color: Colors.black,
-              size: 22,
-            ),
-          ),
-          border: null,
-        ),
-        child: RawKeyboardListener(
-          focusNode: _focusNode,
-          onKey: (RawKeyEvent event) {
-            if (event is RawKeyDownEvent &&
-                event.logicalKey == LogicalKeyboardKey.enter) {
-              _handleContinue(); // Gọi cùng phương thức như nhấn nút
-            }
-          },
-          child: Material(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.08),
-              child: Container(
-                height: screenHeight,
-                width: screenWidth,
-                alignment: Alignment.topCenter,
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: SingleChildScrollView(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 0.0, vertical: 50.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // Adding extra padding between the navigation bar and the step indicator
-                              const SizedBox(height: 50),
-                              // Step indicator bar
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: List.generate(3, (index) {
-                                  return _buildStepIndicator(
-                                      isActive: index <= _currentStep);
-                                }),
+                  // Nút back
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Icon(
+                        Icons.arrow_back_ios,
+                        color: Colors.black,
+                        size: 24,
+                      ),
+                    ),
+                  ),
+
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 50.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: List.generate(3, (index) {
+                                return _buildStepIndicator(isActive: index <= _currentStep);
+                              }),
+                            ),
+                            SizedBox(height: screenHeight * 0.05),
+
+                            const Text(
+                              'Enter your full name',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 19,
+                                fontWeight: FontWeight.bold,
                               ),
-                              SizedBox(height: screenHeight * 0.05),
-
-                              const Text(
-                                'Enter your full name',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
+                            ),
+                            const SizedBox(height: 5),
+                            CupertinoTextField(
+                              controller: _fullNameController,
+                              keyboardType: TextInputType.name,
+                              padding: const EdgeInsets.symmetric(vertical: 19, horizontal: 16),
+                              cursorColor: Colors.black,
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Colors.black),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            if (_fullNameError != null)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 10),
+                                child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    _fullNameError!,
+                                    style: const TextStyle(
+                                      fontSize: 19,
+                                      color: Color(0xFFF20202),
+                                      fontWeight: FontWeight.w400,
+                                      fontFamily: 'Inter',
+                                      decoration: TextDecoration.none,
+                                    ),
+                                  ),
                                 ),
                               ),
-                              const SizedBox(height: 5),
-                              CupertinoTextField(
-                                controller: _fullNameController,
-                                keyboardType: TextInputType.name,
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 19, horizontal: 16),
-                                decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.black),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
+
+                            const SizedBox(height: 34),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(bottom: screenHeight * 0.06),
+                    child: GestureDetector(
+                      onTap: _isButtonEnabled ? _handleContinue : null,
+                      child: FractionallySizedBox(
+                        child: Container(
+                          height: screenHeight * 0.07,
+                          decoration: BoxDecoration(
+                            color: _isButtonEnabled
+                                ? const Color(0xFF10CCC6)
+                                : const Color(0xFF10CCC6).withOpacity(0.3),
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
+                          child: const Center(
+                            child: Text(
+                              'Continue',
+                              style: TextStyle(
+                                fontSize: 30,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
                               ),
-                              const SizedBox(height: 34),
-                            ],
+                            ),
                           ),
                         ),
                       ),
                     ),
-                    Padding(
-                      padding: EdgeInsets.only(bottom: screenHeight * 0.06),
-                      child: GestureDetector(
-                        onTap: _isButtonEnabled ? _handleContinue : null,
-                        child: FractionallySizedBox(
-                          child: Container(
-                            height: screenHeight * 0.07,
-                            decoration: BoxDecoration(
-                              color: _isButtonEnabled
-                                  ? const Color(0xFF10CCC6)
-                                  : const Color(0xFF10CCC6).withOpacity(0.3),
-                              borderRadius: BorderRadius.circular(20.0),
-                            ),
-                            child: const Center(
-                              child: Text(
-                                'Continue',
-                                style: TextStyle(
-                                  fontSize: 30,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
-        )
+        ),
+      ),
     );
   }
 
