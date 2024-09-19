@@ -22,7 +22,7 @@ class _LoginPageState extends State<LoginPage> {
     screenWidth = MediaQuery.of(context).size.width;
 
     return CupertinoPageScaffold(
-      backgroundColor: Color(0xFFFFFFFF),
+      backgroundColor: const Color(0xFFFFFFFF),
       navigationBar: CupertinoNavigationBar(
         leading: GestureDetector(
           onTap: () {
@@ -31,7 +31,7 @@ class _LoginPageState extends State<LoginPage> {
           child: const Icon(
             Icons.arrow_back_ios,
             color: Colors.black,
-            size: 22,
+            size: 24,
           ),
         ),
         border: null,
@@ -57,7 +57,7 @@ class _LoginPageState extends State<LoginPage> {
                 'Login your account',
                 style: TextStyle(
                   fontFamily: 'Inter',
-                  fontSize: 18,
+                  fontSize: 19,
                   color: Colors.black,
                   fontWeight: FontWeight.w400,
                   decoration: TextDecoration.none,
@@ -79,7 +79,7 @@ class _LoginPageState extends State<LoginPage> {
                     fontFamily: 'Inter',
                     color: Colors.black,
                     fontWeight: FontWeight.w700,
-                    fontSize: 18,
+                    fontSize: 19,
                     decoration: TextDecoration.none,
                   ),
                 ),
@@ -112,7 +112,7 @@ class _LoginPageState extends State<LoginPage> {
                     fontFamily: 'Inter',
                     color: Colors.black,
                     fontWeight: FontWeight.w700,
-                    fontSize: 18,
+                    fontSize: 19,
                     decoration: TextDecoration.none,
                   ),
                 ),
@@ -153,7 +153,7 @@ class _LoginPageState extends State<LoginPage> {
                     child: Text(
                       'Invalid email or password!',
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 19,
                         color: Color(0xFFF20202),
                         fontWeight: FontWeight.w400,
                         fontFamily: 'Inter',
@@ -210,7 +210,7 @@ class _LoginPageState extends State<LoginPage> {
                     decorationStyle: TextDecorationStyle.solid,
                     decorationThickness: 1.5,
                     decorationColor: Color(0xFF1F10CC),
-                    fontSize: 18,
+                    fontSize: 19,
                     fontWeight: FontWeight.w400,
                   ),
                 ),

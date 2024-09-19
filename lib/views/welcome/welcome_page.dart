@@ -124,7 +124,7 @@ class _WelcomePageState extends State<WelcomePage> {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: const Text(
-                    'Login as User',
+                    'Login',
                     style: TextStyle(
                       fontFamily: 'Inter',
                       color: Colors.white,
