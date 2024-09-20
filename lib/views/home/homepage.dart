@@ -186,8 +186,8 @@ class _HomePageState extends State<HomePage> {
                             padding: const EdgeInsets.only(right: 5.0), // Khoảng cách giữa các thẻ
                             child: AmbulanceCard(
                               imagePath: index == 0
-                                  ? 'assets/ford_transit.png'
-                                  : 'assets/mercedes_sprinter.png',
+                                  ? 'assets/ford/1.jpg'
+                                  : 'assets/mercedes/1.png',
                               title: index == 0 ? 'Ford Transit' : 'Mercedes-Benz Sprinter',
                             ),
                           );

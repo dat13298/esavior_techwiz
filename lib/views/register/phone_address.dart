@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'account.dart';
+import 'email_password.dart';
 
 class PhoneAddressPage extends StatefulWidget {
   final int currentStep;
