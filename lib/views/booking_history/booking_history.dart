@@ -1,4 +1,7 @@
+import 'package:esavior_techwiz/services/booking_service.dart';
 import 'package:flutter/material.dart';
+
+import '../../models/booking.dart';
 
 class BookingHistory extends StatefulWidget {
   const BookingHistory({super.key});
@@ -8,89 +11,89 @@ class BookingHistory extends StatefulWidget {
 }
 
 class _BookingHistoryState extends State<BookingHistory> {
-  late Future<List<Map<String, dynamic>>> bookingList;
+  List<Booking> bookingList = [];
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    // Tạo dữ liệu mẫu với timestamp
-    bookingList = Future.delayed(Duration(seconds: 1), () {
-      return [
-        {
-          "title": "Emergency",
-          "dateTime": 1695100000000, // Timestamp mẫu
-          "status": "completed"
-        },
-        {
-          "title": "Non-Emergency",
-          "dateTime": 1695013600000, // Timestamp mẫu
-          "status": "waiting"
-        },
-        {
-          "title": "Emergency",
-          "dateTime": 1694927200000, // Timestamp mẫu
-          "status": "rejected"
-        },
-      ];
-    });
+    fetchBookingList();
   }
+
+  // Method để lấy dữ liệu booking từ Firebase
+  Future<void> fetchBookingList() async {
+    try {
+      print("Fetching bookings...");
+      List<Booking> bookings = await BookingService().getBookingsByPhoneNumber('01222222222');
+      print("Bookings fetched: ${bookings.length}");
+
+      setState(() {
+        bookingList = bookings;
+        isLoading = false;
+      });
+    } catch (e) {
+      print("Error fetching bookings: $e");
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
 
   // Chuyển đổi timestamp thành DateTime
   DateTime _convertTimestampToDateTime(int timestamp) {
-    return DateTime.fromMillisecondsSinceEpoch(timestamp);
+    return DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
   }
 
   // Widget để hiển thị từng mục booking
-  Widget _buildBookingItem(Map<String, dynamic> booking) {
-    DateTime dateTime = _convertTimestampToDateTime(booking['dateTime']);
+  Widget _buildBookingItem(Booking booking) {
+    DateTime dateTime = _convertTimestampToDateTime(booking.dateTime.seconds);
     String formattedDate = "${dateTime.day}/${dateTime.month}/${dateTime.year}";
     String formattedTime = "${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}";
 
     return ListTile(
-      contentPadding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+      contentPadding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
       leading: Icon(
-        booking['title'] == "Emergency" ? Icons.local_hospital : Icons.local_taxi,
-        color: booking['title'] == "Emergency" ? Colors.red : Colors.blue,
+        booking.type == "emergency" ? Icons.local_hospital : Icons.local_taxi,
+        color: booking.type == "emergency" ? Colors.red : Colors.blue,
       ),
       title: Text(
-        booking['title'],
-        style: TextStyle(fontWeight: FontWeight.bold),
+        booking.type,
+        style: const TextStyle(fontWeight: FontWeight.bold),
       ),
       subtitle: Text("Date: $formattedDate - Time: $formattedTime"),
       trailing: Container(
         width: 120,
-        padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
         decoration: BoxDecoration(
-          color: booking['status'] == "completed"
+          color: booking.status == "completed"
               ? Colors.green.withOpacity(0.1)
-              : booking['status'] == "waiting"
+              : booking.status == "waiting"
               ? Colors.orange.withOpacity(0.1)
               : Colors.red.withOpacity(0.1),
           border: Border.all(
-            color: booking['status'] == "completed"
+            color: booking.status == "completed"
                 ? Colors.green
-                : booking['status'] == "waiting"
+                : booking.status == "waiting"
                 ? Colors.orange
                 : Colors.red,
           ),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Text(
-          booking['status'].toString().toUpperCase(),
+          booking.status.toUpperCase(),
           textAlign: TextAlign.center,
           style: TextStyle(
-            color: booking['status'] == "completed"
+            color: booking.status == "completed"
                 ? Colors.green
-                : booking['status'] == "waiting"
+                : booking.status == "waiting"
                 ? Colors.orange
                 : Colors.red,
             fontWeight: FontWeight.bold,
           ),
         ),
       ),
-      // Thêm hành động khi nhấn vào ListTile
       onTap: () {
-        // Điều hướng đến màn hình chi tiết với thông tin booking
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -105,29 +108,18 @@ class _BookingHistoryState extends State<BookingHistory> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Booking History'),
+        title: const Text('Booking History'),
       ),
-      body: FutureBuilder<List<Map<String, dynamic>>>(
-        future: bookingList,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error loading booking history'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No bookings available'));
-          }
-
-          List<Map<String, dynamic>> bookings = snapshot.data!;
-
-          return ListView.builder(
-            itemCount: bookings.length,
-            itemBuilder: (context, index) {
-              return Card(
-                margin: EdgeInsets.symmetric(vertical: 5, horizontal: 8),
-                child: _buildBookingItem(bookings[index]),
-              );
-            },
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : bookingList.isEmpty
+          ? const Center(child: Text('No bookings available'))
+          : ListView.builder(
+        itemCount: bookingList.length,
+        itemBuilder: (context, index) {
+          return Card(
+            margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
+            child: _buildBookingItem(bookingList[index]),
           );
         },
       ),
@@ -137,32 +129,36 @@ class _BookingHistoryState extends State<BookingHistory> {
 
 // Tạo màn hình chi tiết để hiển thị thông tin cụ thể của booking
 class DetailScreen extends StatelessWidget {
-  final Map<String, dynamic> booking;
+  final Booking booking;
 
   const DetailScreen({super.key, required this.booking});
 
   @override
   Widget build(BuildContext context) {
-    DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(booking['dateTime']);
+    DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(booking.dateTime.seconds * 1000);
     String formattedDate = "${dateTime.day}/${dateTime.month}/${dateTime.year}";
     String formattedTime = "${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}";
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('${booking['title']} Details'),
+        title: Text('${booking.type} Details'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Title: ${booking['title']}', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            SizedBox(height: 10),
-            Text('Date: $formattedDate', style: TextStyle(fontSize: 16)),
-            SizedBox(height: 5),
-            Text('Time: $formattedTime', style: TextStyle(fontSize: 16)),
-            SizedBox(height: 5),
-            Text('Status: ${booking['status']}', style: TextStyle(fontSize: 16)),
+            Text('Title: ${booking.type}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 10),
+            Text('Date: $formattedDate', style: const TextStyle(fontSize: 16)),
+            const SizedBox(height: 5),
+            Text('Time: $formattedTime', style: const TextStyle(fontSize: 16)),
+            const SizedBox(height: 5),
+            Text('Status: ${booking.status}', style: const TextStyle(fontSize: 16)),
+            const SizedBox(height: 5),
+            Text('Driver Phone: ${booking.driverPhoneNumber}', style: const TextStyle(fontSize: 16)),
+            const SizedBox(height: 5),
+            Text('User Phone: ${booking.userPhoneNumber}', style: const TextStyle(fontSize: 16)),
           ],
         ),
       ),
