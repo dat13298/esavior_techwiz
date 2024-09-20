@@ -14,7 +14,7 @@ Future<void> stopNotificationSound() async {
   await _audioPlayer.stop();
 }
 
-void showEmergencyNotification(BuildContext context, String message) {
+void showEmergencyNotification(BuildContext context, String message, String title) {
   final overlayState = Overlay.of(context);
 
   // Nếu đã có một overlayEntry, loại bỏ nó trước khi tạo cái mới
@@ -22,12 +22,13 @@ void showEmergencyNotification(BuildContext context, String message) {
 
   _overlayEntry = OverlayEntry(
     builder: (context) => EmergencyNotification(
+
       message: message,
       onConfirm: () {
         stopNotificationSound();
         // Loại bỏ overlayEntry khi xác nhận
         _overlayEntry?.remove();
-      },
+      }, title: title,
     ),
   );
 

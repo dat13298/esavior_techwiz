@@ -68,11 +68,12 @@ class EmergencyService{
       showDialog(
         context: context,
         builder: (context) => EmergencyNotification(
+          title: "Emergency!!!",
           message: message,
           onConfirm: () async {
             Navigator.of(context).pop();
             // Cập nhật trạng thái thành 'accepted' khi xác nhận
-            await _databaseReference.child('locations').child(locationKey!).update({
+            await _databaseReference.child('locations').child(locationKey).update({
               'status': 'accepted',
             });
             //TODO: logic send booking to driver and insert booking
