@@ -30,22 +30,23 @@ class Booking {
     this.driverPhoneNumber,
   });
 
-  static Booking fromMap(Map<String,dynamic> map, String id){
+  static Booking fromMap(Map<String, dynamic> map, String id) {
     return Booking(
       id: id,
       carID: map['carID'] as String,
-      startLongitude: map['startLongitude'] as double,
-      startLatitude: map['startLatitude'] as double,
-      endLongitude: map['endLongitude'] as double,
-      endLatitude: map['endLatitude'] as double,
+      startLongitude: (map['startLongitude'] as double?) ?? 0.0, // Nếu null thì gán giá trị mặc định
+      startLatitude: (map['startLatitude'] as double?) ?? 0.0,
+      endLongitude: (map['endLongitude'] as double?) ?? 0.0,
+      endLatitude: (map['endLatitude'] as double?) ?? 0.0,
       userPhoneNumber: map['userPhoneNumber'] as String,
       dateTime: map['dateTime'] as Timestamp,
       type: map['type'] as String,
-      cost: map['cost'] as double,
+      cost: (map['cost'] as double?) ?? 0.0, // Gán giá trị mặc định nếu null
       status: map['status'] as String,
       driverPhoneNumber: map['driverPhoneNumber'] as String,
     );
   }
+
 
   Map<String, dynamic> toMap(){
     return{
