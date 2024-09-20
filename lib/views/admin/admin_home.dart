@@ -1,3 +1,4 @@
+import 'package:esavior_techwiz/models/account.dart';
 import 'package:esavior_techwiz/views/admin/customAppBar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +8,8 @@ import 'admin_manager.dart';
 import 'admin_profile.dart';
 
 class AdminPage extends StatefulWidget {
-  const AdminPage({Key? key}) : super(key: key);
+  final Account account;
+  const AdminPage({super.key, required this.account});
 
   @override
   _AdminPageState createState() => _AdminPageState();

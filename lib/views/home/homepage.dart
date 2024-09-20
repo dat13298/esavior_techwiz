@@ -1,4 +1,6 @@
 import 'package:esavior_techwiz/models/account.dart';
+import 'package:esavior_techwiz/views/admin/admin_home.dart';
+import 'package:esavior_techwiz/views/driver/driver_home.dart';
 import 'package:esavior_techwiz/views/profile/profile.dart';
 import 'package:flutter/material.dart';
 
@@ -13,9 +15,41 @@ class eSaviorHome extends StatefulWidget {
 
 class _eSaviorHomeState extends State<eSaviorHome> {
   @override
+  void initState() {
+    super.initState();
+
+    // Kiểm tra role và điều hướng tới các trang tương ứng
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _navigateBasedOnRole(widget.account.role);
+    });
+  }
+
+  void _navigateBasedOnRole(String role) {
+    if (role == 'user') {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage(account: widget.account)),
+      );
+    } else if (role == 'driver') {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => DriverPage(account: widget.account)),
+      );
+    } else if (role == 'dispatcher') {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => AdminPage(account: widget.account)),
+      );
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: HomePage(account: widget.account),
+    // Hiển thị trang loading trong khi chờ điều hướng
+    return const Scaffold(
+      body: Center(
+        child: CircularProgressIndicator(), // Hiển thị vòng xoay loading trong khi chờ điều hướng
+      ),
     );
   }
 }
