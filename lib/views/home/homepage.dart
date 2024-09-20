@@ -1,33 +1,67 @@
+import 'package:esavior_techwiz/models/account.dart';
 import 'package:esavior_techwiz/views/profile/profile.dart';
 import 'package:flutter/material.dart';
  // Import the ProfilePage to navigate to it
 
-class eSaviorHome extends StatelessWidget {
-  const eSaviorHome({super.key});
+class eSaviorHome extends StatefulWidget {
+  final Account account;
+
+  const eSaviorHome({super.key, required this.account});
 
   @override
+  _eSaviorHomeState createState() => _eSaviorHomeState();
+}
+
+class _eSaviorHomeState extends State<eSaviorHome> {
+  @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: HomePage(),
+    return MaterialApp(
+      home: HomePage(account: widget.account),
     );
   }
 }
 
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+class HomePage extends StatefulWidget {
+  final Account account;
+  const HomePage({super.key, required this.account});
+
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  int _selectedIndex = 0;
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+
+    if (index == 3) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => eSaviorProfile(account:widget.account)),
+      );
+    }
+  }
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(110.0), // Set the height of the AppBar
+        preferredSize: const Size.fromHeight(110.0),
         child: ClipRRect(
-          borderRadius: BorderRadius.only(
-            bottomLeft: Radius.circular(30), // Rounded corners at bottom-left
-            bottomRight: Radius.circular(30), // Rounded corners at bottom-right
+          borderRadius: const BorderRadius.only(
+            bottomLeft: Radius.circular(30),
+            bottomRight: Radius.circular(30),
           ),
           child: AppBar(
-            backgroundColor: Color(0xFF10CCC6),
+            backgroundColor: const Color(0xFF10CCC6),
             title: const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -58,7 +92,7 @@ class HomePage extends StatelessWidget {
               TextField(
                 decoration: InputDecoration(
                   hintText: 'Search places',
-                  prefixIcon: Icon(Icons.search),
+                  prefixIcon: const Icon(Icons.search),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -71,9 +105,9 @@ class HomePage extends StatelessWidget {
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red,
-                    padding: EdgeInsets.symmetric(horizontal: 70, vertical: 30),
+                    padding: const EdgeInsets.symmetric(horizontal: 70, vertical: 30),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10), // Square corners
+                      borderRadius: BorderRadius.circular(10),
                     ),
                   ),
                   onPressed: () {
@@ -99,7 +133,7 @@ class HomePage extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
@@ -114,35 +148,36 @@ class HomePage extends StatelessWidget {
                       title: 'Mercedes-Benz Sprinter',
                     ),
                     const SizedBox(width: 10),
-                    // Icon and "see more" button
                     Column(
                       children: [
                         IconButton(
-                            onPressed: (){},
-                            icon: const Icon(Icons.arrow_forward)
-                        ),// The ">" icon
+                          onPressed: () {},
+                          icon: const Icon(Icons.arrow_forward),
+                        ),
                         TextButton(
                           onPressed: () {
                             // See more action
                           },
-                          child: Text('see more',style: TextStyle(color: Colors.black),),
+                          child: const Text(
+                            'see more',
+                            style: TextStyle(color: Colors.black),
+                          ),
                         ),
                       ],
                     ),
                   ],
                 ),
               ),
-              SizedBox(height: 100),
+              const SizedBox(height: 100),
 
               // Feedback section
-              Text(
+              const Text(
                 'Feedback',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              // You can add your feedback form or details here
             ],
           ),
         ),
@@ -151,15 +186,9 @@ class HomePage extends StatelessWidget {
       // Bottom navigation bar
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
-        onTap: (int index) {
-          if (index == 3) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => eSaviorProfile()), // Navigate to ProfilePage
-            );
-          }
-        },
-        items: [
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+        items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Home',
@@ -181,6 +210,7 @@ class HomePage extends StatelessWidget {
     );
   }
 }
+
 
 class AmbulanceCard extends StatelessWidget {
   final String imagePath;
