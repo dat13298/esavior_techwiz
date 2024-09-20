@@ -80,7 +80,23 @@ flutter:
     - assets/thanh_nguyen.png
     - assets/ha_hung.png
     - assets/mercedes/1.png
+    - assets/mercedes/2.jpg
+    - assets/mercedes/3.jpg
     - assets/ford/1.jpg
+    - assets/ford/2.png
+    - assets/hyundai/1.jpg
+    - assets/hyundai/2.jpg
+    - assets/landrover/1.jpg
+    - assets/landrover/2.jpg
+    - assets/landrover/3.jpg
+    - assets/landrover/4.jpg
+    - assets/nissan/1.jpg
+    - assets/toyota/1.jpg
+    - assets/toyota/2.jpg
+    - assets/vokswa/1.jpg
+    - assets/vokswa/2.jpg
+    - assets/vokswa/3.jpg
+    - assets/vokswa/4.jpg
 
 
   # The following line ensures that the Material Icons font is
