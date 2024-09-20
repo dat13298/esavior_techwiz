@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import '../services/open_route_service.dart';
-import '../views/map_screen.dart';
+import '../views/map/map_screen.dart';
 
 //TODO: add account to this
 Future<void> showMapScreen(BuildContext context) async {
