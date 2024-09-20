@@ -43,12 +43,19 @@ class _MapScreenState extends State<MapScreen> {
   void initState() {
     super.initState();
     if (widget.role == 'driver') {
-      // _startLocationUpdates();
+      // _startLocationUpdates();///main method update firebase real time
       _simulateLocationUpdates();///demo
-      ///
+
       ///convert
       _convertAddressToDisplay();
     }
+    if (widget.role == 'user') {
+      // _startLocationUpdates();
+
+      ///convert
+      _convertAddressToDisplay();
+    }
+
   }
 
   //TODO call convert to string address
@@ -86,24 +93,24 @@ class _MapScreenState extends State<MapScreen> {
   }
 
 
+///update location driver when move
+  Future<void> _startLocationUpdates() async {
+    // Kiểm tra quyền truy cập vị trí
+    LocationPermission permission = await Geolocator.requestPermission();
+    if (permission == LocationPermission.whileInUse || permission == LocationPermission.always) {
+      // Lấy vị trí liên tục
+      _positionStream = Geolocator.getPositionStream().listen((Position position) {
+        setState(() {
+          _currentPosition = position;
+        });
+      });
+    } else {
+      print('Location permission denied');
+    }
+  }
 
-  // Future<void> _startLocationUpdates() async {
-  //   // Kiểm tra quyền truy cập vị trí
-  //   LocationPermission permission = await Geolocator.requestPermission();
-  //   if (permission == LocationPermission.whileInUse || permission == LocationPermission.always) {
-  //     // Lấy vị trí liên tục
-  //     _positionStream = Geolocator.getPositionStream().listen((Position position) {
-  //       setState(() {
-  //         _currentPosition = position;
-  //       });
-  //     });
-  //   } else {
-  //     print('Location permission denied');
-  //   }
-  // }
 
-
-  ///demo update location
+  ///demo update location driver when move
   void _simulateLocationUpdates() {
     int currentIndex = 0;
     _positionTimer = Timer.periodic(Duration(seconds: 1), (timer) {
@@ -170,7 +177,7 @@ class _MapScreenState extends State<MapScreen> {
                 markers: [
                   if (_currentPosition != null)
                     Marker(
-                      point: LatLng(_currentPosition!.latitude, _currentPosition!.longitude),
+                      point: widget.currentPosition,
                       width: 80,
                       height: 80,
                       child: Icon(
@@ -232,7 +239,7 @@ class _MapScreenState extends State<MapScreen> {
                       ),
                       SizedBox(height: 5),
                       Text(
-                        '${widget.currentPosition.latitude}, ${widget.currentPosition.longitude}',
+                        '$startAddress',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
