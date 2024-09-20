@@ -1,160 +1,162 @@
+import 'package:esavior_techwiz/models/account.dart';
 import 'package:esavior_techwiz/views/home/homepage.dart';
 import 'package:flutter/material.dart';
-// Import the HomePage to navigate to it
 
-class eSaviorProfile extends StatelessWidget {
+class eSaviorProfile extends StatefulWidget {
+  final Account account;
+
+  const eSaviorProfile({super.key, required this.account});
+
+  @override
+  _eSaviorProfileState createState() => _eSaviorProfileState();
+}
+
+class _eSaviorProfileState extends State<eSaviorProfile> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: ProfilePage(),
-    );
-  }
-}
-
-class ProfilePage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(110.0), // Set the height of the AppBar
-        child: ClipRRect(
-          borderRadius: const BorderRadius.only(
-            bottomLeft: Radius.circular(30), // Rounded corners at bottom-left
-            bottomRight: Radius.circular(30), // Rounded corners at bottom-right
+      home: Scaffold(
+        appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(110.0), // Set the height of the AppBar
+          child: ClipRRect(
+            borderRadius: const BorderRadius.only(
+              bottomLeft: Radius.circular(30), // Rounded corners at bottom-left
+              bottomRight: Radius.circular(30), // Rounded corners at bottom-right
+            ),
+            child: AppBar(
+              backgroundColor: const Color(0xFF10CCC6),
+              title: const Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'eSavior',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 30,
+                    ),
+                  ),
+                  Text(
+                    'Your health is our care!',
+                    style: TextStyle(fontSize: 20),
+                  ),
+                ],
+              ),
+            ),
           ),
-          child: AppBar(
-            backgroundColor: Color(0xFF10CCC6),
-            title: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'eSavior',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 30,
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // Profile Picture
+              CircleAvatar(
+                radius: 50,
+                backgroundColor: Colors.grey[300],
+                child: Icon(
+                  Icons.person,
+                  size: 60,
+                  color: Colors.grey[700],
+                ),
+              ),
+              const SizedBox(height: 10),
+              // User Name
+              const Text(
+                'User',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              // Edit Profile Button
+              _buildProfileOption(
+                icon: Icons.edit,
+                text: 'Edit profile',
+                onTap: () {
+                  // Handle Edit profile action
+                },
+              ),
+              const SizedBox(height: 10),
+
+              // Change Password Button
+              _buildProfileOption(
+                icon: Icons.lock,
+                text: 'Change password',
+                onTap: () {
+                  // Handle Change password action
+                },
+              ),
+              const SizedBox(height: 10),
+
+              // About this app Button
+              _buildProfileOption(
+                icon: Icons.info_outline,
+                text: 'About this app',
+                onTap: () {
+                  // Handle About this app action
+                },
+              ),
+              const Spacer(),
+
+              // Log Out Button
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF10CCC6), // Same color as AppBar
+                  padding: const EdgeInsets.symmetric(horizontal: 100, vertical: 15),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                Text(
-                  'Your health is our care!',
-                  style: TextStyle(fontSize: 20),
+                onPressed: () {
+                  // Handle Log Out action
+                },
+                child: const Text(
+                  'Log out',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(height: 20),
+            ],
           ),
         ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            // Profile Picture
-            CircleAvatar(
-              radius: 50,
-              backgroundColor: Colors.grey[300],
-              child: Icon(
-                Icons.person,
-                size: 60,
-                color: Colors.grey[700],
-              ),
-            ),
-            SizedBox(height: 10),
-            // User Name
-            Text(
-              'User',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: 20),
 
-            // Edit Profile Button
-            _buildProfileOption(
-              icon: Icons.edit,
-              text: 'Edit profile',
-              onTap: () {
-                // Handle Edit profile action
-              },
+        // Bottom Navigation Bar
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: 3, // Setting the current index to Profile
+          type: BottomNavigationBarType.fixed,
+          onTap: (int index) {
+            if (index == 0) {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => eSaviorHome(account: widget.account)), // Navigate back to HomePage
+              );
+            }
+          },
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
             ),
-            SizedBox(height: 10),
-
-            // Change Password Button
-            _buildProfileOption(
-              icon: Icons.lock,
-              text: 'Change password',
-              onTap: () {
-                // Handle Change password action
-              },
+            BottomNavigationBarItem(
+              icon: Icon(Icons.access_time),
+              label: 'Activities',
             ),
-            SizedBox(height: 10),
-
-            // About this app Button
-            _buildProfileOption(
-              icon: Icons.info_outline,
-              text: 'About this app',
-              onTap: () {
-                // Handle About this app action
-              },
+            BottomNavigationBarItem(
+              icon: Icon(Icons.notifications),
+              label: 'Notifications',
             ),
-            Spacer(),
-
-            // Log Out Button
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFF10CCC6), // Same color as AppBar
-                padding: EdgeInsets.symmetric(horizontal: 100, vertical: 15),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              onPressed: () {
-                // Handle Log Out action
-              },
-              child: Text(
-                'Log out',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person),
+              label: 'Profile',
             ),
-            SizedBox(height: 20),
           ],
         ),
-      ),
-
-      // Bottom Navigation Bar
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 3, // Setting the current index to Profile
-        type: BottomNavigationBarType.fixed,
-        onTap: (int index) {
-          if (index == 0) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => eSaviorHome()), // Navigate back to HomePage
-            );
-          }
-        },
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.access_time),
-            label: 'Activities',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.notifications),
-            label: 'Notifications',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
       ),
     );
   }
@@ -164,7 +166,7 @@ class ProfilePage extends StatelessWidget {
     return GestureDetector(
       onTap: () => onTap(),
       child: Container(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           border: Border.all(color: Colors.black),
           borderRadius: BorderRadius.circular(8),
@@ -172,10 +174,10 @@ class ProfilePage extends StatelessWidget {
         child: Row(
           children: [
             Icon(icon, color: Colors.black),
-            SizedBox(width: 10),
+            const SizedBox(width: 10),
             Text(
               text,
-              style: TextStyle(fontSize: 16),
+              style: const TextStyle(fontSize: 16),
             ),
           ],
         ),
