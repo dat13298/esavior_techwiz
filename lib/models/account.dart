@@ -50,7 +50,7 @@ class Account{
       'addressHome': addressHome,
       'addressCompany': addressCompany,
       'role': role,
-      'feedbacks': feedbacks,
+      'feedbacks': feedbacks.map((f) => f.toMap()).toList(),
       'status': status,
     };
   }
