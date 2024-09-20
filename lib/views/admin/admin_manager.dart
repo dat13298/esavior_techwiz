@@ -3,20 +3,26 @@ import 'package:flutter/material.dart';
 import 'customAppBar.dart';
 import 'hospital_manager.dart';
 
-class ManagerTab extends StatelessWidget {
-  const ManagerTab();
+class ManagerTab extends StatefulWidget {
+  const ManagerTab({Key? key}) : super(key: key);
+
+  @override
+  _ManagerTabState createState() => _ManagerTabState();
+}
+
+class _ManagerTabState extends State<ManagerTab> {
+  // Danh sách các mục quản lý
+  final List<Map<String, dynamic>> managementItems = [
+    {'icon': Icons.person, 'title': 'Driver Manager', 'color': Color(0xFF10CCC6)},
+    {'icon': Icons.local_hospital, 'title': 'Hospital Manager', 'color': Color(0xFF10CCC6)},
+    {'icon': Icons.local_taxi, 'title': 'Booking Manager', 'color': Color(0xFF10CCC6)},
+    {'icon': Icons.drive_eta, 'title': 'Ambulance Manager', 'color': Color(0xFF10CCC6)},
+    // {'icon': Icons.settings, 'title': 'Settings', 'color': Color(0xFF10CCC6)},
+
+  ];
 
   @override
   Widget build(BuildContext context) {
-    // Danh sách các mục quản lý
-    final List<Map<String, dynamic>> managementItems = [
-      {'icon': Icons.drive_eta, 'title': 'Driver Manager', 'color': Color(0xFF10CCC6)},
-      {'icon': Icons.local_hospital, 'title': 'Hospital Manager', 'color': Color(0xFF10CCC6)},
-      {'icon': Icons.emergency, 'title': 'Booking Manager', 'color': Color(0xFF10CCC6)},
-      {'icon': Icons.person, 'title': 'Car Manager', 'color': Color(0xFF10CCC6)},
-      // {'icon': Icons.settings, 'title': 'Settings', 'color': Color(0xFF10CCC6)},
-    ];
-
     return Scaffold(
       appBar: CustomAppBar(
         title: 'Dispatcher Manager',
@@ -44,20 +50,17 @@ class ManagerTab extends StatelessWidget {
               ),
               trailing: Icon(Icons.arrow_forward_ios, color: Color(0xFF10CCC6)),
               onTap: () {
-                  if (item['title'] == 'Hospital Manager') {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => HospitalManager()),
-                    );
-                  }
-                  if (item['title'] == 'Driver Manager') {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => DriverManager()),
-                    );
-                  }
+                if (item['title'] == 'Hospital Manager') {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => HospitalManager()),
+                  );
+                } else if (item['title'] == 'Driver Manager') {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => DriverManager()),
+                  );
+                }
               },
             ),
           );
