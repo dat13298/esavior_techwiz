@@ -7,8 +7,7 @@ import 'admin_manager.dart';
 import 'admin_profile.dart';
 
 class AdminPage extends StatefulWidget {
-  // final String role; // Role được truyền vào (nếu có)
-  const AdminPage({Key? key,}) : super(key: key);
+  const AdminPage({Key? key}) : super(key: key);
 
   @override
   _AdminPageState createState() => _AdminPageState();
@@ -22,7 +21,7 @@ class _AdminPageState extends State<AdminPage> {
   void initState() {
     super.initState();
     _tabs = [
-      const HomeTab(),  // Tab Home
+      _buildHomeTab(),  // Tab Home
       const ActivityTab(),         // Tab Activity
       const ManagerTab(),    // Tab Manager
       const ProfileTab(),          // Tab Profile
@@ -76,14 +75,8 @@ class _AdminPageState extends State<AdminPage> {
       ),
     );
   }
-}
 
-// Trang Home Tab
-class HomeTab extends StatelessWidget {
-  const HomeTab({super.key});
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildHomeTab() {
     return Scaffold(
       appBar: CustomAppBar(title: 'eSavior', subtitle: 'Management'),
       body: Padding(
@@ -141,4 +134,3 @@ class HomeTab extends StatelessWidget {
     );
   }
 }
-
