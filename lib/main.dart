@@ -1,5 +1,4 @@
 import 'package:esavior_techwiz/connection/firebase_connection.dart';
-import 'package:esavior_techwiz/views/map_screen.dart';
 import 'package:esavior_techwiz/views/welcome/welcome_page.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -35,7 +34,13 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,4 +58,5 @@ class HomeScreen extends StatelessWidget {
     );
   }
 }
+
 

@@ -7,7 +7,7 @@ class BookingService {
 
   // Thêm booking mới vào Firestore (ID sẽ tự động được Firestore sinh ra)
   Future<void> addBooking(Booking booking) async {
-    await _bookingCollection.add(booking.toMap());
+    await _bookingCollection.add([booking.toMap()]);
   }
 
   // Cập nhật booking theo ID
