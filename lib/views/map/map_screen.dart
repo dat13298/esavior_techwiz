@@ -1,6 +1,9 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:esavior_techwiz/models/booking.dart';
 import 'package:esavior_techwiz/services/address_service.dart';
+import 'package:esavior_techwiz/services/booking_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
@@ -29,6 +32,8 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   String selectedVehicle = 'emergency'; // Giá trị mặc định
 
+  double amountEmergency = 10000;
+  double amountNonEmergency = 7000;
   DateTime? selectedDate;
   TimeOfDay? selectedTime;
   String? startAddress;//address after convert
@@ -58,12 +63,46 @@ class _MapScreenState extends State<MapScreen> {
 
   }
 
-  //TODO call convert to string address
+  //convert to string address
   Future<void> _convertAddressToDisplay() async{
-    setState(() async{
-      startAddress = await getAddressFromLatlon(widget.currentPosition); //start
-      endAddress = await getAddressFromLatlon(widget.currentPositionDevice); // end
-    });
+    String startAddr = await getAddressFromLatlon(widget.currentPosition); //start
+    String endAddr = await getAddressFromLatlon(widget.currentPositionDevice); // end
+
+    if (mounted) {
+      setState(() {
+        startAddress = startAddr;
+        endAddress = endAddr;
+      });
+    }
+  }
+  
+  //add booking when confirm
+  Future<void> _addBooking() async{
+    DateTime bookingDateTime = _combineDateAndTime(selectedDate!, selectedTime!);
+    Timestamp bookingTimestamp = Timestamp.fromDate(bookingDateTime);
+    double totalAmount = 0;
+    if(selectedVehicle == 'emergency'){
+      totalAmount = amountEmergency * widget.routeDistance;
+    }
+    if(selectedVehicle == 'non_emergency'){
+      totalAmount = amountNonEmergency * widget.routeDistance;
+    }
+    Booking newBooking = Booking(
+      id: null,  // Để null để Firestore tự sinh id
+      carID: 'abc',
+      startLongitude: 2.00,
+      startLatitude: 3.00,
+      endLongitude: 5.00,
+      endLatitude: 6.00,
+      userPhoneNumber: '01222222222',
+      dateTime: bookingTimestamp,
+      type: selectedVehicle,
+      cost: totalAmount,
+      status: 'waiting',
+      driverPhoneNumber: '3123123',
+    );
+
+    await BookingService().addBooking(newBooking);
   }
 
   Future<void> _pickDate(BuildContext context) async {
@@ -91,6 +130,18 @@ class _MapScreenState extends State<MapScreen> {
       });
     }
   }
+
+// Hàm convert DateTime và TimeOfDay thành một DateTime duy nhất
+  DateTime _combineDateAndTime(DateTime date, TimeOfDay time) {
+    return DateTime(
+      date.year,
+      date.month,
+      date.day,
+      time.hour,
+      time.minute,
+    );
+  }
+
 
 
 ///update location driver when move
@@ -177,7 +228,7 @@ class _MapScreenState extends State<MapScreen> {
                 markers: [
                   if (_currentPosition != null)
                     Marker(
-                      point: widget.currentPosition,
+                      point: widget.currentPosition,///start
                       width: 80,
                       height: 80,
                       child: Icon(
@@ -186,7 +237,7 @@ class _MapScreenState extends State<MapScreen> {
                       ),
                     ),
                   Marker(
-                    point: widget.currentPositionDevice,
+                    point: widget.currentPositionDevice,///end
                     width: 80,
                     height: 80,
                     child: Icon(
@@ -314,7 +365,7 @@ class _MapScreenState extends State<MapScreen> {
                                                 'Emergency Vehicle',
                                                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                                               ),
-                                              Text('10,000 VND'),
+                                              Text('${amountEmergency * widget.routeDistance} VND'),
                                             ],
                                           ),
                                         ],
@@ -356,7 +407,7 @@ class _MapScreenState extends State<MapScreen> {
                                                 'Non-Emergency Vehicle',
                                                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                                               ),
-                                              Text('5,000 VND'),
+                                              Text('${amountNonEmergency * widget.routeDistance} VND'),
                                             ],
                                           ),
                                         ],
@@ -435,6 +486,7 @@ class _MapScreenState extends State<MapScreen> {
                               ),
                               onPressed: () {
                                 // Xử lý nút Cancel
+                                Navigator.pop(context);
                               },
                               child: Text('Cancel', style: TextStyle(color: Colors.white)),
                             ),
@@ -447,6 +499,8 @@ class _MapScreenState extends State<MapScreen> {
                               ),
                               onPressed: () {
                                 // Xử lý nút Confirm
+                                _addBooking();
+                                Navigator.pop(context);
                               },
                               child: Text('Confirm', style: TextStyle(color: Colors.white)),
                             ),
