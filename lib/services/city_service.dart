@@ -129,7 +129,87 @@ class CityService{
     }
   }
 
+  Future<void> addHospital(String cityId, String hospitalName, String hospitalAddress) async {
+    try {
+      DocumentSnapshot citySnapshot = await _cityCollection.doc('v4NkyzRqkXjx8YEiYgSC').get();
+      if (citySnapshot.exists) {
+        Map<String, dynamic> data = citySnapshot.data() as Map<String, dynamic>;
+        List cities = data['city'];
+
+        // Tìm city có ID tương ứng
+        int cityIndex = cities.indexWhere((city) => city['id'] == cityId);
+        if (cityIndex != -1) {
+          List hospitals = cities[cityIndex]['hospital'] ?? [];
+
+          // Thêm bệnh viện mới vào danh sách hospital
+          hospitals.add({
+            'id': DateTime.now().millisecondsSinceEpoch.toString(), // Tạo ID bệnh viện mới
+            'name': hospitalName,
+            'address': hospitalAddress,
+          });
+
+          // Cập nhật lại city trong Firestore
+          cities[cityIndex]['hospital'] = hospitals;
+          await _cityCollection.doc('v4NkyzRqkXjx8YEiYgSC').update({'city': cities});
+          print('Hospital added successfully');
+        }
+      }
+    } catch (e) {
+      print('Error adding hospital: $e');
+    }
+  }
+  //GET LIST CITY
+  Future<List<Map<String, dynamic>>> getCities() async {
+    try {
+      DocumentSnapshot docSnapshot = await _cityCollection.doc('v4NkyzRqkXjx8YEiYgSC').get();
+      if (docSnapshot.exists) {
+        Map<String, dynamic> data = docSnapshot.data() as Map<String, dynamic>;
+        List<dynamic> cities = data['city'] ?? [];
+        return List<Map<String, dynamic>>.from(cities);
+      }
+    } catch (e) {
+      print('Error getting cities: $e');
+    }
+    return [];
+  }
+
+
+  Future<List<Hospital>> getHospitalsByName(String name) async {
+    final snapshot = await _cityCollection.get();
+    if (snapshot.docs.isEmpty) return [];
+
+    List<Hospital> matchingHospitals = [];
+
+    for (var doc in snapshot.docs) {
+      final data = doc.data() as Map<String, dynamic>;
+      final hospital = Hospital.fromMap(data);
+
+      if (hospital.name.toLowerCase().contains(name.toLowerCase())) {
+        matchingHospitals.add(hospital);
+      }
+    }
+
+    return matchingHospitals;
+  }
+
+  Future<List<Hospital>> getHospitalsByLocation(String address) async {
+    final snapshot = await _cityCollection.get();
+    if (snapshot.docs.isEmpty) return [];
+
+    List<Hospital> matchingHospitals = [];
+
+    for (var doc in snapshot.docs) {
+      final data = doc.data() as Map<String, dynamic>;
+      final hospital = Hospital.fromMap(data);
+
+      if (hospital.address.toLowerCase().contains(address.toLowerCase())) {
+        matchingHospitals.add(hospital);
+      }
+    }
+
+    return matchingHospitals;
+  }
+}
 
 
 // GET,ADD,DEL,EDIT CAR
-}
