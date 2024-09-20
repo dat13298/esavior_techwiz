@@ -1,3 +1,4 @@
+import 'package:esavior_techwiz/views/admin/ambulance_manager.dart';
 import 'package:esavior_techwiz/views/admin/driver_manager.dart';
 import 'package:flutter/material.dart';
 import 'customAppBar.dart';
@@ -59,6 +60,11 @@ class _ManagerTabState extends State<ManagerTab> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => DriverManager()),
+                  );
+                }if (item['title'] == 'Ambulance Manager') {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => AmbulanceManager()),
                   );
                 }
               },
