@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
 class Booking {
-  final String id;
+  final String? id;
   final String? carID;
   final double? startLongitude;
   final double? startLatitude;
@@ -16,7 +16,7 @@ class Booking {
   final String? driverPhoneNumber;
 
   Booking({
-    required this.id,
+    this.id,
     this.carID,
     this.startLongitude,
     this.startLatitude,
@@ -30,9 +30,9 @@ class Booking {
     this.driverPhoneNumber,
   });
 
-  static Booking fromMap(Map<String,dynamic> map){
+  static Booking fromMap(Map<String,dynamic> map, String id){
     return Booking(
-      id: map['id'] as String,
+      id: id,
       carID: map['carID'] as String,
       startLongitude: map['startLongitude'] as double,
       startLatitude: map['startLatitude'] as double,
@@ -49,7 +49,7 @@ class Booking {
 
   Map<String, dynamic> toMap(){
     return{
-      'id':id,
+      // 'id' auto create on firebase
       'carID':carID,
       'userLongitude':startLongitude,
       'userLatitude':startLatitude,
