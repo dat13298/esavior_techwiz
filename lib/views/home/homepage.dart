@@ -1,7 +1,6 @@
 import 'package:esavior_techwiz/models/account.dart';
 import 'package:esavior_techwiz/views/profile/profile.dart';
 import 'package:flutter/material.dart';
- // Import the ProfilePage to navigate to it
 
 class eSaviorHome extends StatefulWidget {
   final Account account;
@@ -31,6 +30,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
+  bool showSeeMore = false; // Biến để kiểm soát việc hiển thị nút "see more"
 
   void _onItemTapped(int index) {
     setState(() {
@@ -40,14 +40,9 @@ class _HomePageState extends State<HomePage> {
     if (index == 3) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => eSaviorProfile(account:widget.account)),
+        MaterialPageRoute(builder: (context) => eSaviorProfile(account: widget.account)),
       );
     }
-  }
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
   }
 
   @override
@@ -83,103 +78,115 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 30),
-              // Search bar
-              TextField(
-                decoration: InputDecoration(
-                  hintText: 'Search places',
-                  prefixIcon: const Icon(Icons.search),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 30),
+            // Search bar
+            TextField(
+              decoration: InputDecoration(
+                hintText: 'Search places',
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              const SizedBox(height: 20),
+            ),
+            const SizedBox(height: 20),
 
-              // Emergency button
-              Center(
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                    padding: const EdgeInsets.symmetric(horizontal: 70, vertical: 30),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
+            // Emergency button
+            Center(
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  padding: const EdgeInsets.symmetric(horizontal: 70, vertical: 30),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                  onPressed: () {
-                    // Emergency button action
-                  },
-                  child: const Text(
-                    'Call emergency',
-                    style: TextStyle(
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+                ),
+                onPressed: () {
+                  // Emergency button action
+                },
+                child: const Text(
+                  'Call emergency',
+                  style: TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
+            ),
+            const SizedBox(height: 20),
 
-              // Ambulance gallery
-              const Text(
-                'Ambulance gallery',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+            // Ambulance gallery
+            const Text(
+              'Ambulance gallery',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
               ),
-              const SizedBox(height: 10),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
+            ),
+            const SizedBox(height: 10),
+            SizedBox(
+              height: 200, // Chiều cao của các thẻ (card)
+              child: NotificationListener<ScrollNotification>(
+                onNotification: (ScrollNotification scrollInfo) {
+                  if (scrollInfo.metrics.atEdge) {
+                    if (scrollInfo.metrics.pixels != 0) {
+                      setState(() {
+                        showSeeMore = true; // Hiện nút "see more" khi cuộn đến cuối
+                      });
+                    }
+                  }
+                  return true;
+                },
                 child: Row(
                   children: [
-                    AmbulanceCard(
-                      imagePath: 'assets/ford_transit.png',
-                      title: 'Ford Transit',
+                    Expanded(
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal, // Trượt theo chiều ngang
+                        itemCount: 5, // Số lượng phần tử tối đa
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 5.0), // Khoảng cách giữa các thẻ
+                            child: AmbulanceCard(
+                              imagePath: index == 0
+                                  ? 'assets/ford_transit.png'
+                                  : 'assets/mercedes_sprinter.png',
+                              title: index == 0 ? 'Ford Transit' : 'Mercedes-Benz Sprinter',
+                            ),
+                          );
+                        },
+                      ),
                     ),
-                    const SizedBox(width: 5),
-                    AmbulanceCard(
-                      imagePath: 'assets/mercedes_sprinter.png',
-                      title: 'Mercedes-Benz Sprinter',
-                    ),
-                    const SizedBox(width: 10),
-                    Column(
-                      children: [
-                        IconButton(
-                          onPressed: () {},
-                          icon: const Icon(Icons.arrow_forward),
+                    // Nút "see more"
+                    if (showSeeMore)
+                      TextButton(
+                        onPressed: () {
+                          // Xử lý khi nhấn vào 'see more'
+                        },
+                        child: const Text(
+                          'See more',
+                          style: TextStyle(color: Colors.black),
                         ),
-                        TextButton(
-                          onPressed: () {
-                            // See more action
-                          },
-                          child: const Text(
-                            'see more',
-                            style: TextStyle(color: Colors.black),
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
                   ],
                 ),
               ),
-              const SizedBox(height: 100),
+            ),
 
-              // Feedback section
-              const Text(
-                'Feedback',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+            const SizedBox(height: 100),
+
+            // Feedback section
+            const Text(
+              'Feedback',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
 
@@ -210,7 +217,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
-
 
 class AmbulanceCard extends StatelessWidget {
   final String imagePath;
