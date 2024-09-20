@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:latlng/latlng.dart';
+import 'package:latlong2/latlong.dart';
 
 Future<String> getLatitudeFromAddress(String address) async {
   // OpenRouteService API Key (replace with your own key)
@@ -44,8 +44,8 @@ Future<String> getLongitudeFromAddress(String address) async {
     final data = jsonDecode(response.body);
 
     // Extract the latitude from the response
-    String latitude = data[0]['lon'];
-    return latitude;
+    String longitude = data[0]['lon'];
+    return longitude;
   } else {
     // Throw an exception if no location is found
     throw Exception("No location found for the given address.");
@@ -58,7 +58,7 @@ Future<String> getAddressFromLatlon(LatLng location) async {
 
   // Construct the request URL
   final String url =
-      'https://us1.locationiq.com/v1/search?key=$apiKey&lat=${location.latitude}&lon=${location.longitude}&format=json&';
+      'https://us1.locationiq.com/v1/reverse?key=$apiKey&lat=${location.latitude}&lon=${location.longitude}&format=json&';
 
   // Send the GET request
   final response = await http.get(Uri.parse(url));
@@ -67,9 +67,8 @@ Future<String> getAddressFromLatlon(LatLng location) async {
   if (response.statusCode == 200) {
     // Parse the JSON data
     final data = jsonDecode(response.body);
-
     // Extract the latitude from the response
-    String latitude = data[0]['display_name'];
+    String latitude = data['display_name'];
     return latitude;
   } else {
     // Throw an exception if no location is found
@@ -80,8 +79,11 @@ Future<String> getAddressFromLatlon(LatLng location) async {
 void main() async {
   // Ensure you await the result of the asynchronous function call
   try {
+    LatLng latlng = const LatLng(21.0432388,105.7832006);
     String latitude = await getLatitudeFromAddress("Bach Mai Hospital");
+    String address = await getAddressFromLatlon(latlng);
     print("Latitude: $latitude");
+    print("Location: $address");
   } catch (e) {
     print("Error: $e");
   }
