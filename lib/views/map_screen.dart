@@ -1,9 +1,8 @@
 import 'dart:async';
 
-import 'package:esavior_techwiz/models/account.dart';
+import 'package:esavior_techwiz/services/address_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 
@@ -32,8 +31,8 @@ class _MapScreenState extends State<MapScreen> {
 
   DateTime? selectedDate;
   TimeOfDay? selectedTime;
-  String? startAddress;
-  String? endAddress;
+  String? startAddress;//address after convert
+  String? endAddress;//address after convert
   Position? _currentPosition;
   StreamSubscription<Position>? _positionStream;
 
@@ -45,8 +44,19 @@ class _MapScreenState extends State<MapScreen> {
     super.initState();
     if (widget.role == 'driver') {
       // _startLocationUpdates();
-      _simulateLocationUpdates();
+      _simulateLocationUpdates();///demo
+      ///
+      ///convert
+      _convertAddressToDisplay();
     }
+  }
+
+  //TODO call convert to string address
+  Future<void> _convertAddressToDisplay() async{
+    setState(() async{
+      startAddress = await getAddressFromLatlon(widget.currentPosition); //start
+      endAddress = await getAddressFromLatlon(widget.currentPositionDevice); // end
+    });
   }
 
   Future<void> _pickDate(BuildContext context) async {
@@ -74,6 +84,8 @@ class _MapScreenState extends State<MapScreen> {
       });
     }
   }
+
+
 
   // Future<void> _startLocationUpdates() async {
   //   // Kiểm tra quyền truy cập vị trí
@@ -122,7 +134,6 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final LatLng end = LatLng(21.035000, 105.825649); // Điểm kết thúc
 
     return Scaffold(
       appBar: AppBar(
@@ -168,7 +179,7 @@ class _MapScreenState extends State<MapScreen> {
                       ),
                     ),
                   Marker(
-                    point: end,
+                    point: widget.currentPositionDevice,
                     width: 80,
                     height: 80,
                     child: Icon(
@@ -242,7 +253,7 @@ class _MapScreenState extends State<MapScreen> {
                       ),
                       SizedBox(height: 5),
                       Text(
-                        '${end.latitude}, ${end.longitude}',
+                        '${endAddress}',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
