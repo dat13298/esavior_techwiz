@@ -73,12 +73,14 @@ flutter:
 #    -assets/car2.png
     - assets/login.png
     - assets/wellcome_page.png
-    - assets/ford_transit.png
-    - assets/mercedes_sprinter.png
+#    - assets/ford_transit.png
+#    - assets/mercedes_sprinter.png
     - assets/huy_pham.png
     - assets/dat_nguyen.png
     - assets/thanh_nguyen.png
     - assets/ha_hung.png
+    - assets/mercedes/1.png
+    - assets/ford/1.jpg
 
 
   # The following line ensures that the Material Icons font is
