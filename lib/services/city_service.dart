@@ -1,8 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:esavior_techwiz/models/hospital.dart';
 
-class CityService{
-  final CollectionReference _cityCollection = FirebaseFirestore.instance.collection('city');
+import '../models/car.dart';
+
+class CityService {
+  final CollectionReference _cityCollection = FirebaseFirestore.instance
+      .collection('city');
 
   // GET,ADD,DEL,EDIT HOSPITAL
   Stream<List<Hospital>> getAllHospital() {
@@ -21,7 +24,8 @@ class CityService{
           cityID = city['id'];
           String cityName = city['name'];
 
-          final List<dynamic>? cityHospital = city['hospital'] as List<dynamic>?;
+          final List<dynamic>? cityHospital = city['hospital'] as List<
+              dynamic>?;
           if (cityHospital != null) {
             allHospital.addAll(
               cityHospital.map((hospitalData) {
@@ -39,7 +43,8 @@ class CityService{
 
   Future<void> deleteHospital(String hospitalID, String cityID) async {
     final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-    final DocumentReference _cityDocRef = _firestore.collection('city').doc('v4NkyzRqkXjx8YEiYgSC');
+    final DocumentReference _cityDocRef = _firestore.collection('city').doc(
+        'v4NkyzRqkXjx8YEiYgSC');
 
     try {
       await _firestore.runTransaction((transaction) async {
@@ -49,7 +54,9 @@ class CityService{
           throw Exception('City document does not exist');
         }
 
-        Map<String, dynamic> cityDocData = cityDocSnapshot.data() as Map<String, dynamic>;
+        Map<String, dynamic> cityDocData = cityDocSnapshot.data() as Map<
+            String,
+            dynamic>;
         List<dynamic> cities = cityDocData['city'] as List<dynamic>;
 
         bool hospitalFound = false;
@@ -68,7 +75,8 @@ class CityService{
         }
 
         if (!hospitalFound) {
-          throw Exception('Hospital with ID $hospitalID not found in city $cityID');
+          throw Exception(
+              'Hospital with ID $hospitalID not found in city $cityID');
         }
 
         transaction.update(_cityDocRef, {'city': cities});
@@ -81,10 +89,12 @@ class CityService{
     }
   }
 
-  Future<void> updateHospital(String cityID, String hospitalID, String newName, String newAddress) async {
+  Future<void> updateHospital(String cityID, String hospitalID, String newName,
+      String newAddress) async {
     try {
       // Lấy reference đến document chứa tất cả các thành phố
-      DocumentReference cityDocRef = _cityCollection.doc('v4NkyzRqkXjx8YEiYgSC');
+      DocumentReference cityDocRef = _cityCollection.doc(
+          'v4NkyzRqkXjx8YEiYgSC');
 
       await FirebaseFirestore.instance.runTransaction((transaction) async {
         DocumentSnapshot cityDocSnapshot = await transaction.get(cityDocRef);
@@ -93,7 +103,9 @@ class CityService{
           throw Exception('City document does not exist');
         }
 
-        Map<String, dynamic> cityDocData = cityDocSnapshot.data() as Map<String, dynamic>;
+        Map<String, dynamic> cityDocData = cityDocSnapshot.data() as Map<
+            String,
+            dynamic>;
         List<dynamic> cities = cityDocData['city'] as List<dynamic>;
 
         bool hospitalFound = false;
@@ -116,7 +128,8 @@ class CityService{
         }
 
         if (!hospitalFound) {
-          throw Exception('Hospital with ID $hospitalID not found in city $cityID');
+          throw Exception(
+              'Hospital with ID $hospitalID not found in city $cityID');
         }
 
         transaction.update(cityDocRef, {'city': cities});
@@ -129,9 +142,11 @@ class CityService{
     }
   }
 
-  Future<void> addHospital(String cityId, String hospitalName, String hospitalAddress) async {
+  Future<void> addHospital(String cityId, String hospitalName,
+      String hospitalAddress) async {
     try {
-      DocumentSnapshot citySnapshot = await _cityCollection.doc('v4NkyzRqkXjx8YEiYgSC').get();
+      DocumentSnapshot citySnapshot = await _cityCollection.doc(
+          'v4NkyzRqkXjx8YEiYgSC').get();
       if (citySnapshot.exists) {
         Map<String, dynamic> data = citySnapshot.data() as Map<String, dynamic>;
         List cities = data['city'];
@@ -143,14 +158,18 @@ class CityService{
 
           // Thêm bệnh viện mới vào danh sách hospital
           hospitals.add({
-            'id': DateTime.now().millisecondsSinceEpoch.toString(), // Tạo ID bệnh viện mới
+            'id': DateTime
+                .now()
+                .millisecondsSinceEpoch
+                .toString(), // Tạo ID bệnh viện mới
             'name': hospitalName,
             'address': hospitalAddress,
           });
 
           // Cập nhật lại city trong Firestore
           cities[cityIndex]['hospital'] = hospitals;
-          await _cityCollection.doc('v4NkyzRqkXjx8YEiYgSC').update({'city': cities});
+          await _cityCollection.doc('v4NkyzRqkXjx8YEiYgSC').update(
+              {'city': cities});
           print('Hospital added successfully');
         }
       }
@@ -158,10 +177,12 @@ class CityService{
       print('Error adding hospital: $e');
     }
   }
+
   //GET LIST CITY
   Future<List<Map<String, dynamic>>> getCities() async {
     try {
-      DocumentSnapshot docSnapshot = await _cityCollection.doc('v4NkyzRqkXjx8YEiYgSC').get();
+      DocumentSnapshot docSnapshot = await _cityCollection.doc(
+          'v4NkyzRqkXjx8YEiYgSC').get();
       if (docSnapshot.exists) {
         Map<String, dynamic> data = docSnapshot.data() as Map<String, dynamic>;
         List<dynamic> cities = data['city'] ?? [];
@@ -209,7 +230,203 @@ class CityService{
 
     return matchingHospitals;
   }
-}
 
 
 // GET,ADD,DEL,EDIT CAR
+  Stream<List<Car>> getAllCar() {
+    return _cityCollection.snapshots().map((snapshot) {
+      if (snapshot.docs.isEmpty) {
+        print("No data found in Firestore collection.");
+        return [];
+      }
+
+      List<Car> allCar = [];
+      var doc = snapshot.docs.first;
+      final data = doc.data() as Map<String, dynamic>;
+      String cityID = doc.id;
+
+      final List<dynamic>? cityData = data['city'] as List<dynamic>?;
+      print("City Data: $cityData");
+
+      if (cityData != null) {
+        for (var city in cityData) {
+          cityID = city['id'];
+          String cityName = city['name'];
+          print("Processing City: $cityID, Name: $cityName");
+
+          final List<dynamic>? cityCar = city['car'] as List<dynamic>?;
+          if (cityCar != null) {
+            print("Cars in City: $cityCar");
+            allCar.addAll(
+              cityCar.map((carData) {
+                carData['cityID'] = cityID;
+                carData['cityName'] = cityName;
+                print("Car Data: $carData");
+                return Car.fromMap(carData as Map<String, dynamic>);
+              }).toList(),
+            );
+          }
+        }
+      }
+      return allCar;
+    });
+  }
+
+
+
+
+  Future<void> deleteCar(String carID, String cityID) async {
+    final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+    final DocumentReference _cityDocRef = _firestore.collection('city').doc(
+        'v4NkyzRqkXjx8YEiYgSC');
+
+    try {
+      await _firestore.runTransaction((transaction) async {
+        DocumentSnapshot cityDocSnapshot = await transaction.get(_cityDocRef);
+
+        if (!cityDocSnapshot.exists) {
+          throw Exception('City document does not exist');
+        }
+
+        Map<String, dynamic> cityDocData = cityDocSnapshot.data() as Map<
+            String,
+            dynamic>;
+        List<dynamic> cities = cityDocData['city'] as List<dynamic>;
+
+        bool carFound = false;
+        for (int i = 0; i < cities.length; i++) {
+          if (cities[i]['id'] == cityID) {
+            List<dynamic> cars = cities[i]['car'] as List<dynamic>;
+            int originalLength = cars.length;
+            cars.removeWhere((car) => car['id'] == cars);
+
+            if (cars.length < originalLength) {
+              carFound = true;
+              cities[i]['car'] = cars;
+              break;
+            }
+          }
+        }
+
+        if (!carFound) {
+          throw Exception(
+              'Hospital with ID $carID not found in city $cityID');
+        }
+
+        transaction.update(_cityDocRef, {'city': cities});
+      });
+      print('Car deleted successfully');
+    } catch (e) {
+      print('Error deleting hospital: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> updateCar(String cityID, String carID, String newName, String newDescription) async {
+    try {
+      // Lấy reference đến document chứa tất cả các thành phố
+      DocumentReference cityDocRef = _cityCollection.doc(
+          'v4NkyzRqkXjx8YEiYgSC');
+
+      await FirebaseFirestore.instance.runTransaction((transaction) async {
+        DocumentSnapshot cityDocSnapshot = await transaction.get(cityDocRef);
+
+        if (!cityDocSnapshot.exists) {
+          throw Exception('City document does not exist');
+        }
+
+        Map<String, dynamic> cityDocData = cityDocSnapshot.data() as Map<
+            String,
+            dynamic>;
+        List<dynamic> cities = cityDocData['city'] as List<dynamic>;
+
+        bool carFound = false;
+        for (int i = 0; i < cities.length; i++) {
+          if (cities[i]['id'] == cityID) {
+            List<dynamic> cars = cities[i]['car'] as List<dynamic>;
+            for (int j = 0; j < cars.length; j++) {
+              if (cars[j]['id'] == carID) {
+                cars[j]['name'] = newName;
+                cars[j]['description'] = newDescription;
+                carFound = true;
+                break;
+              }
+            }
+            if (carFound) {
+              cities[i]['car'] = cars;
+              break;
+            }
+          }
+        }
+
+        if (!carFound) {
+          throw Exception(
+              'Hospital with ID $carID not found in city $cityID');
+        }
+
+        transaction.update(cityDocRef, {'city': cities});
+      });
+
+      print('Car updated successfully');
+    } catch (e) {
+      print('Error updating hospital: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> addCar(String cityId, String carName, String carDescription, String carNumSeat) async {
+    try {
+      DocumentSnapshot citySnapshot = await _cityCollection.doc(
+          'v4NkyzRqkXjx8YEiYgSC').get();
+      if (citySnapshot.exists) {
+        Map<String, dynamic> data = citySnapshot.data() as Map<String, dynamic>;
+        List cities = data['city'];
+
+        // Tìm city có ID tương ứng
+        int cityIndex = cities.indexWhere((city) => city['id'] == cityId);
+        if (cityIndex != -1) {
+          List cars = cities[cityIndex]['car'] ?? [];
+
+          // Thêm bệnh viện mới vào danh sách hospital
+          cars.add({
+            'id': DateTime
+                .now()
+                .millisecondsSinceEpoch
+                .toString(),
+            'name': carName,
+            'description': carDescription,
+            'num_seat': carNumSeat,
+          });
+
+          // Cập nhật lại city trong Firestore
+          cities[cityIndex]['car'] = cars;
+          await _cityCollection.doc('v4NkyzRqkXjx8YEiYgSC').update(
+              {'city': cities});
+          print('Car added successfully');
+        }
+      }
+    } catch (e) {
+      print('Error adding car: $e');
+    }
+  }
+
+  Future<List<Car>> getCarByName(String name) async {
+    final snapshot = await _cityCollection.get();
+    if (snapshot.docs.isEmpty) return [];
+
+    List<Car> matchingCars = [];
+
+    for (var doc in snapshot.docs) {
+      final data = doc.data() as Map<String, dynamic>;
+      final car = Car.fromMap(data);
+
+      if (car.name.toLowerCase().contains(name.toLowerCase())) {
+        matchingCars.add(car);
+      }
+    }
+
+    return matchingCars;
+  }
+
+
+}
