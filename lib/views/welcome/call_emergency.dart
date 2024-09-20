@@ -54,13 +54,12 @@ class _CallEmergencyState extends State<CallEmergency> {
   }
 
 
-  /// GET CURRENT LOCATION
+  /// GET CURRENT LOCATION and INSERT REALTIME
   Future<void> _getCurrentLocation() async {
     try {
       Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.bestForNavigation,
       );
-      print('Current location: ${position.latitude}, ${position.longitude}');
       // Xử lý vị trí của người dùng ở đây, ví dụ lưu vào biến, gửi đến server, v.v.
       await _emergencyService.sendLocationToFirebase(position.latitude, position.longitude);
     } catch (e) {
