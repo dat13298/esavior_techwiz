@@ -4,6 +4,8 @@ import 'package:esavior_techwiz/views/driver/driver_home.dart';
 import 'package:esavior_techwiz/views/profile/profile.dart';
 import 'package:flutter/material.dart';
 
+import 'gallery.dart';
+
 class eSaviorHome extends StatefulWidget {
   final Account account;
 
@@ -198,13 +200,18 @@ class _HomePageState extends State<HomePage> {
                     if (showSeeMore)
                       TextButton(
                         onPressed: () {
-                          // Xử lý khi nhấn vào 'see more'
+                          // Điều hướng đến trang mới
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => GalleryPage()), // NewPage là trang mới bạn muốn điều hướng đến
+                          );
                         },
                         child: const Text(
                           'See more',
                           style: TextStyle(color: Colors.black),
                         ),
                       ),
+
                   ],
                 ),
               ),
