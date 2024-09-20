@@ -2,6 +2,8 @@ import 'package:esavior_techwiz/models/account.dart';
 import 'package:esavior_techwiz/views/home/homepage.dart';
 import 'package:flutter/material.dart';
 
+import '../welcome/welcome_page.dart';
+
 class eSaviorProfile extends StatefulWidget {
   final Account account;
 
@@ -12,16 +14,24 @@ class eSaviorProfile extends StatefulWidget {
 }
 
 class _eSaviorProfileState extends State<eSaviorProfile> {
+  Future<void> _logout() async {
+    try {
+      // await FirebaseAuth.instance.signOut();  dang ko co thu vien FirebaseAuth
+    } catch (e) {
+      print('Error signing out: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
         appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(110.0), // Set the height of the AppBar
+          preferredSize: const Size.fromHeight(110.0),
           child: ClipRRect(
             borderRadius: const BorderRadius.only(
-              bottomLeft: Radius.circular(30), // Rounded corners at bottom-left
-              bottomRight: Radius.circular(30), // Rounded corners at bottom-right
+              bottomLeft: Radius.circular(30),
+              bottomRight: Radius.circular(30),
             ),
             child: AppBar(
               backgroundColor: const Color(0xFF10CCC6),
@@ -61,12 +71,31 @@ class _eSaviorProfileState extends State<eSaviorProfile> {
               ),
               const SizedBox(height: 10),
               // User Name
-              const Text(
-                'User',
-                style: TextStyle(
-                  fontSize: 20,
+              Text(
+                widget.account.fullName,
+                style: const TextStyle(
+                  fontSize: 26,
                   fontWeight: FontWeight.bold,
                 ),
+              ),
+              const SizedBox(height: 5),
+              // User Email
+              Text(
+                'Phone Number: ${widget.account.phoneNumber}',
+                // Hiển thị số điện thoại
+                style: const TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 5),
+              // User Phone
+              Text(
+                'Email: ${widget.account.email}', // Hiển thị email
+                style: const TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 5),
+              // User Phone
+              Text(
+                'Address: ${widget.account.addressHome}', // Hiển thị email
+                style: const TextStyle(fontSize: 16),
               ),
               const SizedBox(height: 20),
 
@@ -101,16 +130,25 @@ class _eSaviorProfileState extends State<eSaviorProfile> {
               const Spacer(),
 
               // Log Out Button
+
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF10CCC6), // Same color as AppBar
-                  padding: const EdgeInsets.symmetric(horizontal: 100, vertical: 15),
+                  backgroundColor: const Color(0xFF10CCC6),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 100, vertical: 15),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                onPressed: () {
-                  // Handle Log Out action
+                onPressed: () async {
+                  // Xử lý đăng xuất
+                  await _logout(); // Thực hiện thao tác đăng xuất, nếu cần
+
+                  // Chuyển hướng sang WelcomePage
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => WelcomePage()),
+                  );
                 },
                 child: const Text(
                   'Log out',
@@ -128,13 +166,14 @@ class _eSaviorProfileState extends State<eSaviorProfile> {
 
         // Bottom Navigation Bar
         bottomNavigationBar: BottomNavigationBar(
-          currentIndex: 3, // Setting the current index to Profile
+          currentIndex: 3,
           type: BottomNavigationBarType.fixed,
           onTap: (int index) {
             if (index == 0) {
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => eSaviorHome(account: widget.account)), // Navigate back to HomePage
+                MaterialPageRoute(
+                    builder: (context) => eSaviorHome(account: widget.account)),
               );
             }
           },
@@ -158,11 +197,13 @@ class _eSaviorProfileState extends State<eSaviorProfile> {
           ],
         ),
       ),
+      debugShowCheckedModeBanner: false,
     );
   }
 
   // Reusable widget for profile options
-  Widget _buildProfileOption({required IconData icon, required String text, required Function onTap}) {
+  Widget _buildProfileOption(
+      {required IconData icon, required String text, required Function onTap}) {
     return GestureDetector(
       onTap: () => onTap(),
       child: Container(
