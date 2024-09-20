@@ -37,6 +37,6 @@
       double distance = data['features'][0]['properties']['summary']['distance'];
       return distance;
     } else {
-      throw Exception('Failed to load directions');
+      throw Exception('Failed to load distances');
     }
   }
