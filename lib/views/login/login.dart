@@ -1,3 +1,5 @@
+import 'package:esavior_techwiz/views/admin/admin_home.dart';
+import 'package:esavior_techwiz/views/driver/driver_home.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -64,12 +66,33 @@ class _LoginPageState extends State<LoginPage> {
       Account? accountLogged = await _accountService.authenticate(email, password);
 
       if (accountLogged != null) {
-        Navigator.pushReplacement(
-          context,
-          CupertinoPageRoute(
-            builder: (context) => HomePage(account: accountLogged),
-          ),
-        );
+        if(accountLogged.role == 'user'){
+          Navigator.pushReplacement(
+            context,
+            CupertinoPageRoute(
+              builder: (context) => HomePage(account: accountLogged),
+            ),
+          );
+        }
+
+        if(accountLogged.role == 'driver'){
+          Navigator.pushReplacement(
+            context,
+            CupertinoPageRoute(
+              builder: (context) => DriverPage(account: accountLogged),
+            ),
+          );
+        }
+
+        if(accountLogged.role == 'dispatcher'){
+          Navigator.pushReplacement(
+            context,
+            CupertinoPageRoute(
+              builder: (context) => AdminPage(account: accountLogged),
+            ),
+          );
+        }
+
       } else {
         showErrorDialog(context, 'Login failed');
       }
