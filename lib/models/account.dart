@@ -8,7 +8,7 @@ class Account{
   final String addressHome;
   final String addressCompany;
   final String role;
-  final List<Feedbacks> feedbacks;
+  final List<Feedbacks>? feedbacks;
   final String status;
 
   Account({
@@ -18,7 +18,7 @@ class Account{
     required this.email,
     required this.addressHome,
     required this.addressCompany,
-    required this.feedbacks,
+     this.feedbacks,
     required this.role,
     required this.status,
   });
@@ -50,7 +50,7 @@ class Account{
       'addressHome': addressHome,
       'addressCompany': addressCompany,
       'role': role,
-      'feedbacks': feedbacks.map((f) => f.toMap()).toList(),
+      'feedbacks': feedbacks?.map((f) => f.toMap()).toList(),
       'status': status,
     };
   }

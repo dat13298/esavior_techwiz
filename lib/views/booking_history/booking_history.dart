@@ -1,10 +1,12 @@
-import 'package:esavior_techwiz/services/booking_service.dart';
 import 'package:flutter/material.dart';
-
-import '../../models/booking.dart';
+import 'package:esavior_techwiz/models/account.dart';
+import 'package:esavior_techwiz/models/booking.dart';
+import 'package:esavior_techwiz/services/booking_service.dart';
 
 class BookingHistory extends StatefulWidget {
-  const BookingHistory({super.key});
+  final Account currentAccount;
+
+  const BookingHistory({Key? key, required this.currentAccount}) : super(key: key);
 
   @override
   State<BookingHistory> createState() => _BookingHistoryState();
@@ -20,11 +22,10 @@ class _BookingHistoryState extends State<BookingHistory> {
     fetchBookingList();
   }
 
-  // Method để lấy dữ liệu booking từ Firebase
   Future<void> fetchBookingList() async {
     try {
       print("Fetching bookings...");
-      List<Booking> bookings = await BookingService().getBookingsByPhoneNumber('01222222222');
+      List<Booking> bookings = await BookingService().getBookingsByPhoneNumber(widget.currentAccount.phoneNumber);
       print("Bookings fetched: ${bookings.length}");
 
       setState(() {
@@ -39,13 +40,10 @@ class _BookingHistoryState extends State<BookingHistory> {
     }
   }
 
-
-  // Chuyển đổi timestamp thành DateTime
   DateTime _convertTimestampToDateTime(int timestamp) {
     return DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
   }
 
-  // Widget để hiển thị từng mục booking
   Widget _buildBookingItem(Booking booking) {
     DateTime dateTime = _convertTimestampToDateTime(booking.dateTime.seconds);
     String formattedDate = "${dateTime.day}/${dateTime.month}/${dateTime.year}";
@@ -96,9 +94,7 @@ class _BookingHistoryState extends State<BookingHistory> {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (context) => DetailScreen(booking: booking),
-          ),
+          MaterialPageRoute(builder: (context) => DetailScreen(booking: booking)),
         );
       },
     );
@@ -109,6 +105,7 @@ class _BookingHistoryState extends State<BookingHistory> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Booking History'),
+        automaticallyImplyLeading: false, // Bỏ nút back ở đây
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -127,11 +124,10 @@ class _BookingHistoryState extends State<BookingHistory> {
   }
 }
 
-// Tạo màn hình chi tiết để hiển thị thông tin cụ thể của booking
 class DetailScreen extends StatelessWidget {
   final Booking booking;
 
-  const DetailScreen({super.key, required this.booking});
+  const DetailScreen({Key? key, required this.booking}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -140,9 +136,6 @@ class DetailScreen extends StatelessWidget {
     String formattedTime = "${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}";
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('${booking.type} Details'),
-      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
