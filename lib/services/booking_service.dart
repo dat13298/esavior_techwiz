@@ -42,10 +42,8 @@ class BookingService {
     }
     return null;
   }
-
   Future<List<Booking>> getBookingsByPhoneNumber(String userPhoneNumber) async {
     List<Booking> bookings = [];
-
     try {
       final snapshot = await _bookingCollection.get();
 
@@ -70,7 +68,6 @@ class BookingService {
           }
         }
       }
-
       // Sắp xếp danh sách theo thời gian đặt (dateTime)
       bookings.sort((a, b) => b.dateTime.compareTo(a.dateTime)); // Sắp xếp giảm dần (mới nhất trước)
 
@@ -109,7 +106,6 @@ class BookingService {
           }
         }
       }
-
       // Sắp xếp danh sách theo thời gian đặt (dateTime)
       bookings.sort((a, b) => b.dateTime.compareTo(a.dateTime)); // Sắp xếp giảm dần (mới nhất trước)
 
@@ -120,28 +116,4 @@ class BookingService {
 
     return bookings; // Trả về danh sách đã sắp xếp
   }
-
-
-
-
-
-// Future<List<Booking>> getBookingsByPhoneNumber(String userPhoneNumber) async {
-  //   try {
-  //     // Lấy tất cả các booking từ Firestore
-  //     QuerySnapshot snapshot = await _bookingCollection.get();
-  //
-  //     // Lọc danh sách booking theo userPhoneNumber
-  //     List<Booking> bookings = snapshot.docs.map((doc) {
-  //       return Booking.fromMap(doc.data() as Map<String, dynamic>, doc.id);
-  //     }).where((booking) => booking.userPhoneNumber == userPhoneNumber).toList();
-  //
-  //     return bookings;
-  //   } catch (e) {
-  //     print("Error fetching bookings: $e");
-  //     return [];
-  //   }
-  // }
-
-
-
 }
