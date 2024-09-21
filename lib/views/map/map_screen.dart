@@ -5,6 +5,7 @@ import 'package:esavior_techwiz/models/account.dart';
 import 'package:esavior_techwiz/models/booking.dart';
 import 'package:esavior_techwiz/services/address_service.dart';
 import 'package:esavior_techwiz/services/booking_service.dart';
+import 'package:esavior_techwiz/services/emergency_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -18,6 +19,7 @@ class MapScreen extends StatefulWidget {
   final List<LatLng> routePoints;
   final bool isOnBookingShow;
   final Account currentAccount;
+  final Booking? booking;
 
   const MapScreen({
     super.key,
@@ -27,6 +29,7 @@ class MapScreen extends StatefulWidget {
     required this.routePoints,
     required this.isOnBookingShow,
     required this.currentAccount,
+    this.booking,
   });
 
   @override
@@ -44,6 +47,7 @@ class _MapScreenState extends State<MapScreen> {
   String? endAddress;//address after convert
   Position? _startPosition;
   StreamSubscription<Position>? _positionStream;
+  LatLng? _driverGo;
 
   Timer? _positionTimer;
 
@@ -53,19 +57,31 @@ class _MapScreenState extends State<MapScreen> {
     if (widget.currentAccount.role == 'driver') {
       // _startLocationUpdates();///main method update firebase real time
       _simulateLocationUpdates();///demo
-
       ///convert
       _convertAddressToDisplay();
     }
     if (widget.currentAccount.role == 'user') {
       // _startLocationUpdates();
 
+      ///update location driver in user screen
+      if(widget.booking != null){
+        _listenWhenDriverMoveOnUserScreen();
+      }
       ///convert
       _convertAddressToDisplay();
     }
 
   }
-
+  ///get location driver from UserScreen
+  void _listenWhenDriverMoveOnUserScreen() {
+    if (widget.booking?.driverPhoneNumber != null) {
+      EmergencyService().getDriverLocationStream(widget.booking!.driverPhoneNumber!).listen((LatLng newDriverPosition) {
+        setState(() {
+          _driverGo = newDriverPosition;
+        });
+      });
+    }
+  }
   //convert to string address
   Future<void> _convertAddressToDisplay() async{
     String startAddr = await getAddressFromLatlon(widget.startPosition); //start
@@ -147,7 +163,7 @@ class _MapScreenState extends State<MapScreen> {
 
 
 
-///update location driver when move
+///update location driver when move in driver screen
   Future<void> _startLocationUpdates() async {
     LocationPermission permission = await Geolocator.requestPermission();
     if (permission == LocationPermission.whileInUse || permission == LocationPermission.always) {
