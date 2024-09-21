@@ -36,7 +36,6 @@ class _CallEmergencyState extends State<CallEmergency> {
     final PermissionStatus status2 = await Permission.phone.status;
     print('Phone permission status: $status2');
 
-    // Kiểm tra xem quyền đã được cấp chưa
     if (status.isGranted) {
       final Uri phoneUri = Uri(scheme: 'tel', path: '0915799025'); // HOT LINE
       try {
@@ -74,6 +73,7 @@ class _CallEmergencyState extends State<CallEmergency> {
     screenWidth = MediaQuery.of(context).size.width;
 
     return CupertinoPageScaffold(
+      backgroundColor: Colors.white,
       child: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.08),

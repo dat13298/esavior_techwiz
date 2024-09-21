@@ -36,6 +36,7 @@ class _WelcomePageState extends State<WelcomePage> {
     screenWidth = MediaQuery.of(context).size.width;
 
     return CupertinoPageScaffold(
+      backgroundColor: Colors.white,
       child: SafeArea(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.08),

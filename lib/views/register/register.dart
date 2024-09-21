@@ -85,6 +85,7 @@ class _RegisterPageState extends State<RegisterPage> {
           }
         },
         child: Material(
+          color: Colors.white,
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.08),
             child: Container(
