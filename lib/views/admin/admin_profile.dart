@@ -4,6 +4,7 @@ import 'package:esavior_techwiz/models/account.dart';
   import 'package:flutter/material.dart';
   
   import '../../services/account_service.dart';
+import '../../services/admin_notification_service.dart';
 import '../welcome/welcome_page.dart';
   import 'customAppBar.dart';
   
@@ -16,6 +17,24 @@ import '../welcome/welcome_page.dart';
   }
   
   class _ProfileTabState extends State<ProfileTab> {
+    late AdminNotificationService _notificationService;
+
+    String currentTab = 'Profile'; // Biến để theo dõi tab hiện tại
+
+    @override
+    void initState() {
+      super.initState();
+      _notificationService = AdminNotificationService((tab) {
+        // Cập nhật tab hiện tại
+        setState(() {
+          currentTab = tab;
+        });
+        return currentTab; // Trả về tab hiện tại
+      });
+
+      _notificationService.listenForNotifications();
+    }
+
     @override
     Widget build(BuildContext context) {
       return Scaffold(
