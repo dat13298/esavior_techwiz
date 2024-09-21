@@ -12,11 +12,13 @@ Future<void> showMapScreen(BuildContext context, String? address, Account accoun
   String endLatitude;
   String endLongitude;
   LatLng end;
+  bool isBookingShow = false;
 
   if(address!=null){
     endLatitude = await getLatitudeFromAddress(address);
     endLongitude = await getLongitudeFromAddress(address);
     end = LatLng(double.parse(endLatitude), double.parse(endLongitude));
+    isBookingShow = true;
   } else {
     end = LatLng(21.035000, 105.825649);
   }
@@ -38,11 +40,12 @@ Future<void> showMapScreen(BuildContext context, String? address, Account accoun
   Navigator.of(context).push(
     MaterialPageRoute(
       builder: (context) => MapScreen(
-        currentPositionDevice: end,
-        currentPosition: currentPosition,
-        role: account.role, // Thay đổi nếu cần
+        endPosition: end,
+        startPosition: currentPosition,
         routeDistance: routeDistance,
         routePoints: routePoints,
+        isOnBookingShow: isBookingShow,
+        currentAccount: account,
       ),
     ),
   );

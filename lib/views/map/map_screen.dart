@@ -1,36 +1,40 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:esavior_techwiz/models/account.dart';
 import 'package:esavior_techwiz/models/booking.dart';
 import 'package:esavior_techwiz/services/address_service.dart';
 import 'package:esavior_techwiz/services/booking_service.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 
 class MapScreen extends StatefulWidget {
-  final LatLng currentPositionDevice;
-  final LatLng currentPosition;
-  final String role;
+  final LatLng endPosition;///end
+  final LatLng startPosition;///start
   final double routeDistance;
   final List<LatLng> routePoints;
+  final bool isOnBookingShow;
+  final Account currentAccount;
 
   const MapScreen({
-    Key? key,
-    required this.currentPositionDevice,
-    required this.currentPosition,
-    required this.role,
+    super.key,
+    required this.endPosition,
+    required this.startPosition,
     required this.routeDistance,
     required this.routePoints,
-  }) : super(key: key);
+    required this.isOnBookingShow,
+    required this.currentAccount,
+  });
 
   @override
   _MapScreenState createState() => _MapScreenState();
 }
 
 class _MapScreenState extends State<MapScreen> {
-  String selectedVehicle = 'emergency'; // Giá trị mặc định
+  String selectedVehicle = 'emergency';
 
   double amountEmergency = 10000;
   double amountNonEmergency = 7000;
@@ -38,23 +42,22 @@ class _MapScreenState extends State<MapScreen> {
   TimeOfDay? selectedTime;
   String? startAddress;//address after convert
   String? endAddress;//address after convert
-  Position? _currentPosition;
+  Position? _startPosition;
   StreamSubscription<Position>? _positionStream;
 
-  //test
   Timer? _positionTimer;
 
   @override
   void initState() {
     super.initState();
-    if (widget.role == 'driver') {
+    if (widget.currentAccount.role == 'driver') {
       // _startLocationUpdates();///main method update firebase real time
       _simulateLocationUpdates();///demo
 
       ///convert
       _convertAddressToDisplay();
     }
-    if (widget.role == 'user') {
+    if (widget.currentAccount.role == 'user') {
       // _startLocationUpdates();
 
       ///convert
@@ -65,8 +68,8 @@ class _MapScreenState extends State<MapScreen> {
 
   //convert to string address
   Future<void> _convertAddressToDisplay() async{
-    String startAddr = await getAddressFromLatlon(widget.currentPosition); //start
-    String endAddr = await getAddressFromLatlon(widget.currentPositionDevice); // end
+    String startAddr = await getAddressFromLatlon(widget.startPosition); //start
+    String endAddr = await getAddressFromLatlon(widget.endPosition); // end
 
     if (mounted) {
       setState(() {
@@ -77,7 +80,7 @@ class _MapScreenState extends State<MapScreen> {
   }
   
   //add booking when confirm
-  Future<void> _addBooking() async{
+  Future<void> _addBooking(Account user) async{
     DateTime bookingDateTime = _combineDateAndTime(selectedDate!, selectedTime!);
     Timestamp bookingTimestamp = Timestamp.fromDate(bookingDateTime);
     double totalAmount = 0;
@@ -88,13 +91,13 @@ class _MapScreenState extends State<MapScreen> {
       totalAmount = amountNonEmergency * widget.routeDistance;
     }
     Booking newBooking = Booking(
-      id: null,  // Để null để Firestore tự sinh id
+      id: null,
       carID: 'abc',
-      startLongitude: 2.00,
-      startLatitude: 3.00,
-      endLongitude: 5.00,
-      endLatitude: 6.00,
-      userPhoneNumber: '01222222222',
+      startLongitude: widget.startPosition.longitude,
+      startLatitude: widget.startPosition.latitude,
+      endLongitude: widget.endPosition.longitude,
+      endLatitude: widget.endPosition.latitude,
+      userPhoneNumber: widget.currentAccount.phoneNumber,
       dateTime: bookingTimestamp,
       type: selectedVehicle,
       cost: totalAmount,
@@ -146,17 +149,17 @@ class _MapScreenState extends State<MapScreen> {
 
 ///update location driver when move
   Future<void> _startLocationUpdates() async {
-    // Kiểm tra quyền truy cập vị trí
     LocationPermission permission = await Geolocator.requestPermission();
     if (permission == LocationPermission.whileInUse || permission == LocationPermission.always) {
-      // Lấy vị trí liên tục
       _positionStream = Geolocator.getPositionStream().listen((Position position) {
         setState(() {
-          _currentPosition = position;
+          _startPosition = position;
         });
       });
     } else {
-      print('Location permission denied');
+      if (kDebugMode) {
+        print('Location permission denied');
+      }
     }
   }
 
@@ -168,7 +171,7 @@ class _MapScreenState extends State<MapScreen> {
       if (currentIndex < widget.routePoints.length) {
         final currentPoint = widget.routePoints[currentIndex];
         setState(() {
-          _currentPosition = Position(
+          _startPosition = Position(
             latitude: currentPoint.latitude,
             longitude: currentPoint.longitude,
             timestamp: DateTime.now(),
@@ -188,6 +191,22 @@ class _MapScreenState extends State<MapScreen> {
     });
   }
 
+  IconData getIconForRole(String role, bool isStart) {
+    switch (role) {
+      case 'user':
+        if (widget.isOnBookingShow){
+          return Icons.local_hospital;
+        }
+        return Icons.person;
+      case 'driver':
+        return isStart ? Icons.car_crash_rounded : Icons.person;
+    // Thêm các trường hợp khác nếu cần
+      default:
+        return Icons.help; // Icon mặc định
+    }
+  }
+
+
 
 
   @override
@@ -202,12 +221,12 @@ class _MapScreenState extends State<MapScreen> {
           // Bản đồ ở nền
           FlutterMap(
             options: MapOptions(
-              // initialCenter: widget.currentPosition,
-              initialCenter: widget.role == 'driver'
-                  ? _currentPosition != null
-                  ? LatLng(_currentPosition!.latitude, _currentPosition!.longitude)
-                  : widget.currentPosition
-                  : widget.currentPosition,
+              // initialCenter: widget.startPosition,
+              initialCenter: widget.currentAccount.role == 'driver'
+                  ? _startPosition != null
+                  ? LatLng(_startPosition!.latitude, _startPosition!.longitude)
+                  : widget.startPosition
+                  : widget.startPosition,
               initialZoom: 13.0,
             ),
             children: [
@@ -226,23 +245,23 @@ class _MapScreenState extends State<MapScreen> {
               ),
               MarkerLayer(
                 markers: [
-                  if (_currentPosition != null)
+                  if (_startPosition != null)
                     Marker(
-                      point: widget.currentPosition,///start
+                      point: widget.startPosition,///start
                       width: 80,
                       height: 80,
                       child: Icon(
-                        widget.role == 'user' ? Icons.person : Icons.car_crash_rounded,
-                        color: widget.role == 'user' ? Colors.lightBlueAccent : Colors.red,
+                        getIconForRole(widget.currentAccount.role, true),
+                        color: widget.currentAccount.role == 'user' ? Colors.lightBlueAccent : Colors.red,
                       ),
                     ),
                   Marker(
-                    point: widget.currentPositionDevice,///end
+                    point: widget.endPosition,///end
                     width: 80,
                     height: 80,
                     child: Icon(
-                      widget.role == 'user' ? Icons.car_crash_rounded : Icons.person,
-                      color: widget.role == 'user' ? Colors.red : Colors.lightBlueAccent,
+                      getIconForRole(widget.currentAccount.role, false),
+                      color: widget.currentAccount.role == 'user' ? Colors.red : Colors.lightBlueAccent,
                     ),
                   ),
                 ],
@@ -260,7 +279,7 @@ class _MapScreenState extends State<MapScreen> {
             builder: (context, scrollController) {
               return Container(
                 padding: EdgeInsets.all(16),
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(20),
@@ -280,7 +299,7 @@ class _MapScreenState extends State<MapScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Địa chỉ điểm bắt đầu
-                      Text(
+                      const Text(
                         'Start Location:',
                         style: TextStyle(
                           fontSize: 14,
@@ -288,10 +307,10 @@ class _MapScreenState extends State<MapScreen> {
                           color: Colors.grey,
                         ),
                       ),
-                      SizedBox(height: 5),
+                      const SizedBox(height: 5),
                       Text(
                         '$startAddress',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
@@ -301,7 +320,7 @@ class _MapScreenState extends State<MapScreen> {
                       SizedBox(height: 15),
 
                       // Địa chỉ điểm kết thúc
-                      Text(
+                      const Text(
                         'End Location:',
                         style: TextStyle(
                           fontSize: 14,
@@ -312,7 +331,7 @@ class _MapScreenState extends State<MapScreen> {
                       SizedBox(height: 5),
                       Text(
                         '${endAddress}',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
@@ -322,8 +341,8 @@ class _MapScreenState extends State<MapScreen> {
                       SizedBox(height: 20),
 
                       // Chỉ hiện thị chọn loại xe nếu role là 'user'
-                      if (widget.role == 'user') ...[
-                        Text(
+                      if (widget.currentAccount.role == 'user') ...[
+                        const Text(
                           'Select Vehicle Type:',
                           style: TextStyle(
                             fontSize: 16,
@@ -338,7 +357,7 @@ class _MapScreenState extends State<MapScreen> {
                             // Hàng 1
                             Row(
                               children: [
-                                SizedBox(width: 10),
+                                const SizedBox(width: 10),
                                 Expanded(
                                   child: GestureDetector(
                                     onTap: () {
@@ -347,7 +366,7 @@ class _MapScreenState extends State<MapScreen> {
                                       });
                                     },
                                     child: Container(
-                                      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                                      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                                       decoration: BoxDecoration(
                                         border: Border.all(
                                           color: selectedVehicle == 'emergency' ? Colors.green : Colors.grey,
@@ -357,11 +376,11 @@ class _MapScreenState extends State<MapScreen> {
                                       ),
                                       child: Row(
                                         children: [
-                                          Icon(Icons.local_hospital, color: Colors.red),
+                                          const Icon(Icons.local_hospital, color: Colors.red),
                                           Column(
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
-                                              Text(
+                                              const Text(
                                                 'Emergency Vehicle',
                                                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                                               ),
@@ -375,12 +394,12 @@ class _MapScreenState extends State<MapScreen> {
                                 ),
                               ],
                             ),
-                            SizedBox(height: 10),
+                            const SizedBox(height: 10),
 
                             // Hàng 2
                             Row(
                               children: [
-                                SizedBox(width: 10),
+                                const SizedBox(width: 10),
                                 Expanded(
                                   child: GestureDetector(
                                     onTap: () {
@@ -389,7 +408,7 @@ class _MapScreenState extends State<MapScreen> {
                                       });
                                     },
                                     child: Container(
-                                      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                                      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                                       decoration: BoxDecoration(
                                         border: Border.all(
                                           color: selectedVehicle == 'non_emergency' ? Colors.green : Colors.grey,
@@ -399,11 +418,11 @@ class _MapScreenState extends State<MapScreen> {
                                       ),
                                       child: Row(
                                         children: [
-                                          Icon(Icons.local_hospital, color: Colors.blue),
+                                          const Icon(Icons.local_hospital, color: Colors.blue),
                                           Column(
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
-                                              Text(
+                                              const Text(
                                                 'Non-Emergency Vehicle',
                                                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                                               ),
@@ -419,13 +438,13 @@ class _MapScreenState extends State<MapScreen> {
                             ),
                           ],
                         ),
-                        Divider(thickness: 1.5, color: Colors.grey),
-                        SizedBox(height: 20),
+                        const Divider(thickness: 1.5, color: Colors.grey),
+                        const SizedBox(height: 20),
                       ],
 
                       // Chỉ hiện thị chọn ngày giờ nếu role là 'user'
-                      if (widget.role == 'user') ...[
-                        Text(
+                      if (widget.currentAccount.role == 'user') ...[
+                        const Text(
                           'Select Date & Time:',
                           style: TextStyle(
                             fontSize: 16,
@@ -482,10 +501,9 @@ class _MapScreenState extends State<MapScreen> {
                           Expanded(
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.red, // Màu nền của nút Cancel
+                                backgroundColor: Colors.red,
                               ),
                               onPressed: () {
-                                // Xử lý nút Cancel
                                 Navigator.pop(context);
                               },
                               child: Text('Cancel', style: TextStyle(color: Colors.white)),
@@ -495,11 +513,10 @@ class _MapScreenState extends State<MapScreen> {
                           Expanded(
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.green, // Màu nền của nút Confirm
+                                backgroundColor: Colors.green,
                               ),
                               onPressed: () {
-                                // Xử lý nút Confirm
-                                _addBooking();
+                                _addBooking(widget.currentAccount);
                                 Navigator.pop(context);
                               },
                               child: Text('Confirm', style: TextStyle(color: Colors.white)),

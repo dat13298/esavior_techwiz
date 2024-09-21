@@ -33,19 +33,20 @@ class Booking {
   static Booking fromMap(Map<String, dynamic> map, String id) {
     return Booking(
       id: id,
-      carID: map['carID'] as String,
-      startLongitude: (map['startLongitude'] as double?) ?? 0.0, // Nếu null thì gán giá trị mặc định
-      startLatitude: (map['startLatitude'] as double?) ?? 0.0,
-      endLongitude: (map['endLongitude'] as double?) ?? 0.0,
-      endLatitude: (map['endLatitude'] as double?) ?? 0.0,
-      userPhoneNumber: map['userPhoneNumber'] as String,
+      carID: map['carID'] as String? ?? '', // Gán giá trị mặc định nếu null
+      startLongitude: (map['startLongitude'] as num?)?.toDouble() ?? 0.0, // Chuyển từ num (int hoặc double) thành double
+      startLatitude: (map['startLatitude'] as num?)?.toDouble() ?? 0.0,
+      endLongitude: (map['endLongitude'] as num?)?.toDouble() ?? 0.0,
+      endLatitude: (map['endLatitude'] as num?)?.toDouble() ?? 0.0,
+      userPhoneNumber: map['userPhoneNumber'] as String? ?? '', // Gán giá trị mặc định nếu null
       dateTime: map['dateTime'] as Timestamp,
-      type: map['type'] as String,
-      cost: (map['cost'] as double?) ?? 0.0, // Gán giá trị mặc định nếu null
-      status: map['status'] as String,
-      driverPhoneNumber: map['driverPhoneNumber'] as String,
+      type: map['type'] as String? ?? 'unknown', // Gán giá trị mặc định
+      cost: (map['cost'] as num?)?.toDouble() ?? 0.0, // Chuyển từ num (int hoặc double) thành double
+      status: map['status'] as String? ?? 'unknown',
+      driverPhoneNumber: map['driverPhoneNumber'] as String? ?? '', // Gán giá trị mặc định nếu null
     );
   }
+
 
 
   Map<String, dynamic> toMap(){
