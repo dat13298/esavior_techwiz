@@ -7,7 +7,6 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:latlong2/latlong.dart';
 
 import '../views/notification/emergency_notification.dart';
 
@@ -16,8 +15,6 @@ class EmergencyService{
     app: Firebase.app(),
       databaseURL: 'https://test-42ad6-default-rtdb.asia-southeast1.firebasedatabase.app/' // Thay đổi URL này thành đúng
   ).ref();
-
-  StreamSubscription<Position>? _positionStreamSubscription;
 
 
   ///SEND LOCATION USER EMERGENCY
@@ -63,7 +60,7 @@ class EmergencyService{
           endLatitude: latitude,
           userPhoneNumber: null,
           dateTime: timestampObject,
-          type: 'emergency',
+          type: 'Emergency',
           cost: null,
           status: 'waiting',
           driverPhoneNumber: null
@@ -86,73 +83,4 @@ class EmergencyService{
       );
     });
   }
-
-  /// Method to start listening to the driver's location and updating Firebase
-  void startSendingDriverLocation(String driverPhoneNumber) {
-    const locationSettings = LocationSettings(
-      accuracy: LocationAccuracy.high,
-      distanceFilter: 10, // Update location every 10 meters
-    );
-
-    _positionStreamSubscription = Geolocator.getPositionStream(locationSettings: locationSettings)
-        .listen((Position position) {
-      _sendDriverLocationToFirebase(driverPhoneNumber, position.latitude, position.longitude);
-    });
-  }
-
-  void stopSendingDriverLocation() {
-    _positionStreamSubscription?.cancel();
-  }
-
-  /// Method to send driver's location to Firebase
-  Future<void> _sendDriverLocationToFirebase(String driverPhoneNumber, double latitude, double longitude) async {
-    Map<String, dynamic> locationData = {
-      'latitude': latitude,
-      'longitude': longitude,
-      'timestamp': ServerValue.timestamp,
-      'phoneNumber': driverPhoneNumber,
-    };
-
-    try {
-      await _databaseReference.child('drivers_location').child(driverPhoneNumber).set(locationData);
-      print('Driver location sent to Firebase');
-    } catch (e) {
-      print('Error sending driver location to Firebase: $e');
-    }
-  }
-
-  void listenToDriverLocation(String driverPhoneNumber) {
-    _databaseReference.child('drivers_location').child(driverPhoneNumber).onValue.listen((event) {
-      if (event.snapshot.exists) {
-        final data = event.snapshot.value as Map<dynamic, dynamic>;
-        final double latitude = data['latitude'];
-        final double longitude = data['longitude'];
-        final timestamp = data['timestamp'];
-
-        print('Driver location updated: Latitude: $latitude, Longitude: $longitude, Timestamp: $timestamp');
-
-        // Xử lý logic tại đây khi có vị trí tài xế thay đổi
-      } else {
-        print('Driver location not found');
-      }
-    });
-  }
-
-  Stream<LatLng> getDriverLocationStream(String driverPhoneNumber) {
-    return _databaseReference.child('drivers_location').child(driverPhoneNumber).onValue.map((event) {
-      if (event.snapshot.exists) {
-        final data = event.snapshot.value as Map<dynamic, dynamic>;
-        final double latitude = data['latitude'];
-        final double longitude = data['longitude'];
-
-        // Trả về đối tượng LatLng2
-        return LatLng(latitude, longitude);
-      } else {
-        // Nếu không có dữ liệu, trả về vị trí mặc định
-        return LatLng(0.0, 0.0);
-      }
-    });
-  }
-
-
 }
