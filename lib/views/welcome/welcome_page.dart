@@ -17,18 +17,6 @@ class WelcomePage extends StatefulWidget {
 class _WelcomePageState extends State<WelcomePage> {
   double screenHeight = 0;
   double screenWidth = 0;
-//Todo test notify
-  @override
-  void initState() {
-    super.initState();
-    _listenForUserLocations();
-  }
-
-  void _listenForUserLocations() {
-    // Gọi phương thức listenForUserLocations ở đây
-    // Ví dụ: EmergencyService().listenForUserLocations();
-    EmergencyService().listenForUserLocations(context);
-  }
 
   @override
   Widget build(BuildContext context) {
