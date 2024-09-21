@@ -103,9 +103,34 @@ class _BookingHistoryState extends State<BookingHistory> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Booking History'),
-        automaticallyImplyLeading: false, // Bỏ nút back ở đây
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(110.0),
+        child: ClipRRect(
+          borderRadius: const BorderRadius.only(
+            bottomLeft: Radius.circular(30),
+            bottomRight: Radius.circular(30),
+          ),
+          child: AppBar(
+            automaticallyImplyLeading: false, // Bỏ nút back
+            backgroundColor: const Color(0xFF10CCC6),
+            title: const Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'eSavior',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 30,
+                  ),
+                ),
+                Text(
+                  'Your health is our care!',
+                  style: TextStyle(fontSize: 20),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
