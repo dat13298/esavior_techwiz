@@ -249,7 +249,7 @@ class _HomeTabStateState extends State<HomeTabState> {
                 // Thay đổi biểu tượng
                 onPressed: () {
                   showMapScreen(context, hospital.address,
-                      widget.account); // Truyền context vào
+                      widget.account, null); // Truyền context vào
                 },
               ),
             );
