@@ -425,52 +425,16 @@ class CityService {
 
   Future<List<Car>> getCarByDriverPhone(String phone) async {
     final snapshot = await _cityCollection.get();
-    if (snapshot.docs.isEmpty) {
-      print('nullllllll');
-      return [];
-    } else {
-      print('Not nulllllll');
-    }
-
-    List<Car> matchingCars = [];
-
-    for (var doc in snapshot.docs) {
-      final data = doc.data() as Map<String, dynamic>;
-      print("data=========== $data");
-      final car = Car.fromMap(data);
-      print("car=========== $data");
-
-      if (car.driverPhoneNumber.contains(phone)) {
-        matchingCars.add(car);
-        print(car);
-      } else {
-        print('not have car');
-      }
-    }
-
-    return matchingCars;
-  }
-
-  Future<List<Car>> getCarByDriverPhoneNumber(String phone) async {
-    final snapshot = await _cityCollection.get();
     if (snapshot.docs.isEmpty) return [];
 
     List<Car> matchingCars = [];
 
     for (var doc in snapshot.docs) {
       final data = doc.data() as Map<String, dynamic>;
+      final car = Car.fromMap(data);
 
-      // Kiểm tra trong mảng 'city'
-      List<dynamic> cities = data['city'] ?? [];
-      for (var city in cities) {
-        // Kiểm tra trong mảng 'car'
-        List<dynamic> cars = city['car'] ?? [];
-        for (var carData in cars) {
-          final car = Car.fromMap(carData as Map<String, dynamic>);
-          if (car.driverPhoneNumber.toLowerCase().contains(phone.toLowerCase())) {
-            matchingCars.add(car);
-          }
-        }
+      if (car.driverPhoneNumber.toLowerCase().contains(phone.toLowerCase())) {
+        matchingCars.add(car);
       }
     }
 
