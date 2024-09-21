@@ -25,7 +25,9 @@ class HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _tabs = [
-      HomeTabState(account: widget.account,),
+      HomeTabState(
+        account: widget.account,
+      ),
       BookingHistory(currentAccount: widget.account),
       Notifications(account: widget.account),
       ProfileUserTab(account: widget.account),
@@ -54,8 +56,9 @@ class HomePageState extends State<HomePage> {
       type: BottomNavigationBarType.fixed,
       items: const [
         BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-        BottomNavigationBarItem(icon: Icon(Icons.access_time), label: "Activity"),
-        BottomNavigationBarItem(icon: Icon(Icons.notifications), label: "Manager"),
+        BottomNavigationBarItem(
+            icon: Icon(Icons.access_time), label: "Activity"),
+        BottomNavigationBarItem(icon: Icon(Icons.info), label: "About",),
         BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
       ],
     );
@@ -94,8 +97,11 @@ class _HomeTabStateState extends State<HomeTabState> {
             title: const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('eSavior', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30)),
-                Text('Your health is our care!', style: TextStyle(fontSize: 20)),
+                Text('eSavior',
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 30)),
+                Text('Your health is our care!',
+                    style: TextStyle(fontSize: 20)),
               ],
             ),
           ),
@@ -130,7 +136,8 @@ class _HomeTabStateState extends State<HomeTabState> {
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
-                  padding: const EdgeInsets.symmetric(horizontal: 70, vertical: 30),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 70, vertical: 30),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -140,12 +147,16 @@ class _HomeTabStateState extends State<HomeTabState> {
                 },
                 child: const Text(
                   'Call emergency',
-                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white),
+                  style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
                 ),
               ),
             ),
             const SizedBox(height: 20),
-            const Text('Ambulance gallery', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const Text('Ambulance gallery',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 10),
             SizedBox(
               height: 200,
@@ -154,51 +165,55 @@ class _HomeTabStateState extends State<HomeTabState> {
                 itemCount: 6, // 5 hình + 1 nút "See More"
                 itemBuilder: (context, index) {
                   return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10.0), // Cách đều nhau
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
                     child: index < 5
                         ? AmbulanceCard(
-                      imagePath: index == 0 ? 'assets/ford/1.jpg' : 'assets/mercedes/1.png',
-                      title: index == 0 ? 'Ford Transit' : 'Mercedes-Benz Sprinter',
-                    )
+                            imagePath: index == 0
+                                ? 'assets/ford/1.jpg'
+                                : 'assets/mercedes/1.png',
+                            title: index == 0
+                                ? 'Ford Transit'
+                                : 'Mercedes-Benz Sprinter',
+                          )
                         : GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => GalleryPage()), // Thay thế GalleryPage bằng tên thực tế của trang bạn
-                        );
-                      },
-
-                      child: Container(
-                        width: MediaQuery.of(context).size.width * 0.35,
-                        height: MediaQuery.of(context).size.width * 0.35, // Đặt kích thước giống với ảnh
-                        decoration: BoxDecoration(
-                          color: Colors.grey[300],
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        alignment: Alignment.center,
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'See More',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const GalleryPage()),
+                              );
+                            },
+                            child: Container(
+                              width: MediaQuery.of(context).size.width * 0.35,
+                              height: MediaQuery.of(context).size.width * 0.35,
+                              decoration: BoxDecoration(
+                                color: Colors.grey[300],
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              alignment: Alignment.center,
+                              child: const Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    'See More',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  SizedBox(width: 10),
+                                  Icon(Icons.arrow_forward), // Hình mũi tên
+                                ],
                               ),
                             ),
-                            SizedBox(width: 10),
-                            Icon(Icons.arrow_forward), // Hình mũi tên
-                          ],
-                        ),
-                      ),
-                    ),
+                          ),
                   );
                 },
               ),
             ),
-
             const SizedBox(height: 100),
-            const Text('Feedback', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const Text('Feedback',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           ],
         ),
       ),
@@ -215,7 +230,9 @@ class _HomeTabStateState extends State<HomeTabState> {
 
         final hospitals = snapshot.data!;
         final filteredHospitals = hospitals.where((hospital) {
-          return hospital.name.toLowerCase().contains(_searchTerm.toLowerCase());
+          return hospital.name
+              .toLowerCase()
+              .contains(_searchTerm.toLowerCase());
         }).toList();
 
         return ListView.builder(
@@ -228,15 +245,16 @@ class _HomeTabStateState extends State<HomeTabState> {
               title: Text(hospital.name),
               subtitle: Text(hospital.address),
               trailing: IconButton(
-                icon: Icon(Icons.directions_car, color: Colors.blue), // Thay đổi biểu tượng
+                icon: Icon(Icons.directions_car, color: Colors.blue),
+                // Thay đổi biểu tượng
                 onPressed: () {
-                  showMapScreen(context, hospital.address, widget.account); // Truyền context vào
+                  showMapScreen(context, hospital.address,
+                      widget.account); // Truyền context vào
                 },
               ),
             );
           },
         );
-
       },
     );
   }
