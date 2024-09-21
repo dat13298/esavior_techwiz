@@ -1,8 +1,7 @@
-
-
+import 'package:bcrypt/bcrypt.dart';
 import 'package:esavior_techwiz/models/account.dart';
 import 'package:flutter/material.dart';
-
+import 'package:esavior_techwiz/services/account_service.dart';
 import '../welcome/welcome_page.dart';
 
 class ProfileUserTab extends StatefulWidget {
@@ -14,6 +13,246 @@ class ProfileUserTab extends StatefulWidget {
 }
 
 class _ProfileTabState extends State<ProfileUserTab> {
+
+  void _showChangePasswordDialog(BuildContext context) {
+    final TextEditingController _passwordController = TextEditingController();
+    final TextEditingController _newPasswordController = TextEditingController();
+    final TextEditingController _confirmPasswordController = TextEditingController();
+
+    bool _obscureCurrentPassword = true;
+    bool _obscureNewPassword = true;
+    bool _obscureConfirmPassword = true;
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return Dialog(
+              child: Container(
+                width: MediaQuery.of(context).size.width * 0.8,
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text('Change Password', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 20),
+
+                    // Current Password Field
+                    TextField(
+                      controller: _passwordController,
+                      decoration: InputDecoration(
+                        labelText: 'Current Password',
+                        suffixIcon: IconButton(
+                          icon: Icon(_obscureCurrentPassword ? Icons.visibility_off : Icons.visibility),
+                          onPressed: () {
+                            setState(() {
+                              _obscureCurrentPassword = !_obscureCurrentPassword;
+                            });
+                          },
+                        ),
+                      ),
+                      obscureText: _obscureCurrentPassword,
+                    ),
+
+                    // New Password Field
+                    TextField(
+                      controller: _newPasswordController,
+                      decoration: InputDecoration(
+                        labelText: 'New Password',
+                        suffixIcon: IconButton(
+                          icon: Icon(_obscureNewPassword ? Icons.visibility_off : Icons.visibility),
+                          onPressed: () {
+                            setState(() {
+                              _obscureNewPassword = !_obscureNewPassword;
+                            });
+                          },
+                        ),
+                      ),
+                      obscureText: _obscureNewPassword,
+                    ),
+
+                    // Confirm Password Field
+                    TextField(
+                      controller: _confirmPasswordController,
+                      decoration: InputDecoration(
+                        labelText: 'Confirm New Password',
+                        suffixIcon: IconButton(
+                          icon: Icon(_obscureConfirmPassword ? Icons.visibility_off : Icons.visibility),
+                          onPressed: () {
+                            setState(() {
+                              _obscureConfirmPassword = !_obscureConfirmPassword;
+                            });
+                          },
+                        ),
+                      ),
+                      obscureText: _obscureConfirmPassword,
+                    ),
+
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        TextButton(
+                          child: const Text('Cancel'),
+                          onPressed: () {
+                            Navigator.of(context).pop(); // Close dialog
+                          },
+                        ),
+                        TextButton(
+                          child: const Text('Save'),
+                          onPressed: () async {
+                            String currentPassword = _passwordController.text;
+                            String newPassword = _newPasswordController.text;
+                            String confirmPassword = _confirmPasswordController.text;
+
+                            if (newPassword != confirmPassword) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('New password and confirmation do not match!')),
+                              );
+                              return;
+                            }
+
+                            // So sánh mật khẩu hiện tại với mật khẩu đã lưu trên Firebase
+                            bool passwordMatches = BCrypt.checkpw(currentPassword, widget.account.passwordHash);
+                            if (!passwordMatches) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Current password is incorrect!')),
+                              );
+                              return;
+                            }
+
+                            // Hash mật khẩu mới
+                            String hashedNewPassword = BCrypt.hashpw(newPassword, BCrypt.gensalt());
+
+                            // Tạo đối tượng Account mới với mật khẩu được băm
+                            Account updatedAccount = Account(
+                              fullName: widget.account.fullName,
+                              phoneNumber: widget.account.phoneNumber,
+                              email: widget.account.email,
+                              addressHome: widget.account.addressHome,
+                              passwordHash: hashedNewPassword,  // Lưu mật khẩu đã băm
+                              addressCompany: widget.account.addressCompany,
+                              role: widget.account.role,
+                              feedbacks: widget.account.feedbacks,
+                              status: widget.account.status,
+                            );
+
+                            // Cập nhật mật khẩu mới lên Firebase bằng email
+                            await AccountService().updateAccountByEmail(widget.account.email, updatedAccount);
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Password has been updated successfully!')),
+                            );
+
+                            Navigator.of(context).pop(); // Đóng dialog
+                          },
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+
+
+
+  void _showEditDialog(BuildContext context) {
+    final TextEditingController _nameController = TextEditingController(text: widget.account.fullName);
+    final TextEditingController _phoneController = TextEditingController(text: widget.account.phoneNumber);
+    final TextEditingController _emailController = TextEditingController(text: widget.account.email);
+    final TextEditingController _addressController = TextEditingController(text: widget.account.addressHome);
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          child: Container(
+            width: MediaQuery.of(context).size.width * 0.8,
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text('Edit Information', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 20),
+                TextField(
+                  controller: _nameController,
+                  decoration: const InputDecoration(labelText: 'Name'),
+                ),
+                TextField(
+                  controller: _phoneController,
+                  decoration: const InputDecoration(labelText: 'Phone Number'),
+                  keyboardType: TextInputType.phone,
+                ),
+                TextField(
+                  controller: _emailController,
+                  decoration: const InputDecoration(labelText: 'Email'),
+                  keyboardType: TextInputType.emailAddress,
+                ),
+                TextField(
+                  controller: _addressController,
+                  decoration: const InputDecoration(labelText: 'Address'),
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextButton(
+                      child: const Text('Cancel'),
+                      onPressed: () {
+                        Navigator.of(context).pop(); // Đóng dialog
+                      },
+                    ),
+                    TextButton(
+                      child: const Text('Save'),
+                      onPressed: () async {
+                        String name = _nameController.text;
+                        String phone = _phoneController.text;
+                        String email = _emailController.text;
+                        String address = _addressController.text;
+
+                        // Cập nhật thông tin tài khoản
+                        Account updatedAccount = Account(
+                          fullName: name,
+                          phoneNumber: phone,
+                          email: email,
+                          addressHome: address,
+                          passwordHash: widget.account.passwordHash,
+                          addressCompany: widget.account.addressCompany,
+                          role: widget.account.role,
+                          feedbacks: widget.account.feedbacks,
+                          status: widget.account.status,
+                        );
+
+                        // Cập nhật tài khoản theo email
+                        await AccountService().updateAccountByEmail(email, updatedAccount);
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Information has been updated successfully!')),
+                        );
+
+                        Navigator.of(context).pop(); // Đóng dialog
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -74,7 +313,6 @@ class _ProfileTabState extends State<ProfileUserTab> {
             // User Email
             Text(
               'Phone Number: ${widget.account.phoneNumber}',
-              // Hiển thị số điện thoại
               style: const TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 5),
@@ -96,9 +334,10 @@ class _ProfileTabState extends State<ProfileUserTab> {
               icon: Icons.edit,
               text: 'Edit profile',
               onTap: () {
-                // Handle Edit profile action
+                _showEditDialog(context); // Gọi dialog khi nhấn nút
               },
             ),
+
             const SizedBox(height: 10),
 
             // Change Password Button
@@ -106,7 +345,7 @@ class _ProfileTabState extends State<ProfileUserTab> {
               icon: Icons.lock,
               text: 'Change password',
               onTap: () {
-                // Handle Change password action
+                _showChangePasswordDialog(context); // Call the password change dialog
               },
             ),
             const SizedBox(height: 10),
@@ -114,7 +353,7 @@ class _ProfileTabState extends State<ProfileUserTab> {
             // About this app Button
             _buildProfileOption(
               icon: Icons.info_outline,
-              text: 'About this app',
+              text: 'Feedback',
               onTap: () {
                 // Handle About this app action
               },
@@ -177,4 +416,5 @@ class _ProfileTabState extends State<ProfileUserTab> {
       ),
     );
   }
+
 }
