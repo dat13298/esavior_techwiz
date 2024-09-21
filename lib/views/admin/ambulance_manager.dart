@@ -73,11 +73,10 @@ class AmbulanceManagerState extends State<AmbulanceManager> {
                 }
 
 
-                final ambulances = _filterCars( snapshot.data!);
-                final filteredCars = ambulances.where((car) {
-                  return car.name
-                      .toLowerCase()
-                      .contains(_searchTerm.toLowerCase());
+                final filteredCars = snapshot.data!.where((car) {
+                  final nameMatch = car.name.toLowerCase().contains(_searchTerm.toLowerCase());
+                  final phoneMatch = car.driverPhoneNumber.toLowerCase().contains(_searchTerm.toLowerCase());
+                  return nameMatch || phoneMatch;
                 }).toList();
 
                 return ListView.builder(
@@ -119,6 +118,7 @@ class AmbulanceManagerState extends State<AmbulanceManager> {
   // Hàm hiển thị form pop-up để thêm bệnh viện
   void _showAddAmbulanceDialog(BuildContext context) {
     String? selectedCityId;
+    TextEditingController carIDController = TextEditingController();
     TextEditingController carNameController = TextEditingController();
     TextEditingController carDesController = TextEditingController();
     TextEditingController carSeatController = TextEditingController();
@@ -152,6 +152,10 @@ class AmbulanceManagerState extends State<AmbulanceManager> {
                       }).toList(),
                     ),
                     TextField(
+                      controller: carIDController,
+                      decoration: InputDecoration(labelText: 'Car ID'),
+                    ),
+                    TextField(
                       controller: carNameController,
                       decoration: InputDecoration(labelText: 'Car Name'),
                     ),
@@ -175,6 +179,7 @@ class AmbulanceManagerState extends State<AmbulanceManager> {
                     // add new hospital
                     CityService().addCar(
                       selectedCityId!,
+                      carIDController.text,
                       carNameController.text,
                       carDesController.text,
                       carSeatController.text,
@@ -311,7 +316,6 @@ class AmbulanceManagerState extends State<AmbulanceManager> {
 
   Future<void> _searchCars() async {
     if (_searchTerm.isEmpty) {
-      // If search term is empty, load all hospitals
       final allCars = await _cityService.getAllCar();
       setState(() {
         _cars = allCars as List<Car>;
@@ -319,13 +323,13 @@ class AmbulanceManagerState extends State<AmbulanceManager> {
     } else {
       // Perform search
       final nameResults = await _cityService.getCarByName(_searchTerm);
-      // final locationResults = await _cityService.getHospitalsByLocation(_searchTerm);
+      final phoneResults = await _cityService.getCarByDriverPhone(_searchTerm);
 
       // Combine and remove duplicates
       final Set<String> uniqueIds = {};
       final List<Car> combinedResults = [];
 
-      for (var car in [...nameResults,]) {
+      for (var car in [...nameResults, ...phoneResults]) {
         if (uniqueIds.add(car.id)) {
           combinedResults.add(car);
         }
@@ -340,7 +344,7 @@ class AmbulanceManagerState extends State<AmbulanceManager> {
   List<Car> _filterCars(List<Car> cars) {
     return cars.where((car) {
       return car.name.toLowerCase().contains(_searchTerm.toLowerCase()) ||
-          car.id.toLowerCase().contains(_searchTerm.toLowerCase());
+          car.driverPhoneNumber.toLowerCase().contains(_searchTerm.toLowerCase());
     }).toList();
   }
 }

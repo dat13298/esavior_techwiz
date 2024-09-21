@@ -5,6 +5,7 @@ class Car{
   final String num_seat;
   final String driverPhoneNumber;
   final String cityID;
+  final String status;
 
   Car({
     required this.id,
@@ -13,6 +14,7 @@ class Car{
     required this.num_seat,
     required this.driverPhoneNumber,
     required this.cityID,
+    required this.status,
   });
 
   static Car fromMap(Map<String, dynamic> map) {
@@ -23,6 +25,7 @@ class Car{
       num_seat: map['num_seat'] as String? ?? '',
       driverPhoneNumber: map['driverPhoneNumber'] as String? ?? '',
       cityID: map['cityID'] as String? ?? '',
+      status: map['status'] as String? ?? '',
     );
   }
 
@@ -36,6 +39,7 @@ class Car{
       'num_seat': num_seat,
       'driverPhoneNumber':driverPhoneNumber,
       'cityID':cityID,
+      'status':status,
     };
   }
 
