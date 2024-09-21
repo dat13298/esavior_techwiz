@@ -27,7 +27,7 @@ class GalleryPage extends StatelessWidget {
               ),
               // Hàng hình ảnh Toyota
               _buildCarList('assets/ford/1.jpg', 'Toyota Camry', 'assets/ford/2.png', 'Toyota Corolla', screenWidth),
-              _buildCarList('assets/ford/1.jpg', 'Toyota RAV4', 'assets/ford/2.png', 'Toyota Yaris', screenWidth),
+              _buildCarList('assets/ford/3.jpg', 'Toyota RAV4', 'assets/ford/4.jpg', 'Toyota Yaris', screenWidth),
 
               const Padding(
                 padding: EdgeInsets.only(top: 32.0, bottom: 16.0),
@@ -38,7 +38,7 @@ class GalleryPage extends StatelessWidget {
               ),
               // Hàng hình ảnh Mercedes-Benz
               _buildCarList('assets/mercedes/1.png', 'Mercedes-Benz C-Class', 'assets/mercedes/2.jpg', 'Mercedes-Benz E-Class', screenWidth),
-              _buildCarList('assets/mercedes/3.jpg', 'Mercedes-Benz GLE', 'assets/mercedes/2.jpg', 'Mercedes-Benz S-Class', screenWidth),
+              _buildCarList('assets/mercedes/3.jpg', 'Mercedes-Benz GLE', 'assets/mercedes/4.png', 'Mercedes-Benz S-Class', screenWidth),
 
               const Padding(
                 padding: EdgeInsets.only(top: 32.0, bottom: 16.0),
@@ -69,7 +69,7 @@ class GalleryPage extends StatelessWidget {
                 ),
               ),
               // Hàng hình ảnh Nissan
-              _buildCarList('assets/nissan/1.jpg', 'Nissan Altima', 'assets/nissan/1.jpg', 'Nissan Maxima', screenWidth),
+              _buildCarList('assets/nissan/1.jpg', 'Nissan Altima', 'assets/nissan/2.jpg', 'Nissan Maxima', screenWidth),
 
               const Padding(
                 padding: EdgeInsets.only(top: 32.0, bottom: 16.0),
@@ -80,7 +80,7 @@ class GalleryPage extends StatelessWidget {
               ),
               // Hàng hình ảnh Ford
               _buildCarList('assets/ford/1.jpg', 'Ford F-150', 'assets/ford/2.png', 'Ford Mustang', screenWidth),
-              _buildCarList('assets/ford/1.jpg', 'Ford Explorer', 'assets/ford/2.png', 'Ford Escape', screenWidth),
+              _buildCarList('assets/ford/3.jpg', 'Ford Explorer', 'assets/ford/4.jpg', 'Ford Escape', screenWidth),
 
               const Padding(
                 padding: EdgeInsets.only(top: 32.0, bottom: 16.0),

@@ -5,6 +5,7 @@ import '../../controllers/map_controller.dart';
 import '../../models/account.dart';
 import '../../services/city_service.dart';
 import '../booking_history/booking_history.dart';
+import '../welcome/call_emergency.dart';
 import 'gallery.dart';
 import 'notifications.dart';
 
@@ -98,8 +99,7 @@ class _HomeTabStateState extends State<HomeTabState> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text('eSavior',
-                    style:
-                        TextStyle(fontWeight: FontWeight.bold, fontSize: 30)),
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30)),
                 Text('Your health is our care!',
                     style: TextStyle(fontSize: 20)),
               ],
@@ -117,7 +117,7 @@ class _HomeTabStateState extends State<HomeTabState> {
               controller: _searchController,
               decoration: InputDecoration(
                 labelText: 'Search Hospital',
-                border: OutlineInputBorder(),
+                border: const OutlineInputBorder(),
                 suffixIcon: IconButton(
                   icon: const Icon(Icons.search),
                   onPressed: () {
@@ -136,21 +136,19 @@ class _HomeTabStateState extends State<HomeTabState> {
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 70, vertical: 30),
+                  padding: const EdgeInsets.symmetric(horizontal: 70, vertical: 30),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
                 onPressed: () {
                   // Hành động của nút gọi cấp cứu
+                  const CallEmergency();
                 },
                 child: const Text(
                   'Call emergency',
                   style: TextStyle(
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white),
+                      fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white),
                 ),
               ),
             ),
@@ -164,50 +162,69 @@ class _HomeTabStateState extends State<HomeTabState> {
                 scrollDirection: Axis.horizontal,
                 itemCount: 6, // 5 hình + 1 nút "See More"
                 itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                    child: index < 5
-                        ? AmbulanceCard(
-                            imagePath: index == 0
-                                ? 'assets/ford/1.jpg'
-                                : 'assets/mercedes/1.png',
-                            title: index == 0
-                                ? 'Ford Transit'
-                                : 'Mercedes-Benz Sprinter',
-                          )
-                        : GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const GalleryPage()),
-                              );
-                            },
-                            child: Container(
-                              width: MediaQuery.of(context).size.width * 0.35,
-                              height: MediaQuery.of(context).size.width * 0.35,
-                              decoration: BoxDecoration(
-                                color: Colors.grey[300],
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              alignment: Alignment.center,
-                              child: const Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    'See More',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  SizedBox(width: 10),
-                                  Icon(Icons.arrow_forward), // Hình mũi tên
-                                ],
-                              ),
+                  // Danh sách các ô tô
+                  final carList = [
+                    {'imagePath': 'assets/ford/1.jpg', 'title': 'Ford Transit'},
+                    {'imagePath': 'assets/mercedes/1.png', 'title': 'Mercedes-Benz Sprinter'},
+                    {'imagePath': 'assets/toyota/1.jpg', 'title': 'Toyota Hiace'},
+                    {'imagePath': 'assets/landrover/1.jpg', 'title': 'Nissan NV350'},
+                    {'imagePath': 'assets/vokswa/1.jpg', 'title': 'Volkswagen Crafter'}
+                  ];
+
+                  if (index < 5) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0), // Khoảng cách giữa các item
+                      child: AmbulanceCard(
+                        imagePath: carList[index]['imagePath']!,
+                        title: carList[index]['title']!,
+                      ),
+                    );
+                  } else {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const GalleryPage()),
+                          );
+                        },
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => const GalleryPage()),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            minimumSize: Size(MediaQuery.of(context).size.width * 0.3, MediaQuery.of(context).size.width * 0.3), // Đặt kích thước tối thiểu
+                            backgroundColor: Colors.grey[300], // Màu nền
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10), // Đường viền bo tròn
                             ),
                           ),
-                  );
+                          child: const Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'See More',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              SizedBox(height: 4), // Khoảng cách giữa chữ và icon
+                              Icon(Icons.arrow_forward, size: 16),
+                            ],
+                          ),
+                        ),
+
+
+
+                      ),
+                    );
+                  }
                 },
               ),
             ),
@@ -218,6 +235,7 @@ class _HomeTabStateState extends State<HomeTabState> {
         ),
       ),
     );
+
   }
 
   Widget _buildHospitalList() {
