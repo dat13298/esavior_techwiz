@@ -23,9 +23,18 @@ class _CarManagerScreenState extends State<CarManagerScreen> {
     _fetchCars();
   }
 
+
   Future<void> _fetchCars() async {
     try {
-      _cars = await CityService().getCarByDriverPhone(widget.account.phoneNumber);
+      List<Car> cars = await CityService().getCarByDriverPhone(widget.account.phoneNumber);
+      if (cars.isEmpty) {
+        print("No cars found for phone: ${widget.account.phoneNumber}");
+      } else {
+        print("Found cars: $cars");
+      }
+      setState(() {
+        _cars = cars;
+      });
     } catch (e) {
       print("Error fetching cars: $e");
     } finally {
@@ -39,6 +48,7 @@ class _CarManagerScreenState extends State<CarManagerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text('Car Manager'),
       ),
       body: Column(
