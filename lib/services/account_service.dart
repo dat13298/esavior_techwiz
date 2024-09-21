@@ -23,6 +23,38 @@ class AccountService {
     }
   }
 
+  Future<void> updateAccountByEmail(String email, Account account) async {
+    final accountMap = account.toMap();
+
+    try {
+      final snapshot = await _accountsCollection.get();
+
+      if (snapshot.docs.isNotEmpty) {
+        final docId = snapshot.docs.first.id;
+        final accountList = snapshot.docs.first['account'] as List;
+
+        // Tìm tài khoản theo email
+        final index = accountList.indexWhere((acc) => acc['email'] == email);
+        if (index != -1) {
+          accountList[index] = accountMap; // Cập nhật tài khoản
+          await _accountsCollection.doc(docId).update({
+            'account': accountList,
+          });
+        } else {
+          print('Account with email $email not found.');
+        }
+      }
+    } catch (e) {
+      print('Error updating account: $e');
+    }
+  }
+
+
+
+
+
+
+
   Future<Account?> authenticate(String email, String password) async {
     try {
       // Lấy tất cả các tài liệu từ collection
