@@ -49,6 +49,7 @@ dependencies:
   permission_handler:
   url_launcher: ^6.3.0
   audioplayers: ^6.1.0
+  flutter_launcher_icons: ^0.13.1
 
 
 dev_dependencies:
@@ -64,6 +65,10 @@ dev_dependencies:
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
+
+flutter_icons:
+  android: true
+  image_path: "assets/logo_launcher/icon.png"
 
 # The following section is specific to Flutter packages.
 flutter:
