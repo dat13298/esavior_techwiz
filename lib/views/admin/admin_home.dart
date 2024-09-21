@@ -26,7 +26,7 @@ class _AdminPageState extends State<AdminPage> {
       _buildHomeTab(),  // Tab Home
       const ActivityTab(),         // Tab Activity
       const ManagerTab(),    // Tab Manager
-      const ProfileTab(),          // Tab Profile
+      ProfileTab(account: widget.account),          // Tab Profile
     ];
   }
 
@@ -87,7 +87,7 @@ class _AdminPageState extends State<AdminPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Hello,',
+              'Hello, ${widget.account.fullName}',  // Hiển thị tên account ở đây
               style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
@@ -135,4 +135,5 @@ class _AdminPageState extends State<AdminPage> {
       ),
     );
   }
+
 }
