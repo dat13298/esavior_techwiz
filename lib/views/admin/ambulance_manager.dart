@@ -341,10 +341,4 @@ class AmbulanceManagerState extends State<AmbulanceManager> {
     }
   }
 
-  List<Car> _filterCars(List<Car> cars) {
-    return cars.where((car) {
-      return car.name.toLowerCase().contains(_searchTerm.toLowerCase()) ||
-          car.driverPhoneNumber.toLowerCase().contains(_searchTerm.toLowerCase());
-    }).toList();
-  }
 }

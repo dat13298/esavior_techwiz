@@ -21,8 +21,6 @@ class _HospitalManagerState extends State<HospitalManager> {
   final CityService _cityService = CityService();
 
 
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -67,11 +65,10 @@ class _HospitalManagerState extends State<HospitalManager> {
                   return Center(child: CircularProgressIndicator());
                 }
 
-                final hospitals = _filterHospitals( snapshot.data!);
-                final filteredHospitals = hospitals.where((hospital) {
-                  return hospital.name
-                      .toLowerCase()
-                      .contains(_searchTerm.toLowerCase());
+                final filteredHospitals = snapshot.data!.where((hospital) {
+                  final nameMatch = hospital.name.toLowerCase().contains(_searchTerm.toLowerCase());
+                  final addMatch = hospital.address.toLowerCase().contains(_searchTerm.toLowerCase());
+                  return nameMatch || addMatch;
                 }).toList();
 
                 return ListView.builder(
@@ -322,10 +319,4 @@ class _HospitalManagerState extends State<HospitalManager> {
     }
   }
 
-  List<Hospital> _filterHospitals(List<Hospital> hospitals) {
-    return hospitals.where((hospital) {
-      return hospital.name.toLowerCase().contains(_searchTerm.toLowerCase()) ||
-          hospital.address.toLowerCase().contains(_searchTerm.toLowerCase());
-    }).toList();
-  }
 }
