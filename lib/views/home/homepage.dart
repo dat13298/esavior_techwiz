@@ -230,7 +230,7 @@ class _HomeTabStateState extends State<HomeTabState> {
               trailing: IconButton(
                 icon: Icon(Icons.directions_car, color: Colors.blue), // Thay đổi biểu tượng
                 onPressed: () {
-                  showMapScreen(context, hospital.address, widget.account, null); // Truyền context vào
+                  showMapScreen(context, hospital.address, widget.account); // Truyền context vào
                 },
               ),
             );
