@@ -133,15 +133,12 @@ class _ProfileTabState extends State<ProfileUserTab> {
                 ),
               ),
               onPressed: () async {
-                // Xử lý đăng xuất
-                // Thực hiện thao tác đăng xuất, nếu cần
-
-                // Chuyển hướng sang WelcomePage
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(builder: (context) => WelcomePage()),
                 );
               },
+
               child: const Text(
                 'Log out',
                 style: TextStyle(
