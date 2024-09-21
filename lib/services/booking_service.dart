@@ -28,6 +28,60 @@ class BookingService {
     await _bookingCollection.doc(id).delete();
   }
 
+  // Future<List<Booking>> getAllBookings() async {
+  //   QuerySnapshot snapshot = await _bookingCollection.get();
+  //   print('Total bookings: ${snapshot.docs.length}');
+  //   return snapshot.docs.map((doc) {
+  //     return Booking.fromMap(doc.data() as Map<String, dynamic>, doc.id);
+  //   }).toList();
+  // }
+
+  // Stream<List<Booking>> getBookingsByStatus(String status) {
+  //   return _bookingCollection.snapshots().map((snapshot) {
+  //     List<Booking> bookings = [];
+  //     for (var doc in snapshot.docs) {
+  //       Map<String, dynamic>? bookingData = doc.data() as Map<String, dynamic>?;
+  //       if (bookingData != null && bookingData.containsKey('booking')) {
+  //         List<dynamic> bookingsList = bookingData['booking'] as List<dynamic>;
+  //         for (var bookingMap in bookingsList) {
+  //           Map<String, dynamic>? booking = bookingMap as Map<String, dynamic>?;
+  //           if (booking != null && booking['status'].toString().toLowerCase() == status.toLowerCase()) {
+  //             Booking bookingObject = Booking.fromMap(booking, doc.id);
+  //             bookings.add(bookingObject);
+  //           }
+  //         }
+  //       }
+  //     }
+  //     bookings.sort((a, b) => b.dateTime.compareTo(a.dateTime));
+  //     return bookings;
+  //   }).asBroadcastStream(); // Chuyển stream thành broadcast stream
+  // }
+  Future<List<Booking>> getBookingsByStatus(String status) async {
+    List<Booking> bookings = [];
+
+    final snapshot = await _bookingCollection.get();
+    for (var doc in snapshot.docs) {
+      Map<String, dynamic>? bookingData = doc.data() as Map<String, dynamic>?;
+
+      if (bookingData != null && bookingData.containsKey('booking')) {
+        List<dynamic> bookingsList = bookingData['booking'] as List<dynamic>;
+        for (var bookingMap in bookingsList) {
+          Map<String, dynamic>? booking = bookingMap as Map<String, dynamic>?;
+
+          if (booking != null && booking['status'].toString().toLowerCase() == status.toLowerCase()) {
+            Booking bookingObject = Booking.fromMap(booking, doc.id);
+            bookings.add(bookingObject);
+          }
+        }
+      }
+    }
+
+    bookings.sort((a, b) => b.dateTime.compareTo(a.dateTime));
+    return bookings; // Trả về danh sách booking
+  }
+
+
+
   Future<List<Booking>> getAllBookings() async {
     QuerySnapshot snapshot = await _bookingCollection.get();
     return snapshot.docs.map((doc) {
@@ -35,10 +89,11 @@ class BookingService {
     }).toList();
   }
 
+
   Future<Booking?> getBookingById(String id) async {
     DocumentSnapshot doc = await _bookingCollection.doc(id).get();
     if (doc.exists) {
-      return Booking.fromMap(doc.data() as Map<String, dynamic>, doc.id);
+      return Booking.fromMap(doc.data() as Map<String, dynamic>,doc.id);
     }
     return null;
   }
@@ -63,7 +118,7 @@ class BookingService {
               if (booking != null && booking['userPhoneNumber'] == userPhoneNumber) {
                 print('Booking data: $booking');
 
-                Booking bookingObject = Booking.fromMap(booking, doc.id);
+                Booking bookingObject = Booking.fromMap(booking,doc.id);
                 bookings.add(bookingObject); // Thêm booking vào danh sách
               }
             }
@@ -102,7 +157,7 @@ class BookingService {
               if (booking != null && booking['driverPhoneNumber'] == driverPhoneNumber) {
                 print('Booking data: $booking');
 
-                Booking bookingObject = Booking.fromMap(booking, doc.id);
+                Booking bookingObject = Booking.fromMap(booking,doc.id);
                 bookings.add(bookingObject); // Thêm booking vào danh sách
               }
             }
