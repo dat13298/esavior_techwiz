@@ -1,7 +1,9 @@
+import 'package:esavior_techwiz/models/hospital.dart';
 import 'package:esavior_techwiz/views/home/profile_tab.dart';
 import 'package:flutter/material.dart';
-
+import '../../controllers/map_controller.dart';
 import '../../models/account.dart';
+import '../../services/city_service.dart';
 import '../booking_history/booking_history.dart';
 import 'notifications.dart';
 
@@ -15,27 +17,24 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
-  late List<Widget>
-      _tabs; // Dùng late để đảm bảo _tabs được khởi tạo trước khi sử dụng
+  late List<Widget> _tabs;
   int _currentIndex = 0;
 
   @override
   void initState() {
     super.initState();
-    // Khởi tạo _tabs trong initState
     _tabs = [
-      const HomeTabState(), // Tab Home
-      BookingHistory(currentAccount: widget.account), // Tab Activity
-      Notifications(account: widget.account), // Tab Manager
-      ProfileUserTab(account: widget.account), // Tab Profile
+      const HomeTabState(),
+      BookingHistory(currentAccount: widget.account),
+      Notifications(account: widget.account),
+      ProfileUserTab(account: widget.account),
     ];
   }
 
   @override
   Widget build(BuildContext context) {
-    // Đảm bảo _tabs đã được khởi tạo trước khi sử dụng
     return Scaffold(
-      body: _tabs[_currentIndex], // Sử dụng _tabs sau khi khởi tạo
+      body: _tabs[_currentIndex],
       bottomNavigationBar: _buildBottomNavigationBar(),
     );
   }
@@ -53,22 +52,10 @@ class HomePageState extends State<HomePage> {
       unselectedItemColor: Colors.black,
       type: BottomNavigationBarType.fixed,
       items: const [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home),
-          label: "Home",
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.access_time),
-          label: "Activity",
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.notifications),
-          label: "Manager",
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.person),
-          label: "Profile",
-        ),
+        BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
+        BottomNavigationBarItem(icon: Icon(Icons.access_time), label: "Activity"),
+        BottomNavigationBarItem(icon: Icon(Icons.notifications), label: "Manager"),
+        BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
       ],
     );
   }
@@ -82,7 +69,11 @@ class HomeTabState extends StatefulWidget {
 }
 
 class _HomeTabStateState extends State<HomeTabState> {
-  bool showSeeMore = false;
+  final TextEditingController _searchController = TextEditingController();
+  String _searchTerm = '';
+  List<Hospital> _hospitals = [];
+  final CityService _cityService = CityService();
+  bool _isHospitalListVisible = false;
 
   @override
   Widget build(BuildContext context) {
@@ -95,131 +86,121 @@ class _HomeTabStateState extends State<HomeTabState> {
             bottomRight: Radius.circular(30),
           ),
           child: AppBar(
-            automaticallyImplyLeading: false, // Bỏ nút back
+            automaticallyImplyLeading: false,
             backgroundColor: const Color(0xFF10CCC6),
             title: const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'eSavior',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 30,
-                  ),
-                ),
-                Text(
-                  'Your health is our care!',
-                  style: TextStyle(fontSize: 20),
-                ),
+                Text('eSavior', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30)),
+                Text('Your health is our care!', style: TextStyle(fontSize: 20)),
               ],
             ),
           ),
         ),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 30),
-            // Search bar
             TextField(
+              controller: _searchController,
               decoration: InputDecoration(
-                hintText: 'Search places',
-                prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                labelText: 'Search Hospital',
+                border: OutlineInputBorder(),
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.search),
+                  onPressed: () {
+                    setState(() {
+                      _searchTerm = _searchController.text.trim();
+                      _isHospitalListVisible = true;
+                    });
+                  },
                 ),
               ),
             ),
             const SizedBox(height: 20),
-
-            // Emergency button
+            if (_isHospitalListVisible) _buildHospitalList(),
+            const SizedBox(height: 20),
             Center(
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 70, vertical: 30),
+                  padding: const EdgeInsets.symmetric(horizontal: 70, vertical: 30),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
                 onPressed: () {
-                  // Emergency button action
+                  // Hành động của nút gọi cấp cứu
                 },
                 child: const Text(
                   'Call emergency',
-                  style: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
+                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white),
                 ),
               ),
             ),
             const SizedBox(height: 20),
-
-            //TODO: code của Huy ở đây nhé Huy sửa lại giúp anh cho đúng với code cũ của Huy nhé
-            // Ambulance gallery
-            const Text(
-              'Ambulance gallery',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            const Text('Ambulance gallery', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 10),
             SizedBox(
-              height: 200, // Chiều cao của các thẻ (card)
-              child: NotificationListener<ScrollNotification>(
-                onNotification: (ScrollNotification scrollInfo) {
-                  if (scrollInfo.metrics.atEdge) {
-                    if (scrollInfo.metrics.pixels != 0) {
-                      setState(() {
-                        showSeeMore =
-                            true; // Hiện nút "see more" khi cuộn đến cuối
-                      });
-                    }
-                  }
-                  return true;
+              height: 200,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: 5,
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 5.0),
+                    child: AmbulanceCard(
+                      imagePath: index == 0 ? 'assets/ford/1.jpg' : 'assets/mercedes/1.png',
+                      title: index == 0 ? 'Ford Transit' : 'Mercedes-Benz Sprinter',
+                    ),
+                  );
                 },
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal, // Trượt theo chiều ngang
-                  itemCount: 5, // Số lượng phần tử tối đa
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 5.0),
-                      // Khoảng cách giữa các thẻ
-                      child: AmbulanceCard(
-                        imagePath: index == 0
-                            ? 'assets/ford/1.jpg'
-                            : 'assets/mercedes/1.png',
-                        title: index == 0
-                            ? 'Ford Transit'
-                            : 'Mercedes-Benz Sprinter',
-                      ),
-                    );
-                  },
-                ),
               ),
             ),
-
-            //TODO: đến đây là hết rồi Huy nhé
-
             const SizedBox(height: 100),
-
-            // Feedback section
-            const Text(
-              'Feedback',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            const Text('Feedback', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildHospitalList() {
+    return StreamBuilder<List<Hospital>>(
+      stream: _cityService.getAllHospital(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return Center(child: CircularProgressIndicator());
+        }
+
+        final hospitals = snapshot.data!;
+        final filteredHospitals = hospitals.where((hospital) {
+          return hospital.name.toLowerCase().contains(_searchTerm.toLowerCase());
+        }).toList();
+
+        return ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: filteredHospitals.length,
+          itemBuilder: (context, index) {
+            final hospital = filteredHospitals[index];
+            return ListTile(
+              title: Text(hospital.name),
+              subtitle: Text(hospital.address),
+              trailing: IconButton(
+                icon: Icon(Icons.directions_car, color: Colors.blue), // Thay đổi biểu tượng
+                onPressed: () {
+                  showMapScreen(context, hospital.address); // Truyền context vào
+                },
+              ),
+            );
+          },
+        );
+
+      },
     );
   }
 }
@@ -228,7 +209,7 @@ class AmbulanceCard extends StatelessWidget {
   final String imagePath;
   final String title;
 
-  AmbulanceCard({required this.imagePath, required this.title});
+  const AmbulanceCard({required this.imagePath, required this.title});
 
   @override
   Widget build(BuildContext context) {
