@@ -6,7 +6,6 @@ class BookingService {
   final CollectionReference _bookingCollection =
       FirebaseFirestore.instance.collection('booking');
 
-  // Thêm booking mới vào Firestore (ID sẽ tự động được Firestore sinh ra)
   Future<void> addBooking(Booking booking) async {
     final newBooking = booking.toMap();
 
@@ -21,17 +20,14 @@ class BookingService {
     }
   }
 
-  // Cập nhật booking theo ID
   Future<void> updateBooking(String id, Booking updatedBooking) async {
     await _bookingCollection.doc(id).update(updatedBooking.toMap());
   }
 
-  // Xóa booking theo ID
   Future<void> deleteBooking(String id) async {
     await _bookingCollection.doc(id).delete();
   }
 
-  // Lấy tất cả các booking từ Firestore
   Future<List<Booking>> getAllBookings() async {
     QuerySnapshot snapshot = await _bookingCollection.get();
     return snapshot.docs.map((doc) {
@@ -39,7 +35,6 @@ class BookingService {
     }).toList();
   }
 
-  // Lấy booking theo ID
   Future<Booking?> getBookingById(String id) async {
     DocumentSnapshot doc = await _bookingCollection.doc(id).get();
     if (doc.exists) {
@@ -49,7 +44,7 @@ class BookingService {
   }
 
   Future<List<Booking>> getBookingsByPhoneNumber(String userPhoneNumber) async {
-    List<Booking> bookings = []; // Danh sách để lưu các booking tìm thấy
+    List<Booking> bookings = [];
 
     try {
       final snapshot = await _bookingCollection.get();
@@ -67,9 +62,8 @@ class BookingService {
               if (booking != null && booking['userPhoneNumber'] == userPhoneNumber) {
                 print('Booking data: $booking');
 
-                // Tạo đối tượng Booking từ map và thêm vào danh sách
                 Booking bookingObject = Booking.fromMap(booking, doc.id);
-                bookings.add(bookingObject); // Thêm booking vào danh sách
+                bookings.add(bookingObject);
               }
             }
           }
@@ -81,7 +75,7 @@ class BookingService {
       print('Error fetching bookings: $e');
     }
 
-    return bookings; // Trả về danh sách booking tìm thấy
+    return bookings;
   }
 
 
