@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:esavior_techwiz/models/booking.dart';
+import 'package:esavior_techwiz/services/booking_service.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
@@ -54,20 +55,16 @@ class EmergencyService{
 
       final message = 'New location received:\nLatitude: $latitude\nLongitude: $longitude\nTimestamp: $formattedTime';
 
-      final Booking emergencyBooking = Booking(
-          id: locationKey,
-          carID: null,
-          startLongitude: null,//if driver add when driver accept
-          startLatitude: null,
+      Booking newBooking = Booking(
           endLongitude: longitude,
           endLatitude: latitude,
-          userPhoneNumber: null,
           dateTime: timestampObject,
-          type: 'emergency',
-          cost: null,
-          status: 'waiting',
-          driverPhoneNumber: null
+          type: "Emergency",
+          status: "Not Yet Confirm"
       );
+
+      BookingService().addBooking(newBooking);
+
       showDialog(
         context: context,
         builder: (context) => EmergencyNotification(
