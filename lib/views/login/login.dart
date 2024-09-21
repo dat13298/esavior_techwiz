@@ -71,10 +71,10 @@ class _LoginPageState extends State<LoginPage> {
           ),
         );
       } else {
-        showErrorDialog(context, 'Đăng nhập thất bại');
+        showErrorDialog(context, 'Login failed');
       }
     } catch (e) {
-      showErrorDialog(context, 'Đã xảy ra lỗi, vui lòng thử lại sau.');
+      showErrorDialog(context, 'An error occurred, please try again later.');
     }
   }
 
