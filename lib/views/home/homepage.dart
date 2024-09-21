@@ -1,85 +1,88 @@
-import 'package:esavior_techwiz/models/account.dart';
-import 'package:esavior_techwiz/views/admin/admin_home.dart';
-import 'package:esavior_techwiz/views/driver/driver_home.dart';
-import 'package:esavior_techwiz/views/profile/profile.dart';
+import 'package:esavior_techwiz/views/home/profile_tab.dart';
 import 'package:flutter/material.dart';
 
-import 'gallery.dart';
+import '../../models/account.dart';
+import '../booking_history/booking_history.dart';
+import 'notifications.dart';
 
-class eSaviorHome extends StatefulWidget {
+class HomePage extends StatefulWidget {
   final Account account;
 
-  const eSaviorHome({super.key, required this.account});
+  const HomePage({super.key, required this.account});
 
   @override
-  _eSaviorHomeState createState() => _eSaviorHomeState();
+  HomePageState createState() => HomePageState();
 }
 
-class _eSaviorHomeState extends State<eSaviorHome> {
+class HomePageState extends State<HomePage> {
+  late List<Widget>
+      _tabs; // Dùng late để đảm bảo _tabs được khởi tạo trước khi sử dụng
+  int _currentIndex = 0;
+
   @override
   void initState() {
     super.initState();
-
-    // Kiểm tra role và điều hướng tới các trang tương ứng
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _navigateBasedOnRole(widget.account.role);
-    });
-  }
-
-  void _navigateBasedOnRole(String role) {
-    if (role == 'user') {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => HomePage(account: widget.account)),
-      );
-    } else if (role == 'driver') {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => DriverPage(account: widget.account)),
-      );
-    } else if (role == 'dispatcher') {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => AdminPage(account: widget.account)),
-      );
-    }
+    // Khởi tạo _tabs trong initState
+    _tabs = [
+      const HomeTabState(), // Tab Home
+      BookingHistory(currentAccount: widget.account), // Tab Activity
+      Notifications(account: widget.account), // Tab Manager
+      ProfileUserTab(account: widget.account), // Tab Profile
+    ];
   }
 
   @override
   Widget build(BuildContext context) {
-    // Hiển thị trang loading trong khi chờ điều hướng
-    return const Scaffold(
-      body: Center(
-        child: CircularProgressIndicator(), // Hiển thị vòng xoay loading trong khi chờ điều hướng
-      ),
+    // Đảm bảo _tabs đã được khởi tạo trước khi sử dụng
+    return Scaffold(
+      body: _tabs[_currentIndex], // Sử dụng _tabs sau khi khởi tạo
+      bottomNavigationBar: _buildBottomNavigationBar(),
+    );
+  }
+
+  BottomNavigationBar _buildBottomNavigationBar() {
+    return BottomNavigationBar(
+      currentIndex: _currentIndex,
+      onTap: (index) {
+        setState(() {
+          _currentIndex = index;
+        });
+      },
+      backgroundColor: Colors.white,
+      selectedItemColor: const Color(0xFF10CCC6),
+      unselectedItemColor: Colors.black,
+      type: BottomNavigationBarType.fixed,
+      items: const [
+        BottomNavigationBarItem(
+          icon: Icon(Icons.home),
+          label: "Home",
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.access_time),
+          label: "Activity",
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.notifications),
+          label: "Manager",
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.person),
+          label: "Profile",
+        ),
+      ],
     );
   }
 }
 
-class HomePage extends StatefulWidget {
-  final Account account;
-  const HomePage({super.key, required this.account});
+class HomeTabState extends StatefulWidget {
+  const HomeTabState({super.key});
 
   @override
-  _HomePageState createState() => _HomePageState();
+  State<HomeTabState> createState() => _HomeTabStateState();
 }
 
-class _HomePageState extends State<HomePage> {
-  int _selectedIndex = 0;
-  bool showSeeMore = false; // Biến để kiểm soát việc hiển thị nút "see more"
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-
-    if (index == 3) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => eSaviorProfile(account: widget.account)),
-      );
-    }
-  }
+class _HomeTabStateState extends State<HomeTabState> {
+  bool showSeeMore = false;
 
   @override
   Widget build(BuildContext context) {
@@ -92,6 +95,7 @@ class _HomePageState extends State<HomePage> {
             bottomRight: Radius.circular(30),
           ),
           child: AppBar(
+            automaticallyImplyLeading: false, // Bỏ nút back
             backgroundColor: const Color(0xFF10CCC6),
             title: const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -135,7 +139,8 @@ class _HomePageState extends State<HomePage> {
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
-                  padding: const EdgeInsets.symmetric(horizontal: 70, vertical: 30),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 70, vertical: 30),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -155,6 +160,7 @@ class _HomePageState extends State<HomePage> {
             ),
             const SizedBox(height: 20),
 
+            //TODO: code của Huy ở đây nhé Huy sửa lại giúp anh cho đúng với code cũ của Huy nhé
             // Ambulance gallery
             const Text(
               'Ambulance gallery',
@@ -171,51 +177,35 @@ class _HomePageState extends State<HomePage> {
                   if (scrollInfo.metrics.atEdge) {
                     if (scrollInfo.metrics.pixels != 0) {
                       setState(() {
-                        showSeeMore = true; // Hiện nút "see more" khi cuộn đến cuối
+                        showSeeMore =
+                            true; // Hiện nút "see more" khi cuộn đến cuối
                       });
                     }
                   }
                   return true;
                 },
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal, // Trượt theo chiều ngang
-                        itemCount: 5, // Số lượng phần tử tối đa
-                        itemBuilder: (context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.only(right: 5.0), // Khoảng cách giữa các thẻ
-                            child: AmbulanceCard(
-                              imagePath: index == 0
-                                  ? 'assets/ford/1.jpg'
-                                  : 'assets/mercedes/1.png',
-                              title: index == 0 ? 'Ford Transit' : 'Mercedes-Benz Sprinter',
-                            ),
-                          );
-                        },
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal, // Trượt theo chiều ngang
+                  itemCount: 5, // Số lượng phần tử tối đa
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 5.0),
+                      // Khoảng cách giữa các thẻ
+                      child: AmbulanceCard(
+                        imagePath: index == 0
+                            ? 'assets/ford/1.jpg'
+                            : 'assets/mercedes/1.png',
+                        title: index == 0
+                            ? 'Ford Transit'
+                            : 'Mercedes-Benz Sprinter',
                       ),
-                    ),
-                    // Nút "see more"
-                    if (showSeeMore)
-                      TextButton(
-                        onPressed: () {
-                          // Điều hướng đến trang mới
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => GalleryPage()), // NewPage là trang mới bạn muốn điều hướng đến
-                          );
-                        },
-                        child: const Text(
-                          'See more',
-                          style: TextStyle(color: Colors.black),
-                        ),
-                      ),
-
-                  ],
+                    );
+                  },
                 ),
               ),
             ),
+
+            //TODO: đến đây là hết rồi Huy nhé
 
             const SizedBox(height: 100),
 
@@ -229,31 +219,6 @@ class _HomePageState extends State<HomePage> {
             ),
           ],
         ),
-      ),
-
-      // Bottom navigation bar
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.access_time),
-            label: 'Activities',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.notifications),
-            label: 'Notifications',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
       ),
     );
   }
@@ -280,7 +245,7 @@ class AmbulanceCard extends StatelessWidget {
             ),
           ),
         ),
-        SizedBox(height: 5),
+        const SizedBox(height: 5),
         Text(title),
       ],
     );
