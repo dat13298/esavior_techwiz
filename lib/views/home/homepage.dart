@@ -5,6 +5,7 @@ import '../../controllers/map_controller.dart';
 import '../../models/account.dart';
 import '../../services/city_service.dart';
 import '../booking_history/booking_history.dart';
+import 'gallery.dart';
 import 'notifications.dart';
 
 class HomePage extends StatefulWidget {
@@ -150,18 +151,52 @@ class _HomeTabStateState extends State<HomeTabState> {
               height: 200,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                itemCount: 5,
+                itemCount: 6, // 5 hình + 1 nút "See More"
                 itemBuilder: (context, index) {
                   return Padding(
-                    padding: const EdgeInsets.only(right: 5.0),
-                    child: AmbulanceCard(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0), // Cách đều nhau
+                    child: index < 5
+                        ? AmbulanceCard(
                       imagePath: index == 0 ? 'assets/ford/1.jpg' : 'assets/mercedes/1.png',
                       title: index == 0 ? 'Ford Transit' : 'Mercedes-Benz Sprinter',
+                    )
+                        : GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => GalleryPage()), // Thay thế GalleryPage bằng tên thực tế của trang bạn
+                        );
+                      },
+
+                      child: Container(
+                        width: MediaQuery.of(context).size.width * 0.35,
+                        height: MediaQuery.of(context).size.width * 0.35, // Đặt kích thước giống với ảnh
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        alignment: Alignment.center,
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'See More',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(width: 10),
+                            Icon(Icons.arrow_forward), // Hình mũi tên
+                          ],
+                        ),
+                      ),
                     ),
                   );
                 },
               ),
             ),
+
             const SizedBox(height: 100),
             const Text('Feedback', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           ],
