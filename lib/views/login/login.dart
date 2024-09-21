@@ -67,7 +67,7 @@ class _LoginPageState extends State<LoginPage> {
         Navigator.pushReplacement(
           context,
           CupertinoPageRoute(
-            builder: (context) => eSaviorHome(account: accountLogged),
+            builder: (context) => HomePage(account: accountLogged),
           ),
         );
       } else {
