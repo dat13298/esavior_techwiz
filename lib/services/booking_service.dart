@@ -59,24 +59,29 @@ class BookingService {
             for (var bookingMap in bookingsList) {
               Map<String, dynamic>? booking = bookingMap as Map<String, dynamic>?;
 
+              // Kiểm tra nếu số điện thoại của user trong booking khớp với userPhoneNumber
               if (booking != null && booking['userPhoneNumber'] == userPhoneNumber) {
                 print('Booking data: $booking');
 
                 Booking bookingObject = Booking.fromMap(booking, doc.id);
-                bookings.add(bookingObject);
+                bookings.add(bookingObject); // Thêm booking vào danh sách
               }
             }
           }
         }
       }
 
+      // Sắp xếp danh sách theo thời gian đặt (dateTime)
+      bookings.sort((a, b) => b.dateTime.compareTo(a.dateTime)); // Sắp xếp giảm dần (mới nhất trước)
+
       print("Total bookings fetched: ${bookings.length}");
     } catch (e) {
       print('Error fetching bookings: $e');
     }
 
-    return bookings;
+    return bookings; // Trả về danh sách đã sắp xếp
   }
+
 
 
 
