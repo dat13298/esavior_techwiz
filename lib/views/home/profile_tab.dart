@@ -1,7 +1,9 @@
 import 'package:bcrypt/bcrypt.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:esavior_techwiz/models/account.dart';
 import 'package:flutter/material.dart';
 import 'package:esavior_techwiz/services/account_service.dart';
+import '../../services/feedbacks_service.dart';
 import '../welcome/welcome_page.dart';
 
 class ProfileUserTab extends StatefulWidget {
@@ -99,8 +101,7 @@ class _ProfileTabState extends State<ProfileUserTab> {
                             Navigator.of(context).pop(); // Close dialog
                           },
                         ),
-                        TextButton(
-                          child: const Text('Save'),
+                        ElevatedButton(
                           onPressed: () async {
                             String currentPassword = _passwordController.text;
                             String newPassword = _newPasswordController.text;
@@ -108,16 +109,21 @@ class _ProfileTabState extends State<ProfileUserTab> {
 
                             if (newPassword != confirmPassword) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('New password and confirmation do not match!')),
+                                const SnackBar(
+                                  content: Text('New password and confirmation do not match!'),
+                                  backgroundColor: Colors.red,
+                                ),
                               );
                               return;
                             }
 
-                            // So sánh mật khẩu hiện tại với mật khẩu đã lưu trên Firebase
                             bool passwordMatches = BCrypt.checkpw(currentPassword, widget.account.passwordHash);
                             if (!passwordMatches) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Current password is incorrect!')),
+                                const SnackBar(
+                                  content: Text('Current password is incorrect!'),
+                                  backgroundColor: Colors.red,
+                                ),
                               );
                               return;
                             }
@@ -131,7 +137,7 @@ class _ProfileTabState extends State<ProfileUserTab> {
                               phoneNumber: widget.account.phoneNumber,
                               email: widget.account.email,
                               addressHome: widget.account.addressHome,
-                              passwordHash: hashedNewPassword,  // Lưu mật khẩu đã băm
+                              passwordHash: hashedNewPassword,
                               addressCompany: widget.account.addressCompany,
                               role: widget.account.role,
                               feedbacks: widget.account.feedbacks,
@@ -142,11 +148,15 @@ class _ProfileTabState extends State<ProfileUserTab> {
                             await AccountService().updateAccountByEmail(widget.account.email, updatedAccount);
 
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Password has been updated successfully!')),
+                              const SnackBar(
+                                content: Text('Password has been updated successfully!'),
+                                backgroundColor: Colors.green, // Màu xanh lá cây cho thông báo thành công
+                              ),
                             );
 
                             Navigator.of(context).pop(); // Đóng dialog
                           },
+                          child: const Text('Save'),
                         ),
                       ],
                     ),
@@ -161,13 +171,15 @@ class _ProfileTabState extends State<ProfileUserTab> {
   }
 
 
-
-
   void _showEditDialog(BuildContext context) {
-    final TextEditingController _nameController = TextEditingController(text: widget.account.fullName);
-    final TextEditingController _phoneController = TextEditingController(text: widget.account.phoneNumber);
-    final TextEditingController _emailController = TextEditingController(text: widget.account.email);
-    final TextEditingController _addressController = TextEditingController(text: widget.account.addressHome);
+    final TextEditingController _nameController = TextEditingController(
+        text: widget.account.fullName);
+    final TextEditingController _phoneController = TextEditingController(
+        text: widget.account.phoneNumber);
+    final TextEditingController _emailController = TextEditingController(
+        text: widget.account.email);
+    final TextEditingController _addressController = TextEditingController(
+        text: widget.account.addressHome);
 
     showDialog(
       context: context,
@@ -179,7 +191,8 @@ class _ProfileTabState extends State<ProfileUserTab> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text('Edit Information', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                const Text('Edit Information', style: TextStyle(
+                    fontSize: 20, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 20),
                 TextField(
                   controller: _nameController,
@@ -209,7 +222,7 @@ class _ProfileTabState extends State<ProfileUserTab> {
                         Navigator.of(context).pop(); // Đóng dialog
                       },
                     ),
-                    TextButton(
+                    ElevatedButton(
                       child: const Text('Save'),
                       onPressed: () async {
                         String name = _nameController.text;
@@ -230,12 +243,24 @@ class _ProfileTabState extends State<ProfileUserTab> {
                           status: widget.account.status,
                         );
 
-                        // Cập nhật tài khoản theo email
-                        await AccountService().updateAccountByEmail(email, updatedAccount);
+                        try {
+                          // Cập nhật tài khoản theo email
+                          await AccountService().updateAccountByEmail(email, updatedAccount);
 
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Information has been updated successfully!')),
-                        );
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Information has been updated successfully!'),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
+                        } catch (error) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Failed to update information: $error'),
+                              backgroundColor: Colors.red, // Màu đỏ cho thông báo lỗi
+                            ),
+                          );
+                        }
 
                         Navigator.of(context).pop(); // Đóng dialog
                       },
@@ -251,6 +276,88 @@ class _ProfileTabState extends State<ProfileUserTab> {
   }
 
 
+  void _showFeedbackDialog(BuildContext context, String accountId) {
+    final TextEditingController _feedbackController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          child: Container(
+            width: MediaQuery
+                .of(context)
+                .size
+                .width * 0.9,
+            height: MediaQuery
+                .of(context)
+                .size
+                .height * 0.6,
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text('Feedback', style: TextStyle(
+                    fontSize: 20, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 20),
+                Expanded(
+                  child: TextField(
+                    controller: _feedbackController,
+                    decoration: const InputDecoration(
+                      labelText: 'Enter your feedback',
+                      border: OutlineInputBorder(),
+                    ),
+                    maxLines: null,
+                    expands: true,
+                    textAlignVertical: TextAlignVertical
+                        .top, // Đặt vị trí con trỏ ở đầu
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text('Cancel'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () async {
+                        String feedbackContent = _feedbackController.text;
+
+                        if (feedbackContent.isNotEmpty) {
+                          // Gọi hàm addFeedback từ AccountService
+                          await FeedbacksService().addFeedbackByEmail(widget
+                              .account.email, feedbackContent, Timestamp.now());
+
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text('Feedback added successfully!'),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
+                          Navigator.of(context).pop();
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text('Please enter feedback'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
+                      },
+                      child: const Text('Send'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
 
 
   @override
@@ -264,7 +371,7 @@ class _ProfileTabState extends State<ProfileUserTab> {
             bottomRight: Radius.circular(30),
           ),
           child: AppBar(
-            automaticallyImplyLeading: false, // Bỏ nút back
+            automaticallyImplyLeading: false,
             backgroundColor: const Color(0xFF10CCC6),
             title: const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -285,88 +392,95 @@ class _ProfileTabState extends State<ProfileUserTab> {
           ),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            // Profile Picture
-            CircleAvatar(
-              radius: 50,
-              backgroundColor: Colors.grey[300],
-              child: Icon(
-                Icons.person,
-                size: 60,
-                color: Colors.grey[700],
+      body: Column( // Thay đổi ở đây
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // Profile Picture
+                  CircleAvatar(
+                    radius: 50,
+                    backgroundColor: Colors.grey[300],
+                    child: Icon(
+                      Icons.person,
+                      size: 60,
+                      color: Colors.grey[700],
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  // User Name
+                  Text(
+                    widget.account.fullName,
+                    style: const TextStyle(
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  // User Phone Number
+                  Text(
+                    'Phone Number: ${widget.account.phoneNumber}',
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                  const SizedBox(height: 5),
+                  // User Email
+                  Text(
+                    'Email: ${widget.account.email}',
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                  const SizedBox(height: 5),
+                  // User Address
+                  Text(
+                    'Address: ${widget.account.addressHome}',
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Edit Profile Button
+                  _buildProfileOption(
+                    icon: Icons.edit,
+                    text: 'Edit profile',
+                    onTap: () {
+                      _showEditDialog(context);
+                    },
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  // Change Password Button
+                  _buildProfileOption(
+                    icon: Icons.lock,
+                    text: 'Change password',
+                    onTap: () {
+                      _showChangePasswordDialog(context);
+                    },
+                  ),
+                  const SizedBox(height: 10),
+
+                  // Feedback Button
+                  _buildProfileOption(
+                    icon: Icons.feedback_outlined,
+                    text: 'Feedback',
+                    onTap: () {
+                      _showFeedbackDialog(context, 'fNaPyfHH0NaHNuvT7JpD');
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                ],
               ),
             ),
-            const SizedBox(height: 10),
-            // User Name
-            Text(
-              widget.account.fullName,
-              style: const TextStyle(
-                fontSize: 26,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 5),
-            // User Email
-            Text(
-              'Phone Number: ${widget.account.phoneNumber}',
-              style: const TextStyle(fontSize: 16),
-            ),
-            const SizedBox(height: 5),
-            // User Phone
-            Text(
-              'Email: ${widget.account.email}', // Hiển thị email
-              style: const TextStyle(fontSize: 16),
-            ),
-            const SizedBox(height: 5),
-            // User Phone
-            Text(
-              'Address: ${widget.account.addressHome}', // Hiển thị email
-              style: const TextStyle(fontSize: 16),
-            ),
-            const SizedBox(height: 20),
-
-            // Edit Profile Button
-            _buildProfileOption(
-              icon: Icons.edit,
-              text: 'Edit profile',
-              onTap: () {
-                _showEditDialog(context); // Gọi dialog khi nhấn nút
-              },
-            ),
-
-            const SizedBox(height: 10),
-
-            // Change Password Button
-            _buildProfileOption(
-              icon: Icons.lock,
-              text: 'Change password',
-              onTap: () {
-                _showChangePasswordDialog(context); // Call the password change dialog
-              },
-            ),
-            const SizedBox(height: 10),
-
-            // About this app Button
-            _buildProfileOption(
-              icon: Icons.info_outline,
-              text: 'Feedback',
-              onTap: () {
-                // Handle About this app action
-              },
-            ),
-            const Spacer(),
-
-            // Log Out Button
-
-            ElevatedButton(
+          ),
+          // Log Out Button
+          Padding(
+            padding: const EdgeInsets.all(16.0), // Thêm padding cho nút
+            child: ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF10CCC6),
-                padding:
-                const EdgeInsets.symmetric(horizontal: 100, vertical: 15),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 100, vertical: 15),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -377,7 +491,6 @@ class _ProfileTabState extends State<ProfileUserTab> {
                   MaterialPageRoute(builder: (context) => WelcomePage()),
                 );
               },
-
               child: const Text(
                 'Log out',
                 style: TextStyle(
@@ -387,14 +500,17 @@ class _ProfileTabState extends State<ProfileUserTab> {
                 ),
               ),
             ),
-            const SizedBox(height: 20),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
-  Widget _buildProfileOption(
-      {required IconData icon, required String text, required Function onTap}) {
+
+  Widget _buildProfileOption({
+    required IconData icon,
+    required String text,
+    required Function onTap,
+  }) {
     return GestureDetector(
       onTap: () => onTap(),
       child: Container(
@@ -416,5 +532,4 @@ class _ProfileTabState extends State<ProfileUserTab> {
       ),
     );
   }
-
 }
