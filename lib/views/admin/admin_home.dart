@@ -1,11 +1,12 @@
-import 'package:esavior_techwiz/models/account.dart';
-import 'package:esavior_techwiz/views/admin/customAppBar.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:esavior_techwiz/models/booking.dart';
+import 'package:esavior_techwiz/services/booking_service.dart';
 
-import 'admin_activity.dart';
+import '../../models/account.dart';
+import 'admin_feedback.dart';
 import 'admin_manager.dart';
 import 'admin_profile.dart';
+import 'customAppBar.dart';
 
 class AdminPage extends StatefulWidget {
   final Account account;
@@ -15,19 +16,25 @@ class AdminPage extends StatefulWidget {
   _AdminPageState createState() => _AdminPageState();
 }
 
-class _AdminPageState extends State<AdminPage> {
+class _AdminPageState extends State<AdminPage> with AutomaticKeepAliveClientMixin{
   late List<Widget> _tabs;
   int _currentIndex = 0;
+  late Stream<List<Booking>> _bookingStream;
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
     super.initState();
+    // _bookingStream = ;
     _tabs = [
-      _buildHomeTab(),  // Tab Home
-      const ActivityTab(),         // Tab Activity
-      const ManagerTab(),    // Tab Manager
-      ProfileTab(account: widget.account),          // Tab Profile
+      _buildHomeTab(), // Tab Home
+      const FeedBackTab(), // Tab Activity
+      const ManagerTab(), // Tab Manager
+      ProfileTab(account: widget.account), // Tab Profile
     ];
+
   }
 
   @override
@@ -52,7 +59,7 @@ class _AdminPageState extends State<AdminPage> {
             });
           },
           backgroundColor: Colors.white,
-          selectedItemColor: Color(0xFF10CCC6),
+          selectedItemColor: const Color(0xFF10CCC6),
           unselectedItemColor: Colors.black,
           type: BottomNavigationBarType.fixed,
           items: const [
@@ -61,8 +68,8 @@ class _AdminPageState extends State<AdminPage> {
               label: "Home",
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.notifications),
-              label: "Activity",
+              icon: Icon(Icons.feedback),
+              label: "Feedback",
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.person_add),
@@ -91,47 +98,81 @@ class _AdminPageState extends State<AdminPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Hello, ${widget.account.fullName}',  // Hiển thị tên account ở đây
-              style: TextStyle(
+              'Hello, ${widget.account.fullName}',
+              style: const TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
-                // Chuyển sang trang dispatch ambulance
+                // Navigate to dispatch ambulance page
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFFF20202),
+                backgroundColor: const Color(0xFFF20202),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
-                padding: EdgeInsets.symmetric(vertical: 16),
+                padding: const EdgeInsets.symmetric(vertical: 16),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [
+                children: const [
                   Icon(Icons.add, color: Colors.white),
                   SizedBox(width: 8),
                   Text(
                     'Dispatch an ambulance',
-                    style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ],
               ),
             ),
-            SizedBox(height: 24),
-            Text(
+            const SizedBox(height: 24),
+            const Text(
               'Emergency booking',
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Expanded(
-              child: ListView(
-                children: [
-                  // Các booking card ở đây
-                ],
+              child: FutureBuilder<List<Booking>>(
+                future: BookingService().getBookingsByStatus('Not Yet Confirm'),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  }
+                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    return const Center(child: Text('No bookings found'));
+                  }
+
+                  // Get the list of bookings with 'Not Yet Confirm' status
+                  final bookings = snapshot.data!;
+
+                  return ListView.builder(
+                    itemCount: bookings.length,
+                    itemBuilder: (context, index) {
+                      final booking = bookings[index];
+                      return Card(
+                        margin: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: ListTile(
+                          title: Text('Driver Phone: ${booking.driverPhoneNumber}'),
+                          subtitle: Text(
+                            'User Phone: ${booking.userPhoneNumber}\n'
+                                'Date: ${booking.formattedDateTime}',
+                          ),
+                          trailing: Text('Status: ${booking.status}'),
+                        ),
+                      );
+                    },
+                  );
+                },
               ),
             ),
           ],
@@ -139,5 +180,7 @@ class _AdminPageState extends State<AdminPage> {
       ),
     );
   }
+
+
 
 }
