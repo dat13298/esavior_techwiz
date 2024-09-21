@@ -28,6 +28,7 @@ class _ManagerTabState extends State<ManagerTab> {
       appBar: CustomAppBar(
         title: 'Dispatcher Manager',
         subtitle: 'Manage everything here.',
+        showBackButton: false,
       ),
       body: ListView.builder(
         padding: EdgeInsets.all(16),

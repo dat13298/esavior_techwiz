@@ -20,6 +20,7 @@
         appBar: CustomAppBar(
           title: 'Profile',
           subtitle: 'Profile page',
+          showBackButton: false,
         ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),

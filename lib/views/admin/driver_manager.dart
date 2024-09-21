@@ -1,3 +1,4 @@
+import 'package:esavior_techwiz/services/booking_service.dart';
 import 'package:esavior_techwiz/services/drver_service.dart';
 import 'package:flutter/material.dart';
 import '../../models/account.dart';
@@ -15,6 +16,7 @@ class DriverManagerState extends State<DriverManager> {
   final TextEditingController _searchController = TextEditingController();
   String _searchTerm = '';
   final DriverService _driverService = DriverService();
+  final BookingService _bookingService = BookingService();
 
   @override
   Widget build(BuildContext context) {
@@ -98,6 +100,10 @@ class DriverManagerState extends State<DriverManager> {
                           ),
                         ],
                       ),
+                      onTap: () {
+                        // Show the booking history dialog when tapped
+                        _showBookingHistory(driver.phoneNumber);
+                      },
                     );
                   },
                 );
@@ -164,6 +170,56 @@ class DriverManagerState extends State<DriverManager> {
         );
       },
     );
+  }
+
+  void _showBookingHistory(String phoneNumber) async {
+    try {
+      // Assuming getBookingsByDriverPhoneNumber is a method in DriverService
+      final bookings = await _bookingService.getBookingsByDriverPhoneNumber(phoneNumber);
+
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Booking History'),
+            content: bookings.isEmpty
+                ? Text('No bookings found for this driver.')
+                : SizedBox(
+              width: double.maxFinite,
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: bookings.length,
+                itemBuilder: (context, index) {
+                  final booking = bookings[index];
+                  return ListTile(
+                    title: Text('User phone number: ${booking.userPhoneNumber}'),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Cost: ${booking.cost}'),
+                        Text('Status: ${booking.status}'),
+                        Text('Date: ${booking.formattedDateTime}'),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+            actions: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('Close'),
+              ),
+            ],
+          );
+        },
+      );
+    } catch (e) {
+      print('Error fetching booking history: $e');
+      // Optionally, show an error dialog to the user
+    }
   }
 
   void _editDriver(String phoneNumber, String newFullName, String newHomeAdd, String newCompAdd) async {

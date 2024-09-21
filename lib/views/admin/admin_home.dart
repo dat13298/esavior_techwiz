@@ -80,7 +80,11 @@ class _AdminPageState extends State<AdminPage> {
 
   Widget _buildHomeTab() {
     return Scaffold(
-      appBar: CustomAppBar(title: 'eSavior', subtitle: 'Management'),
+      appBar: CustomAppBar(
+        title: 'eSavior',
+        subtitle: 'Management',
+        showBackButton: false,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
