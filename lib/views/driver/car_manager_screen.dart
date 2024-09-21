@@ -26,7 +26,7 @@ class _CarManagerScreenState extends State<CarManagerScreen> {
 
   Future<void> _fetchCars() async {
     try {
-      List<Car> cars = await CityService().getCarByDriverPhone(widget.account.phoneNumber);
+      List<Car> cars = await CityService().getCarByDriverPhoneNumber(widget.account.phoneNumber);
       if (cars.isEmpty) {
         print("No cars found for phone: ${widget.account.phoneNumber}");
       } else {
