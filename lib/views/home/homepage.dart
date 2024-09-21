@@ -228,9 +228,9 @@ class _HomeTabStateState extends State<HomeTabState> {
               title: Text(hospital.name),
               subtitle: Text(hospital.address),
               trailing: IconButton(
-                icon: Icon(Icons.directions_car, color: Colors.blue), // Thay đổi biểu tượng
+                icon: Icon(Icons.directions_car, color: Colors.blue),
                 onPressed: () {
-                  showMapScreen(context, hospital.address, widget.account); // Truyền context vào
+                  showMapScreen(context, hospital.address, widget.account, null);
                 },
               ),
             );
