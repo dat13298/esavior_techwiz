@@ -1,4 +1,5 @@
 import 'package:esavior_techwiz/models/account.dart';
+import 'package:esavior_techwiz/models/booking.dart';
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
@@ -7,8 +8,7 @@ import '../services/open_route_service.dart';
 import '../views/map/map_screen.dart';
 
 //TODO: add account to this
-Future<void> showMapScreen(BuildContext context, String? address, Account account) async {
-  // Lấy vị trí hiện tại
+Future<void> showMapScreen(BuildContext context, String? address, Account account, Booking? booking) async {
   String endLatitude;
   String endLongitude;
   LatLng end;
@@ -22,6 +22,8 @@ Future<void> showMapScreen(BuildContext context, String? address, Account accoun
   } else {
     end = LatLng(21.035000, 105.825649);
   }
+
+  //get current location
   Position userPosition = await Geolocator.getCurrentPosition(
     desiredAccuracy: LocationAccuracy.bestForNavigation,
   );
@@ -46,6 +48,7 @@ Future<void> showMapScreen(BuildContext context, String? address, Account accoun
         routePoints: routePoints,
         isOnBookingShow: isBookingShow,
         currentAccount: account,
+        booking: booking,
       ),
     ),
   );
