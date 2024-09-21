@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.redAccent),
         useMaterial3: true,
       ),
-      home: HomeScreen(),
+      home: WelcomePage(),
       debugShowCheckedModeBanner: false,
     );
   }
@@ -50,7 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Center(
         child: ElevatedButton(
           onPressed: () {
-            showMapScreen(context); // Mở MapScreen khi nút bấm
+            // showMapScreen(context); // Mở MapScreen khi nút bấm
           },
           child: Text('Show Map'),
         ),

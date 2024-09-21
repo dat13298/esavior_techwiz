@@ -1,3 +1,4 @@
+import 'package:esavior_techwiz/models/account.dart';
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
@@ -6,7 +7,7 @@ import '../services/open_route_service.dart';
 import '../views/map/map_screen.dart';
 
 //TODO: add account to this
-Future<void> showMapScreen(BuildContext context, String? address) async {
+Future<void> showMapScreen(BuildContext context, String? address, Account account) async {
   // Lấy vị trí hiện tại
   String endLatitude;
   String endLongitude;
@@ -39,7 +40,7 @@ Future<void> showMapScreen(BuildContext context, String? address) async {
       builder: (context) => MapScreen(
         currentPositionDevice: end,
         currentPosition: currentPosition,
-        role: 'driver', // Thay đổi nếu cần
+        role: account.role, // Thay đổi nếu cần
         routeDistance: routeDistance,
         routePoints: routePoints,
       ),

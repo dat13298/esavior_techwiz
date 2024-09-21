@@ -24,7 +24,7 @@ class HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _tabs = [
-      const HomeTabState(),
+      HomeTabState(account: widget.account,),
       BookingHistory(currentAccount: widget.account),
       Notifications(account: widget.account),
       ProfileUserTab(account: widget.account),
@@ -62,7 +62,9 @@ class HomePageState extends State<HomePage> {
 }
 
 class HomeTabState extends StatefulWidget {
-  const HomeTabState({super.key});
+  final Account account;
+
+  const HomeTabState({super.key, required this.account});
 
   @override
   State<HomeTabState> createState() => _HomeTabStateState();
@@ -193,7 +195,7 @@ class _HomeTabStateState extends State<HomeTabState> {
               trailing: IconButton(
                 icon: Icon(Icons.directions_car, color: Colors.blue), // Thay đổi biểu tượng
                 onPressed: () {
-                  showMapScreen(context, hospital.address); // Truyền context vào
+                  showMapScreen(context, hospital.address, widget.account); // Truyền context vào
                 },
               ),
             );
