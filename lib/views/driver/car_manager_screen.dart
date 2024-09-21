@@ -14,7 +14,7 @@ class CarManagerScreen extends StatefulWidget {
 
 class _CarManagerScreenState extends State<CarManagerScreen> {
   List<Car> _cars = [];
-  String? _selectedStatus;
+  String? _selectedStatus; // Lưu trữ trạng thái được chọn
   bool _isLoading = true;
 
   @override
@@ -23,7 +23,6 @@ class _CarManagerScreenState extends State<CarManagerScreen> {
     _fetchCars();
   }
 
-
   Future<void> _fetchCars() async {
     try {
       List<Car> cars = await CityService().getCarByDriverPhoneNumber(widget.account.phoneNumber);
@@ -31,6 +30,10 @@ class _CarManagerScreenState extends State<CarManagerScreen> {
         print("No cars found for phone: ${widget.account.phoneNumber}");
       } else {
         print("Found cars: $cars");
+        // Lấy status của xe đầu tiên và đặt làm selected status
+        setState(() {
+          _selectedStatus = cars[0].status; // Cập nhật trạng thái xe
+        });
       }
       setState(() {
         _cars = cars;
@@ -98,32 +101,52 @@ class _CarManagerScreenState extends State<CarManagerScreen> {
   }
 
   Widget _buildStatusButton(String status, Color color, IconData icon) {
-    bool isSelected = _selectedStatus == status;
+    bool isSelected = _selectedStatus?.toLowerCase() == status.toLowerCase(); // So sánh trạng thái hiện tại với trạng thái của xe
 
-    return SizedBox(
-      width: MediaQuery.of(context).size.width * 0.95, // Chiếm khoảng 95% chiều ngang
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: isSelected ? color : Colors.grey,
-          padding: const EdgeInsets.symmetric(vertical: 15),
-        ),
-        onPressed: () {
-          setState(() {
-            _selectedStatus = status;
-          });
-        },
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, color: Colors.white),
-            const SizedBox(width: 10),
-            Text(
-              status,
-              style: const TextStyle(color: Colors.white),
-            ),
-          ],
+    return Center(
+      child: SizedBox(
+        width: MediaQuery.of(context).size.width * 0.9, // Đảm bảo các nút có cùng kích thước
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: isSelected ? color : Colors.grey, // Thay đổi màu nếu được chọn
+            padding: const EdgeInsets.symmetric(vertical: 15), // Điều chỉnh độ dày của nút
+          ),
+          onPressed: () {
+            CityService().updateCarStatus(widget.account.phoneNumber, status);
+            setState(() {
+              _selectedStatus = status; // Cập nhật trạng thái khi nhấn nút
+            });
+          },
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center, // Căn giữa nội dung trong nút
+            children: [
+              Icon(icon, color: Colors.white),
+              const SizedBox(width: 10),
+              Text(
+                status,
+                style: const TextStyle(color: Colors.white),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
+
+  // Hàm cập nhật trạng thái xe
+  // Future<void> _updateCarStatus(String newStatus) async {
+  //   if (_cars.isNotEmpty) {
+  //     try {
+  //       Car carToUpdate = _cars[0]; // Lấy xe đầu tiên (hoặc tùy chỉnh theo ý muốn)
+  //       carToUpdate.status = newStatus; // Cập nhật trạng thái mới
+  //
+  //       // Gọi hàm cập nhật trong CityService (hoặc service tương ứng)
+  //       await CityService().updateCarStatus(carToUpdate);
+  //
+  //       print("Car status updated to $newStatus");
+  //     } catch (e) {
+  //       print("Error updating car status: $e");
+  //     }
+  //   }
+  // }
 }

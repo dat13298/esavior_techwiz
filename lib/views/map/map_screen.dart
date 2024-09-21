@@ -108,7 +108,7 @@ class _MapScreenState extends State<MapScreen> {
     }
     Booking newBooking = Booking(
       id: null,
-      carID: 'abc',
+      carID: '',
       startLongitude: widget.startPosition.longitude,
       startLatitude: widget.startPosition.latitude,
       endLongitude: widget.endPosition.longitude,
@@ -117,8 +117,8 @@ class _MapScreenState extends State<MapScreen> {
       dateTime: bookingTimestamp,
       type: selectedVehicle,
       cost: totalAmount,
-      status: 'waiting',
-      driverPhoneNumber: '3123123',
+      status: 'Not Yet Confirm',
+      driverPhoneNumber: '',
     );
 
     await BookingService().addBooking(newBooking);
