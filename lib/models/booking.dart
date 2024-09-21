@@ -6,8 +6,8 @@ class Booking {
   final String? carID;
   final double? startLongitude;
   final double? startLatitude;
-  final double endLongitude;
-  final double endLatitude;
+  final double? endLongitude;
+  final double? endLatitude;
   final String? userPhoneNumber;
   final Timestamp dateTime;
   final String type;
@@ -25,7 +25,7 @@ class Booking {
     this.userPhoneNumber,
     required this.dateTime,
     required this.type,
-    required this.cost,
+     this.cost,
     required this.status,
     this.driverPhoneNumber,
   });
@@ -53,10 +53,10 @@ class Booking {
     return{
       // 'id' auto create on firebase
       'carID':carID,
-      'userLongitude':startLongitude,
-      'userLatitude':startLatitude,
-      'locationLongitude':endLongitude,
-      'locationLatitude':endLongitude,
+      'startLongitude':startLongitude,
+      'startLatitude':startLatitude,
+      'endLongitude':endLongitude,
+      'endLatitude':endLongitude,
       'userPhoneNumber':userPhoneNumber,
       'dateTime':dateTime,
       'type':type,
