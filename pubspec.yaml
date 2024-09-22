@@ -109,6 +109,7 @@ flutter:
     - assets/vokswa/2.jpg
     - assets/vokswa/3.jpg
     - assets/vokswa/4.jpg
+    - assets/see_more.png
 
 
   # The following line ensures that the Material Icons font is
