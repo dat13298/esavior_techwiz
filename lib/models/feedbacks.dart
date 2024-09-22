@@ -14,8 +14,8 @@ class Feedbacks{
 
   static Feedbacks fromMap(Map<String, dynamic> map) {
     return Feedbacks(
-      id: map['id'] as String,
-      content: map['content'] as String,
+      id: map['id'] as String? ?? '',
+      content: map['content'] as String? ?? '',
       datetime: map['datetime'] as Timestamp,
     );
   }
