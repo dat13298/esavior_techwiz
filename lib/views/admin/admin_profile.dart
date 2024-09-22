@@ -17,22 +17,22 @@ import '../welcome/welcome_page.dart';
   }
   
   class _ProfileTabState extends State<ProfileTab> {
-    late AdminNotificationService _notificationService;
+    late AdminNotificationService _notificationService;///notify
 
-    String currentTab = 'Profile'; // Biến để theo dõi tab hiện tại
+    String currentTab = 'ADMIN_TAB'; ///notify
 
     @override
     void initState() {
       super.initState();
-      _notificationService = AdminNotificationService((tab) {
+      _notificationService = AdminNotificationService((tab) {///notify
         // Cập nhật tab hiện tại
-        setState(() {
-          currentTab = tab;
+        setState(() {///notify
+          currentTab = tab;///notify
         });
-        return currentTab; // Trả về tab hiện tại
+        return currentTab; ///notify
       });
 
-      _notificationService.listenForNotifications();
+      _notificationService.listenForNotifications();///notify
     }
 
     @override
