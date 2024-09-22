@@ -5,9 +5,9 @@
     <uses-permission android:name="android.permission.CALL_PHONE"/>
 
     <application
-        android:label="esavior_techwiz"
+        android:label="eSavior"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/logo">
         <activity
             android:name=".MainActivity"
             android:exported="true"
