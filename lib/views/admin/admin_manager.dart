@@ -1,4 +1,5 @@
 import 'package:esavior_techwiz/views/admin/ambulance_manager.dart';
+import 'package:esavior_techwiz/views/admin/booking_manager.dart';
 import 'package:esavior_techwiz/views/admin/driver_manager.dart';
 import 'package:flutter/material.dart';
 import 'customAppBar.dart';
@@ -57,7 +58,7 @@ class _ManagerTabState extends State<ManagerTab> {
                     context,
                     MaterialPageRoute(builder: (context) => HospitalManager()),
                   );
-                } else if (item['title'] == 'Driver Manager') {
+                }if (item['title'] == 'Driver Manager') {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => DriverManager()),
@@ -66,6 +67,11 @@ class _ManagerTabState extends State<ManagerTab> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => AmbulanceManager()),
+                  );
+                }if (item['title'] == 'Booking Manager') {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => BookingManager()),
                   );
                 }
               },
