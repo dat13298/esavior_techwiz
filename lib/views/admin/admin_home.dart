@@ -267,10 +267,10 @@ class _AdminPageState extends State<AdminPage> with AutomaticKeepAliveClientMixi
                         subtitle: Text(driver.phoneNumber),
                         onTap: () async {
                           // Cập nhật booking với tài xế được chọn
-                          await BookingService().updateBooking(booking.dateTime, driver.phoneNumber);
+                          await BookingService().updateBooking(booking.id, driver.phoneNumber);
 
                           // Cập nhật trạng thái booking thành "Waiting"
-                          await BookingService().updateBookingStatus(booking.dateTime, 'Waiting');
+                          await BookingService().updateBookingStatus(booking.id, 'Waiting');
 
                           Navigator.pop(context);
                           ScaffoldMessenger.of(context).showSnackBar(

@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
 class Booking {
-  final String? id;
+  final String id;
   final String? carID;
   final double? startLongitude;
   final double? startLatitude;
@@ -16,7 +16,7 @@ class Booking {
   final String? driverPhoneNumber;
 
   Booking({
-    this.id,
+    required this.id,
     this.carID,
     this.startLongitude,
     this.startLatitude,

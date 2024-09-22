@@ -19,6 +19,7 @@ class BookingService {
       });
     }
   }
+
   Future<void> deleteBooking(String id) async {
     await _bookingCollection.doc(id).delete();
   }
@@ -38,6 +39,7 @@ class BookingService {
           if (booking != null && booking['status'].toString().toLowerCase() == status.toLowerCase()) {
             Booking bookingObject = Booking.fromMap(booking, doc.id);
             bookings.add(bookingObject);
+            // print(bookingObject.toString());
           }
         }
       }
@@ -167,25 +169,71 @@ class BookingService {
     return bookings; // Trả về danh sách đã sắp xếp
   }
 
+  Future<void> updateBooking(String bookingId, String driverPhoneNumber) async {
+    try {
+      final snapshot = await _bookingCollection.get();
 
-  Future<void> updateBooking(Timestamp time, String driverPhoneNumber) async {
-    await _bookingCollection.doc(time.toString()).update({
-      'status': 'Waiting',
-      'driverPhoneNumber': driverPhoneNumber,
-    });
+      for (var doc in snapshot.docs) {
+        Map<String, dynamic>? bookingData = doc.data() as Map<String, dynamic>?;
+
+        if (bookingData != null && bookingData.containsKey('booking')) {
+          List<dynamic> bookingsList = bookingData['booking'] as List<dynamic>;
+
+          // Tìm booking theo id
+          for (var bookingMap in bookingsList) {
+            if (bookingMap['id'] == bookingId) {
+              // Cập nhật booking
+              bookingMap['status'] = 'Waiting';
+              bookingMap['driverPhoneNumber'] = driverPhoneNumber;
+
+              // Cập nhật lại document
+              await _bookingCollection.doc(doc.id).update({
+                'booking': bookingsList,
+              });
+              print("Booking updated successfully.");
+              return;
+            }
+          }
+        }
+      }
+    } catch (e) {
+      print("Error updating booking: $e");
+    }
   }
 
-  Future<void> updateBookingStatus(Timestamp time, String newStatus) async {
+  Future<void> updateBookingStatus(String bookingId, String newStatus) async {
     try {
-      await _bookingCollection.doc(time.toString()).update({
-        'status': newStatus,
-      });
+      final snapshot = await _bookingCollection.get();
+
+      for (var doc in snapshot.docs) {
+        Map<String, dynamic>? bookingData = doc.data() as Map<String, dynamic>?;
+
+        if (bookingData != null && bookingData.containsKey('booking')) {
+          List<dynamic> bookingsList = bookingData['booking'] as List<dynamic>;
+
+          // Tìm booking theo id
+          for (var bookingMap in bookingsList) {
+            if (bookingMap['id'] == bookingId) {
+              // Cập nhật trạng thái booking
+              bookingMap['status'] = newStatus;
+
+              // Cập nhật lại document
+              await _bookingCollection.doc(doc.id).update({
+                'booking': bookingsList,
+              });
+              print("Booking status updated successfully.");
+              return;
+            }
+          }
+        }
+      }
     } catch (e) {
       print('Failed to update booking status: $e');
     }
   }
 
 
+  
 
 
 
