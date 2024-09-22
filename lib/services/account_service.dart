@@ -1,5 +1,6 @@
 import 'package:bcrypt/bcrypt.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:esavior_techwiz/models/feedbacks.dart';
 
 import '../models/account.dart';
 
@@ -48,12 +49,6 @@ class AccountService {
       print('Error updating account: $e');
     }
   }
-
-
-
-
-
-
 
   Future<Account?> authenticate(String email, String password) async {
     try {
@@ -111,4 +106,40 @@ class AccountService {
     }
     return null;
   }
+
+  Stream<List<Feedbacks>> getAllFeedBack() {
+    return _accountsCollection.snapshots().map((snapshot) {
+      if (snapshot.docs.isEmpty) return [];
+
+      List<Feedbacks> allFeedback = [];
+      var doc = snapshot.docs.first;
+      final data = doc.data() as Map<String, dynamic>;
+
+      final List<dynamic>? accountData = data['account'] as List<dynamic>?;
+
+      if (accountData != null) {
+        for (var account in accountData) {
+          String accID = account['phoneNumber'];
+          String accName = account['fullName'];
+
+          final List<dynamic>? feedback = account['feedbacks'] as List<dynamic>?;
+
+          if (feedback != null) {
+            allFeedback.addAll(
+              feedback.map((feedbackData) {
+                // Thêm thông tin nghệ sĩ vào mỗi bài hát
+                feedbackData['phoneNumber'] = accID;
+                feedbackData['fullName'] = accName;
+                return Feedbacks.fromMap(feedbackData as Map<String, dynamic>);
+              }).toList(),
+            );
+          }
+        }
+      }
+      return allFeedback;
+    });
+  }
+
+
+
 }
