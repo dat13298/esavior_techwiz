@@ -9,8 +9,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:provider/provider.dart';
 
 import '../views/notification/emergency_notification.dart';
+import 'notificationProvider.dart';
 
 class EmergencyService{
   final DatabaseReference _databaseReference = FirebaseDatabase.instanceFor(
@@ -42,6 +44,7 @@ class EmergencyService{
 
   ///LISTEN WHEN USER HAVE EMERGENCY AND NOTIFY TO ADMIN SCREEN
   void listenForUserLocations(BuildContext context) {
+    final notificationProvider = Provider.of<NotificationProvider>(context, listen: false);
     _databaseReference.child('locations').orderByChild('status').equalTo('not accept').onChildAdded.listen((event) {
       final locationKey = event.snapshot.key as String;
       final locationData = event.snapshot.value as Map<dynamic, dynamic>;
@@ -55,6 +58,7 @@ class EmergencyService{
 
       final message = 'New location received:\nLatitude: $latitude\nLongitude: $longitude\nTimestamp: $formattedTime';
 
+      print("Listen success");
       Booking newBooking = Booking(
         id: DateTime
             .now()
@@ -69,22 +73,31 @@ class EmergencyService{
 
       BookingService().addBooking(newBooking);
 
-      showDialog(
-        context: context,
-        builder: (context) => EmergencyNotification(
-          title: "Emergency!!!",
-          message: message,
-          onConfirm: () async {
-            Navigator.of(context).pop();
-            // Cập nhật trạng thái thành 'accepted' khi xác nhận
-            await _databaseReference.child('locations').child(locationKey).update({
-              'status': 'accepted',
-            });
-            //TODO: logic send booking to driver and insert booking
-            print('Location status updated to accepted');
-          },
-        ),
-      );
+      notificationProvider.setMessage(message);
+
+      if (notificationProvider.isAdmin) {
+        showDialog(
+          context: context,
+          builder: (context) =>
+              EmergencyNotification(
+                title: "Emergency!!!",
+                message: message,
+                onConfirm: () async {
+                  Navigator.of(context).pop();
+                  // Cập nhật trạng thái thành 'accepted' khi xác nhận
+                  await _databaseReference.child('locations')
+                      .child(locationKey)
+                      .update({
+                    'status': 'accepted',
+                  });
+                  //TODO: logic send booking to driver and insert booking
+                  print('Location status updated to accepted');
+                },
+              ),
+        );
+      } else {
+        print("This not admin");
+      }
     });
   }
 
