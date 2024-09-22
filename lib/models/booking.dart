@@ -32,7 +32,7 @@ class Booking {
 
   static Booking fromMap(Map<String, dynamic> map, String id) {
     return Booking(
-      id: id,
+      id: map['id'] as String? ?? '',
       carID: map['carID'] as String? ?? '', // Gán giá trị mặc định nếu null
       startLongitude: (map['startLongitude'] as num?)?.toDouble() ?? 0.0, // Chuyển từ num (int hoặc double) thành double
       startLatitude: (map['startLatitude'] as num?)?.toDouble() ?? 0.0,
@@ -51,7 +51,7 @@ class Booking {
 
   Map<String, dynamic> toMap(){
     return{
-      // 'id' auto create on firebase
+      'id':id,
       'carID':carID,
       'startLongitude':startLongitude,
       'startLatitude':startLatitude,
@@ -71,5 +71,10 @@ class Booking {
     DateTime formatDateTime = dateTime.toDate();
     // Định dạng ngày giờ
     return DateFormat('dd-MM-yyyy HH:mm:ss').format(formatDateTime);
+  }
+
+  @override
+  String toString() {
+    return 'Booking{id: $id, carID: $carID, startLongitude: $startLongitude, startLatitude: $startLatitude, endLongitude: $endLongitude, endLatitude: $endLatitude, userPhoneNumber: $userPhoneNumber, dateTime: $dateTime, type: $type, cost: $cost, status: $status, driverPhoneNumber: $driverPhoneNumber}';
   }
 }

@@ -107,7 +107,10 @@ class _MapScreenState extends State<MapScreen> {
       totalAmount = amountNonEmergency * widget.routeDistance;
     }
     Booking newBooking = Booking(
-      id: null,
+      id: DateTime
+          .now()
+          .millisecondsSinceEpoch
+          .toString(),
       carID: '',
       startLongitude: widget.startPosition.longitude,
       startLatitude: widget.startPosition.latitude,
