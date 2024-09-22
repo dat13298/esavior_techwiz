@@ -1,7 +1,9 @@
 import 'package:esavior_techwiz/connection/firebase_connection.dart';
+import 'package:esavior_techwiz/services/notificationProvider.dart';
 import 'package:esavior_techwiz/views/welcome/welcome_page.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 
 import 'controllers/map_controller.dart';
 
@@ -14,7 +16,13 @@ void main() async {
 
   await FirestoreService.initializeFirebase();
 
-  runApp(const MyApp());
+  // runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => NotificationProvider(),
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -30,31 +38,6 @@ class MyApp extends StatelessWidget {
       ),
       home: WelcomePage(),
       debugShowCheckedModeBanner: false,
-    );
-  }
-}
-
-class HomeScreen extends StatefulWidget {
-  @override
-  _HomeScreenState createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Home Screen'),
-      ),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            // showMapScreen(context); // Mở MapScreen khi nút bấm
-          },
-          child: Text('Show Map'),
-        ),
-      ),
     );
   }
 }
