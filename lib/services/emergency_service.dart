@@ -56,6 +56,10 @@ class EmergencyService{
       final message = 'New location received:\nLatitude: $latitude\nLongitude: $longitude\nTimestamp: $formattedTime';
 
       Booking newBooking = Booking(
+        id: DateTime
+            .now()
+            .millisecondsSinceEpoch
+            .toString(),
           endLongitude: longitude,
           endLatitude: latitude,
           dateTime: timestampObject,
