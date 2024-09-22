@@ -2,8 +2,11 @@ import 'package:esavior_techwiz/services/drver_service.dart';
 import 'package:flutter/material.dart';
 import 'package:esavior_techwiz/models/booking.dart';
 import 'package:esavior_techwiz/services/booking_service.dart';
+import 'package:provider/provider.dart';
 
 import '../../models/account.dart';
+import '../../services/emergency_service.dart';
+import '../../services/notificationProvider.dart';
 import 'admin_feedback.dart';
 import 'admin_manager.dart';
 import 'admin_profile.dart';
@@ -21,6 +24,9 @@ class _AdminPageState extends State<AdminPage> with AutomaticKeepAliveClientMixi
   late List<Widget> _tabs;
   int _currentIndex = 0;
   late Stream<List<Booking>> _bookingStream;
+  final EmergencyService _emergencyService = EmergencyService();
+
+
 
   @override
   bool get wantKeepAlive => true;
@@ -35,6 +41,9 @@ class _AdminPageState extends State<AdminPage> with AutomaticKeepAliveClientMixi
       const ManagerTab(), // Tab Manager
       ProfileTab(account: widget.account), // Tab Profile
     ];
+    final notificationProvider = Provider.of<NotificationProvider>(context, listen: false);
+    notificationProvider.setAdminStatus(true);
+    _emergencyService.listenForUserLocations(context);
 
   }
 
