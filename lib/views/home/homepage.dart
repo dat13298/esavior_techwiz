@@ -7,7 +7,7 @@ import '../../services/city_service.dart';
 import '../booking_history/booking_history.dart';
 import '../welcome/call_emergency.dart';
 import 'gallery.dart';
-import 'notifications.dart';
+import 'about.dart';
 
 class HomePage extends StatefulWidget {
   final Account account;
@@ -156,13 +156,15 @@ class _HomeTabStateState extends State<HomeTabState> {
             const Text('Ambulance gallery',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 10),
+
+
+
             SizedBox(
-              height: 200,
+              height: MediaQuery.of(context).size.width * 0.35,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                itemCount: 6, // 5 hình + 1 nút "See More"
+                itemCount: 6,
                 itemBuilder: (context, index) {
-                  // Danh sách các ô tô
                   final carList = [
                     {'imagePath': 'assets/ford/1.jpg', 'title': 'Ford Transit'},
                     {'imagePath': 'assets/mercedes/1.png', 'title': 'Mercedes-Benz Sprinter'},
@@ -186,51 +188,39 @@ class _HomeTabStateState extends State<HomeTabState> {
                         onTap: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(
-                                builder: (context) => const GalleryPage()),
+                            MaterialPageRoute(builder: (context) => const GalleryPage()),
                           );
                         },
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => const GalleryPage()),
-                            );
-                          },
-                          style: ElevatedButton.styleFrom(
-                            minimumSize: Size(MediaQuery.of(context).size.width * 0.3, MediaQuery.of(context).size.width * 0.3), // Đặt kích thước tối thiểu
-                            backgroundColor: Colors.grey[300], // Màu nền
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10), // Đường viền bo tròn
+                        child: Container(
+                          width: MediaQuery.of(context).size.width * 0.35, // Chiều rộng
+                          height: MediaQuery.of(context).size.width * 0.3, // Chiều cao
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: Colors.grey[300], // Màu nền
+                          ),
+                          child: const Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'See More',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                SizedBox(height: 4), // Khoảng cách giữa chữ và icon
+                                Icon(Icons.arrow_forward, size: 16),
+                              ],
                             ),
                           ),
-                          child: const Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                'See More',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              SizedBox(height: 4), // Khoảng cách giữa chữ và icon
-                              Icon(Icons.arrow_forward, size: 16),
-                            ],
-                          ),
                         ),
-
-
-
                       ),
                     );
                   }
                 },
               ),
             ),
-            const SizedBox(height: 100),
-            const Text('Feedback',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           ],
         ),
       ),
