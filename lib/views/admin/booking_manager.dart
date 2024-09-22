@@ -93,8 +93,26 @@ class BookingManagerState extends State<BookingManager> {
                   itemCount: bookings.length,
                   itemBuilder: (context, index) {
                     final booking = bookings[index];
+                    Color cardColor;
+
+                    switch (booking.status.toLowerCase()) {
+                      case 'waiting':
+                        cardColor = Colors.yellow[100]!;
+                        break;
+                      case 'completed':
+                        cardColor = Colors.green[100]!;
+                        break;
+                      case 'not yet confirm':
+                        cardColor = Colors.blue[100]!;
+                        break;
+                      default:
+                        cardColor = Colors.grey[100]!;
+                        break;
+                    }
+
                     return Card(
-                      margin: const EdgeInsets.symmetric(vertical: 8.0),
+                      margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+                      color: cardColor,
                       child: ListTile(
                         title: Text('Driver Phone: ${booking.driverPhoneNumber}'),
                         subtitle: Text(
@@ -106,6 +124,7 @@ class BookingManagerState extends State<BookingManager> {
                     );
                   },
                 );
+
               },
             ),
           ),
@@ -113,4 +132,5 @@ class BookingManagerState extends State<BookingManager> {
       ),
     );
   }
+
 }
