@@ -11,20 +11,26 @@ import '../views/map/map_screen.dart';
 Future<void> showMapScreen(BuildContext context, String? address, Account account, Booking? booking) async {
   String endLatitude;
   String endLongitude;
-  LatLng end;
+  LatLng end = LatLng(0.0, 0.0);
   bool isBookingShow = false;
+
 
   if(address!=null){
     endLatitude = await getLatitudeFromAddress(address);
     endLongitude = await getLongitudeFromAddress(address);
     end = LatLng(double.parse(endLatitude), double.parse(endLongitude));
     isBookingShow = true;
-  } else {
-    end = LatLng(21.035000, 105.825649);
   }
 
   if(booking != null && account.role == 'user'){
     isBookingShow = true;
+  }
+
+  if(booking != null && account.role == 'driver'){
+    isBookingShow = true;
+    double? driverEndLa = booking.startLatitude;
+    double? driverEndLo = booking.startLongitude;
+    end = LatLng(driverEndLa!, driverEndLo!);
   }
 
   //get current location
@@ -32,9 +38,6 @@ Future<void> showMapScreen(BuildContext context, String? address, Account accoun
     desiredAccuracy: LocationAccuracy.bestForNavigation,
   );
   LatLng currentPosition = LatLng(userPosition.latitude, userPosition.longitude);
-
-  // Điểm kết thúc
-  // end = LatLng(21.035000, 105.825649);
 
   // Tải tuyến đường
   List<LatLng> routePoints = await getRouteCoordinates(currentPosition, end);

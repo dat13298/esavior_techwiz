@@ -56,7 +56,7 @@ class Booking {
       'startLongitude':startLongitude,
       'startLatitude':startLatitude,
       'endLongitude':endLongitude,
-      'endLatitude':endLongitude,
+      'endLatitude':endLatitude,
       'userPhoneNumber':userPhoneNumber,
       'dateTime':dateTime,
       'type':type,

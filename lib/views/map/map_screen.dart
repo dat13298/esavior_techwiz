@@ -233,7 +233,8 @@ class _MapScreenState extends State<MapScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Distance: ${widget.routeDistance / 1000}km'),
+        title: Text('Distance: ${(widget.routeDistance / 1000).toStringAsFixed(1)} km'),
+
       ),
       body: Stack(
         children: [
@@ -403,7 +404,8 @@ class _MapScreenState extends State<MapScreen> {
                                                 'Emergency Vehicle',
                                                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                                               ),
-                                              Text('${amountEmergency * widget.routeDistance} VND'),
+                                              Text('${(amountEmergency * widget.routeDistance).round()} VND'),
+
                                             ],
                                           ),
                                         ],
@@ -445,7 +447,8 @@ class _MapScreenState extends State<MapScreen> {
                                                 'Non-Emergency Vehicle',
                                                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                                               ),
-                                              Text('${amountNonEmergency * widget.routeDistance} VND'),
+                                              Text('${(amountNonEmergency * widget.routeDistance).round()} VND'),
+
                                             ],
                                           ),
                                         ],
