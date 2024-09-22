@@ -5,30 +5,57 @@ class GalleryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Lấy chiều rộng màn hình
     final double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Gallery'),
+        title: const Text('Ambulance Gallery'),
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(16.0), // Thêm padding cho toàn bộ khung sườn
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Padding(
                 padding: EdgeInsets.only(bottom: 16.0),
                 child: Text(
-                  'Toyota',
+                  'Ford',
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
               ),
-              // Hàng hình ảnh Toyota
-              _buildCarList('assets/ford/1.jpg', 'Toyota Camry', 'assets/ford/2.png', 'Toyota Corolla', screenWidth),
-              _buildCarList('assets/ford/3.jpg', 'Toyota RAV4', 'assets/ford/4.jpg', 'Toyota Yaris', screenWidth),
-
+              _buildCarList(
+                  'assets/ford/1.jpg', 'Ford Transit Ambulance', '5.8m', [
+                'Defibrillator',
+                'Stretcher',
+                'Oxygen cylinder',
+                'Ventilator',
+                'First aid kit',
+                'Cardiac monitor',
+              ], 'assets/ford/2.png', 'Ford E-Series Ambulance', '6.2m', [
+                'Suction machine',
+                'Stretcher',
+                'Portable ECG',
+                'IV infusion kit',
+                'Patient monitoring system',
+                'Advanced life support tools',
+              ], screenWidth),
+              _buildCarList(
+                  'assets/ford/3.jpg', 'Ford Transit Ambulance', '5.8m', [
+                'Defibrillator',
+                'Stretcher',
+                'Oxygen cylinder',
+                'Ventilator',
+                'First aid kit',
+                'Cardiac monitor',
+              ], 'assets/ford/4.jpg', 'Ford E-Series Ambulance', '6.2m', [
+                'Suction machine',
+                'Stretcher',
+                'Portable ECG',
+                'IV infusion kit',
+                'Patient monitoring system',
+                'Advanced life support tools',
+              ], screenWidth),
               const Padding(
                 padding: EdgeInsets.only(top: 32.0, bottom: 16.0),
                 child: Text(
@@ -36,10 +63,34 @@ class GalleryPage extends StatelessWidget {
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
               ),
-              // Hàng hình ảnh Mercedes-Benz
-              _buildCarList('assets/mercedes/1.png', 'Mercedes-Benz C-Class', 'assets/mercedes/2.jpg', 'Mercedes-Benz E-Class', screenWidth),
-              _buildCarList('assets/mercedes/3.jpg', 'Mercedes-Benz GLE', 'assets/mercedes/4.png', 'Mercedes-Benz S-Class', screenWidth),
-
+              _buildCarList('assets/mercedes/1.png', 'Mercedes-Benz Sprinter', '6.0m', [
+                'Defibrillator',
+                'Stretcher',
+                'Oxygen cylinder',
+                'Patient monitoring system',
+                'Spinal immobilization board',
+                'Ventilator',
+              ], 'assets/mercedes/2.jpg', 'Mercedes-Benz Vito Ambulance', '5.5m', [
+                'First aid kit',
+                'IV fluids',
+                'Suction machine',
+                'Portable ECG',
+                'Patient transport system',
+              ], screenWidth),
+              _buildCarList('assets/mercedes/3.jpg', 'Mercedes-Benz Sprinter', '6.0m', [
+                'Defibrillator',
+                'Stretcher',
+                'Oxygen cylinder',
+                'Patient monitoring system',
+                'Spinal immobilization board',
+                'Ventilator',
+              ], 'assets/mercedes/4.png', 'Mercedes-Benz Vito Ambulance', '5.5m', [
+                'First aid kit',
+                'IV fluids',
+                'Suction machine',
+                'Portable ECG',
+                'Patient transport system',
+              ], screenWidth),
               const Padding(
                 padding: EdgeInsets.only(top: 32.0, bottom: 16.0),
                 child: Text(
@@ -47,20 +98,19 @@ class GalleryPage extends StatelessWidget {
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
               ),
-              // Hàng hình ảnh Hyundai
-              _buildCarList('assets/hyundai/1.jpg', 'Hyundai Elantra', 'assets/hyundai/2.jpg', 'Hyundai Sonata', screenWidth),
-
-              const Padding(
-                padding: EdgeInsets.only(top: 32.0, bottom: 16.0),
-                child: Text(
-                  'Land Rover',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                ),
-              ),
-              // Hàng hình ảnh Land Rover
-              _buildCarList('assets/landrover/1.jpg', 'Land Rover Defender', 'assets/landrover/2.jpg', 'Land Rover Discovery', screenWidth),
-              _buildCarList('assets/landrover/3.jpg', 'Land Rover Range Rover', 'assets/landrover/4.jpg', 'Land Rover Evoque', screenWidth),
-
+              _buildCarList('assets/hyundai/1.jpg', 'Hyundai Starex Ambulance', '5.1m', [
+                'Basic life support equipment',
+                'Oxygen cylinder',
+                'Stretcher',
+                'IV fluids',
+                'Suction machine',
+              ], 'assets/hyundai/2.jpg', 'Hyundai iLoad Ambulance', '5.4m', [
+                'First aid kit',
+                'Patient monitoring system',
+                'Defibrillator',
+                'Ventilator',
+                'Stretcher',
+              ], screenWidth),
               const Padding(
                 padding: EdgeInsets.only(top: 32.0, bottom: 16.0),
                 child: Text(
@@ -68,30 +118,143 @@ class GalleryPage extends StatelessWidget {
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
               ),
-              // Hàng hình ảnh Nissan
-              _buildCarList('assets/nissan/1.jpg', 'Nissan Altima', 'assets/nissan/2.jpg', 'Nissan Maxima', screenWidth),
+              _buildCarList('assets/nissan/1.jpg', 'Nissan NV350 Ambulance', '5.3m', [
+                'Defibrillator',
+                'Stretcher',
+                'Portable ECG',
+                'Oxygen cylinder',
+                'Suction machine',
+              ], 'assets/nissan/2.jpg', 'Nissan Patrol Ambulance', '5.9m', [
+                'Spinal immobilization board',
+                'Ventilator',
+                'Stretcher',
+                'Patient transport system',
+                'Advanced life support tools',
+              ], screenWidth),
+
+
 
               const Padding(
-                padding: EdgeInsets.only(top: 32.0, bottom: 16.0),
+                padding: EdgeInsets.only(bottom: 16.0),
                 child: Text(
-                  'Ford',
+                  'Toyota',
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
               ),
-              // Hàng hình ảnh Ford
-              _buildCarList('assets/ford/1.jpg', 'Ford F-150', 'assets/ford/2.png', 'Ford Mustang', screenWidth),
-              _buildCarList('assets/ford/3.jpg', 'Ford Explorer', 'assets/ford/4.jpg', 'Ford Escape', screenWidth),
+              _buildCarList(
+                  'assets/toyota/1.jpg', 'Toyota Hiace Ambulance', '5.7m', [
+                'Ventilator',
+                'Defibrillator',
+                'Trauma kit',
+                'IV fluids',
+                'Oxygen mask',
+                'Stretcher',
+              ], 'assets/toyota/2.jpg', 'Toyota Land Cruiser Ambulance', '6.0m', [
+                'Suction unit',
+                'Cardiac monitor',
+                'Stretcher',
+                'Portable ventilator',
+                'Patient monitoring system',
+                'Advanced trauma care kit',
+              ], screenWidth),
+              _buildCarList(
+                  'assets/toyota/3.png', 'Toyota Hilux Ambulance', '5.5m', [
+                'Oxygen cylinder',
+                'Emergency resuscitation kit',
+                'Surgical instruments',
+                'Stretcher',
+                'IV pump',
+                'Portable ultrasound',
+              ], 'assets/toyota/4.jpg', 'Toyota Fortuner Ambulance', '6.1m', [
+                'Advanced oxygen delivery system',
+                'Patient transport stretcher',
+                'Blood pressure monitor',
+                'Suction machine',
+                'First aid kit',
+                'Infusion pumps',
+              ], screenWidth),
 
               const Padding(
-                padding: EdgeInsets.only(top: 32.0, bottom: 16.0),
+                padding: EdgeInsets.only(bottom: 16.0),
+                child: Text(
+                  'Range Rover',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                ),
+              ),
+              _buildCarList(
+                  'assets/landrover/1.jpg', 'Range Rover Defender Ambulance', '5.9m', [
+                'Ventilator',
+                'Cardiac monitor',
+                'Oxygen supply system',
+                'Defibrillator',
+                'Trauma care kit',
+                'Mobile ECG',
+              ], 'assets/landrover/2.jpg', 'Range Rover Evoque Ambulance', '6.3m', [
+                'Patient warming system',
+                'Portable X-ray machine',
+                'First aid kit',
+                'Stretcher',
+                'Suction machine',
+                'Advanced emergency tools',
+              ], screenWidth),
+              _buildCarList(
+                  'assets/landrover/3.jpg', 'Range Rover Discovery Ambulance', '5.6m', [
+                'Advanced ventilator',
+                'Oxygen cylinder',
+                'First aid kit',
+                'Defibrillator',
+                'Spinal board',
+                'Emergency lighting system',
+              ], 'assets/landrover/4.jpg', 'Range Rover Velar Ambulance', '6.0m', [
+                'Portable ventilator',
+                'Surgical instruments',
+                'Stretcher',
+                'Suction unit',
+                'Defibrillator',
+                'Monitoring system',
+              ], screenWidth),
+
+              const Padding(
+                padding: EdgeInsets.only(bottom: 16.0),
                 child: Text(
                   'Volkswagen',
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
               ),
-              // Hàng hình ảnh Volkswagen
-              _buildCarList('assets/vokswa/1.jpg', 'Volkswagen Golf', 'assets/vokswa/2.jpg', 'Volkswagen Jetta', screenWidth),
-              _buildCarList('assets/vokswa/3.jpg', 'Volkswagen Tiguan', 'assets/vokswa/4.jpg', 'Volkswagen Passat', screenWidth),
+              _buildCarList(
+                  'assets/vokswa/1.jpg', 'Volkswagen Transporter Ambulance', '6.0m', [
+                'Advanced life support tools',
+                'Defibrillator',
+                'Trauma kit',
+                'Oxygen supply system',
+                'Stretcher',
+                'IV fluids',
+              ], 'assets/vokswa/2.jpg', 'Volkswagen Crafter Ambulance', '5.9m', [
+                'Suction machine',
+                'Ventilator',
+                'First aid kit',
+                'Spinal board',
+                'Patient monitoring system',
+                'Portable ECG',
+              ], screenWidth),
+              _buildCarList(
+                  'assets/vokswa/3.jpg', 'Volkswagen Amarok Ambulance', '5.8m', [
+                'Oxygen cylinder',
+                'Advanced trauma kit',
+                'Defibrillator',
+                'Stretcher',
+                'Ventilator',
+                'Cardiac monitor',
+              ], 'assets/vokswa/4.jpg', 'Volkswagen Caravelle Ambulance', '6.1m', [
+                'Emergency response tools',
+                'Portable ventilator',
+                'IV infusion kit',
+                'Suction unit',
+                'Stretcher',
+                'Patient warming system',
+              ], screenWidth),
+
+
             ],
           ),
         ),
@@ -99,36 +262,73 @@ class GalleryPage extends StatelessWidget {
     );
   }
 
-  Widget _buildCarList(String imagePath1, String carName1, String imagePath2, String carName2, double screenWidth) {
-    return Container(
-      height: (screenWidth * 0.5 - 32) + 60, // Chiều cao tăng để đủ cho ảnh và tên xe
-      child: ListView(
-        scrollDirection: Axis.horizontal, // Cuộn ngang
-        children: [
-          _buildCarItem(imagePath1, carName1, screenWidth),
-          _buildCarItem(imagePath2, carName2, screenWidth),
-        ],
-      ),
+  Widget _buildCarList(
+      String imagePath1,
+      String carName1,
+      String carSize1,
+      List<String> equipmentList1,
+      String imagePath2,
+      String carName2,
+      String carSize2,
+      List<String> equipmentList2,
+      double screenWidth,
+      ) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        _buildCarItem(imagePath1, carName1, carSize1, equipmentList1, screenWidth),
+        _buildCarItem(imagePath2, carName2, carSize2, equipmentList2, screenWidth),
+      ],
     );
   }
 
-  Widget _buildCarItem(String imagePath, String carName, double screenWidth) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(20), // Bo góc tròn 20px
-            child: Image.asset(
-              imagePath,
-              width: screenWidth * 0.5 - 32, // Chiều rộng bằng 50% chiều rộng màn hình
-              height: screenWidth * 0.5 - 32, // Chiều cao bằng chiều rộng để tạo hình vuông
-              fit: BoxFit.cover,
+  Widget _buildCarItem(
+      String imagePath,
+      String carName,
+      String carSize,
+      List<String> equipmentList,
+      double screenWidth,
+      ) {
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Image.asset(
+                imagePath,
+                width: screenWidth * 0.4,
+                height: screenWidth * 0.4,
+                fit: BoxFit.cover,
+              ),
             ),
-          ),
-          const SizedBox(height: 16), // Khoảng cách lớn hơn giữa ảnh và tên
-          Text(carName, style: const TextStyle(fontSize: 16)), // Tên xe
-        ],
+            const SizedBox(height: 8),
+            Text(
+              carName,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Size: $carSize',
+              style: const TextStyle(fontSize: 14, fontStyle: FontStyle.italic),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 4),
+            const Text(
+              'Equipment:',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            for (String equipment in equipmentList)
+              Text(
+                '- $equipment',
+                style: const TextStyle(fontSize: 12),
+                textAlign: TextAlign.center,
+              ),
+          ],
+        ),
       ),
     );
   }
