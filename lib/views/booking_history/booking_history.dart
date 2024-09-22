@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:esavior_techwiz/models/account.dart';
 import 'package:esavior_techwiz/models/booking.dart';
@@ -153,22 +154,33 @@ class _BookingHistoryState extends State<BookingHistory> {
   }
 }
 
-class DetailScreen extends StatelessWidget {
+class DetailScreen extends StatefulWidget {
   final Booking booking;
   final Account account;
 
   const DetailScreen({Key? key, required this.booking, required this.account}) : super(key: key);
 
   @override
+  _DetailScreenState createState() => _DetailScreenState();
+}
+
+class _DetailScreenState extends State<DetailScreen> {
+  late String formattedDate;
+  late String formattedTime;
+  String? startAddress; // Địa chỉ bắt đầu sau khi chuyển đổi
+  String? endAddress;   // Địa chỉ kết thúc sau khi chuyển đổi
+
+  @override
+  void initState() {
+    super.initState();
+    DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(widget.booking.dateTime.seconds * 1000);
+    formattedDate = "${dateTime.day}/${dateTime.month}/${dateTime.year}";
+    formattedTime = "${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}";
+    _convertAddressToDisplay();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(booking.dateTime.seconds * 1000);
-    String formattedDate = "${dateTime.day}/${dateTime.month}/${dateTime.year}";
-    String formattedTime = "${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}";
-    double? endLat = booking.endLatitude;
-    double? endLong = booking.endLongitude;
-
-    LatLng destinationLocation = LatLng(endLat!, endLong!);
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Booking Details'),
@@ -196,53 +208,78 @@ class DetailScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Title: ${booking.type}', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                    Text('Title: ${widget.booking.type}', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 10),
                     Text('Date: $formattedDate', style: const TextStyle(fontSize: 16)),
                     const SizedBox(height: 5),
                     Text('Time: $formattedTime', style: const TextStyle(fontSize: 16)),
                     const SizedBox(height: 5),
-                    Text('Status: ${booking.status}', style: const TextStyle(fontSize: 16)),
+                    Text('Status: ${widget.booking.status}', style: const TextStyle(fontSize: 16)),
                     const SizedBox(height: 5),
-                    Text('Driver Phone: ${booking.driverPhoneNumber}', style: const TextStyle(fontSize: 16)),
+                    Text('Driver Phone: ${widget.booking.driverPhoneNumber}', style: const TextStyle(fontSize: 16)),
                     const SizedBox(height: 5),
-                    Text('User Phone: ${booking.userPhoneNumber}', style: const TextStyle(fontSize: 16)),
+                    Text('User Phone: ${widget.booking.userPhoneNumber}', style: const TextStyle(fontSize: 16)),
                     const SizedBox(height: 10),
-                    const Text('Destination:', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                    FutureBuilder<String>(
-                      future: getAddressFromLatlon(destinationLocation),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
-                          return const CircularProgressIndicator(); // Hiển thị khi đang tải
-                        } else if (snapshot.hasError) {
-                          return Text('Error: ${snapshot.error}');
-                        } else {
-                          return Text(snapshot.data ?? 'N/A', style: const TextStyle(fontSize: 16));
-                        }
-                      },
+                    const Text('Start Address:', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    Text(
+                      startAddress ?? 'Loading...',
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                    const SizedBox(height: 10),
+                    const Text('End Address:', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    Text(
+                      endAddress ?? 'Loading...',
+                      style: const TextStyle(fontSize: 16),
                     ),
                   ],
                 ),
               ),
               const SizedBox(height: 20),
-              Center(
-                child: ElevatedButton(
-                  onPressed: () {
-                    // Thực hiện hành động của bạn ở đây
-                    showMapScreen(context, null,account, booking);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                    backgroundColor: const Color(0xFF10CCC6),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        // Hành động hiển thị bản đồ
+                        showMapScreen(context, null, widget.account, widget.booking);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        backgroundColor: const Color(0xFF10CCC6),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: const Text(
+                        'Show Map',
+                        style: TextStyle(fontSize: 16, color: Colors.white),
+                      ),
                     ),
                   ),
-                  child: const Text(
-                    'Show Map',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                ),
+                  const SizedBox(width: 10), // Khoảng cách giữa hai nút
+                  if (widget.account.role == 'driver') // Kiểm tra vai trò
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          // Hành động hoàn thành booking
+                          BookingService().updateBookingStatus(widget.booking.id, "Completed");
+                          Navigator.pop(context); // Quay lại trang trước đó
+                        },
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                          backgroundColor: Colors.green, // Màu cho nút Completed
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        child: const Text(
+                          'Completed',
+                          style: TextStyle(fontSize: 16, color: Colors.white),
+                        ),
+                      ),
+                    ),
+                ],
               ),
             ],
           ),
@@ -250,7 +287,24 @@ class DetailScreen extends StatelessWidget {
       ),
     );
   }
+
+  Future<void> _convertAddressToDisplay() async {
+    print("Start Latitude: ${widget.booking.startLatitude}, Start Longitude: ${widget.booking.startLongitude}");
+    print("End Latitude: ${widget.booking.endLatitude}, End Longitude: ${widget.booking.endLongitude}");
+
+    String startAddr = await getAddressFromLatlon(LatLng(widget.booking.startLatitude!, widget.booking.startLongitude!));
+    String endAddr = await getAddressFromLatlon(LatLng(widget.booking.endLatitude!, widget.booking.endLongitude!));
+
+    setState(() {
+      startAddress = startAddr;
+      endAddress = endAddr; // Cập nhật địa chỉ kết thúc
+    });
+  }
 }
+
+
+
+
 
 
 
