@@ -19,11 +19,6 @@ class BookingService {
       });
     }
   }
-
-  Future<void> updateBooking(String id, Booking updatedBooking) async {
-    await _bookingCollection.doc(id).update(updatedBooking.toMap());
-  }
-
   Future<void> deleteBooking(String id) async {
     await _bookingCollection.doc(id).delete();
   }
@@ -171,6 +166,26 @@ class BookingService {
 
     return bookings; // Trả về danh sách đã sắp xếp
   }
+
+
+  Future<void> updateBooking(Timestamp time, String driverPhoneNumber) async {
+    await _bookingCollection.doc(time.toString()).update({
+      'status': 'Waiting',
+      'driverPhoneNumber': driverPhoneNumber,
+    });
+  }
+
+  Future<void> updateBookingStatus(Timestamp time, String newStatus) async {
+    try {
+      await _bookingCollection.doc(time.toString()).update({
+        'status': newStatus,
+      });
+    } catch (e) {
+      print('Failed to update booking status: $e');
+    }
+  }
+
+
 
 
 

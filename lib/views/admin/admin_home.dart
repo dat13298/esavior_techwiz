@@ -1,3 +1,4 @@
+import 'package:esavior_techwiz/services/drver_service.dart';
 import 'package:flutter/material.dart';
 import 'package:esavior_techwiz/models/booking.dart';
 import 'package:esavior_techwiz/services/booking_service.dart';
@@ -107,7 +108,7 @@ class _AdminPageState extends State<AdminPage> with AutomaticKeepAliveClientMixi
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
-                // Navigate to dispatch ambulance page
+                showBookingsToDispatch(context);
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFF20202),
@@ -180,6 +181,115 @@ class _AdminPageState extends State<AdminPage> with AutomaticKeepAliveClientMixi
       ),
     );
   }
+
+  void showBookingsToDispatch(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Select Booking to Dispatch'),
+          content: Container(
+            width: 300, // Đặt chiều rộng tùy ý
+            constraints: const BoxConstraints(maxHeight: 400), // Giới hạn chiều cao tối đa
+            child: FutureBuilder<List<Booking>>(
+              future: BookingService().getBookingsByStatus('Not Yet Confirm'),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                }
+                if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const Center(child: Text('No bookings available'));
+                }
+
+                final bookings = snapshot.data!;
+                return SingleChildScrollView(
+                  child: ListView.builder(
+                    shrinkWrap: true, // Để ListView không chiếm hết không gian
+                    physics: const NeverScrollableScrollPhysics(), // Ngăn chặn cuộn
+                    itemCount: bookings.length,
+                    itemBuilder: (context, index) {
+                      final booking = bookings[index];
+                      return ListTile(
+                        title: Text('User Phone: ${booking.userPhoneNumber}'),
+                        subtitle: Text('Date: ${booking.formattedDateTime}'),
+                        onTap: () {
+                          // Khi chọn booking, mở danh sách tài xế
+                          Navigator.pop(context);
+                          showDriversToAssign(context, booking, index);
+                        },
+                      );
+                    },
+                  ),
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void showDriversToAssign(BuildContext context, Booking booking, int index) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Select Driver'),
+          content: Container(
+            width: 300, // Đặt chiều rộng tùy ý
+            constraints: const BoxConstraints(maxHeight: 400), // Giới hạn chiều cao tối đa
+            child: StreamBuilder<List<Account>>(
+              stream: DriverService().getAllDriver(), // Sử dụng stream để lấy tài xế
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                }
+                if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const Center(child: Text('No drivers available'));
+                }
+
+                final drivers = snapshot.data!;
+                return SingleChildScrollView(
+                  child: ListView.builder(
+                    shrinkWrap: true, // Để ListView không chiếm hết không gian
+                    physics: const NeverScrollableScrollPhysics(), // Ngăn chặn cuộn
+                    itemCount: drivers.length,
+                    itemBuilder: (context, index) {
+                      final driver = drivers[index];
+                      return ListTile(
+                        title: Text(driver.fullName),
+                        subtitle: Text(driver.phoneNumber),
+                        onTap: () async {
+                          // Cập nhật booking với tài xế được chọn
+                          await BookingService().updateBooking(booking.dateTime, driver.phoneNumber);
+
+                          // Cập nhật trạng thái booking thành "Waiting"
+                          await BookingService().updateBookingStatus(booking.dateTime, 'Waiting');
+
+                          Navigator.pop(context);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Driver assigned successfully!')),
+                          );
+                        },
+                      );
+                    },
+                  ),
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+
 
 
 
