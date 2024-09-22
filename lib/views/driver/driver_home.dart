@@ -1,5 +1,6 @@
 import 'package:esavior_techwiz/views/driver/car_manager_screen.dart';
 import 'package:esavior_techwiz/views/home/profile_tab.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../models/account.dart';
 import '../../models/booking.dart';
@@ -23,7 +24,9 @@ class DriverHomeStage extends State<DriverPage> {
   void initState() {
     super.initState();
     _tabs = [
-      DriverHomeTab(account: widget.account,),
+      DriverHomeTab(
+        account: widget.account,
+      ),
       CarManagerScreen(account: widget.account),
       ProfileUserTab(account: widget.account),
     ];
@@ -51,7 +54,8 @@ class DriverHomeStage extends State<DriverPage> {
       type: BottomNavigationBarType.fixed,
       items: const [
         BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-        BottomNavigationBarItem(icon: Icon(Icons.car_crash_sharp), label: "Activity"),
+        BottomNavigationBarItem(
+            icon: Icon(Icons.car_crash_sharp), label: "Activity"),
         BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
       ],
     );
@@ -79,16 +83,22 @@ class _DriverHomeTabStateState extends State<DriverHomeTab> {
 
   Future<void> fetchBookingList() async {
     try {
-      print("Fetching bookings...");
-      List<Booking> bookings = await BookingService().getBookingsByDriverPhoneNumber(widget.account.phoneNumber);
-      print("Bookings fetched: ${bookings.length}");
-
+      if (kDebugMode) {
+        print("Fetching bookings...");
+      }
+      List<Booking> bookings = await BookingService()
+          .getBookingsByDriverPhoneNumber(widget.account.phoneNumber);
+      if (kDebugMode) {
+        print("Bookings fetched: ${bookings.length}");
+      }
       setState(() {
         bookingList = bookings;
         isLoading = false;
       });
     } catch (e) {
-      print("Error fetching bookings: $e");
+      if (kDebugMode) {
+        print("Error fetching bookings: $e");
+      }
       setState(() {
         isLoading = false;
       });
@@ -111,8 +121,11 @@ class _DriverHomeTabStateState extends State<DriverHomeTab> {
             title: const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('eSavior', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30)),
-                Text('Your health is our care!', style: TextStyle(fontSize: 20)),
+                Text('eSavior',
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 30)),
+                Text('Your health is our care!',
+                    style: TextStyle(fontSize: 20)),
               ],
             ),
           ),
@@ -121,16 +134,17 @@ class _DriverHomeTabStateState extends State<DriverHomeTab> {
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : bookingList.isEmpty
-          ? const Center(child: Text('No bookings available'))
-          : ListView.builder(
-        itemCount: bookingList.length,
-        itemBuilder: (context, index) {
-          return Card(
-            margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
-            child: _buildBookingItem(bookingList[index]),
-          );
-        },
-      ),
+              ? const Center(child: Text('No bookings available'))
+              : ListView.builder(
+                  itemCount: bookingList.length,
+                  itemBuilder: (context, index) {
+                    return Card(
+                      margin: const EdgeInsets.symmetric(
+                          vertical: 5, horizontal: 8),
+                      child: _buildBookingItem(bookingList[index]),
+                    );
+                  },
+                ),
     );
   }
 
@@ -141,7 +155,8 @@ class _DriverHomeTabStateState extends State<DriverHomeTab> {
   Widget _buildBookingItem(Booking booking) {
     DateTime dateTime = _convertTimestampToDateTime(booking.dateTime.seconds);
     String formattedDate = "${dateTime.day}/${dateTime.month}/${dateTime.year}";
-    String formattedTime = "${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}";
+    String formattedTime =
+        "${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}";
 
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
@@ -161,14 +176,14 @@ class _DriverHomeTabStateState extends State<DriverHomeTab> {
           color: booking.status == "completed"
               ? Colors.green.withOpacity(0.1)
               : booking.status == "waiting"
-              ? Colors.orange.withOpacity(0.1)
-              : Colors.red.withOpacity(0.1),
+                  ? Colors.orange.withOpacity(0.1)
+                  : Colors.red.withOpacity(0.1),
           border: Border.all(
             color: booking.status == "completed"
                 ? Colors.green
                 : booking.status == "waiting"
-                ? Colors.orange
-                : Colors.red,
+                    ? Colors.orange
+                    : Colors.red,
           ),
           borderRadius: BorderRadius.circular(8),
         ),
@@ -179,8 +194,8 @@ class _DriverHomeTabStateState extends State<DriverHomeTab> {
             color: booking.status == "completed"
                 ? Colors.green
                 : booking.status == "waiting"
-                ? Colors.orange
-                : Colors.red,
+                    ? Colors.orange
+                    : Colors.red,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -188,20 +203,23 @@ class _DriverHomeTabStateState extends State<DriverHomeTab> {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => DetailScreen(booking: booking, account: widget.account,)),
+          MaterialPageRoute(
+              builder: (context) => DetailScreen(
+                    booking: booking,
+                    account: widget.account,
+                  )),
         );
       },
     );
   }
-
-
 }
 
 class AmbulanceCard extends StatelessWidget {
   final String imagePath;
   final String title;
 
-  const AmbulanceCard({required this.imagePath, required this.title});
+  const AmbulanceCard(
+      {super.key, required this.imagePath, required this.title});
 
   @override
   Widget build(BuildContext context) {

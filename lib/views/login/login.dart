@@ -9,6 +9,8 @@ import '../home/homepage.dart';
 import '../register/register.dart';
 
 class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
   @override
   _LoginPageState createState() => _LoginPageState();
 }
@@ -28,11 +30,11 @@ class _LoginPageState extends State<LoginPage> {
       context: context,
       builder: (context) {
         return CupertinoAlertDialog(
-          title: Text("Error"),
+          title: const Text("Error"),
           content: Text(message),
           actions: [
             CupertinoDialogAction(
-              child: Text("OK"),
+              child: const Text("OK"),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -63,10 +65,11 @@ class _LoginPageState extends State<LoginPage> {
       isErrorVisible = false;
     });
     try {
-      Account? accountLogged = await _accountService.authenticate(email, password);
+      Account? accountLogged =
+          await _accountService.authenticate(email, password);
 
       if (accountLogged != null) {
-        if(accountLogged.role == 'user'){
+        if (accountLogged.role == 'user') {
           Navigator.pushReplacement(
             context,
             CupertinoPageRoute(
@@ -75,7 +78,7 @@ class _LoginPageState extends State<LoginPage> {
           );
         }
 
-        if(accountLogged.role == 'driver'){
+        if (accountLogged.role == 'driver') {
           Navigator.pushReplacement(
             context,
             CupertinoPageRoute(
@@ -84,7 +87,7 @@ class _LoginPageState extends State<LoginPage> {
           );
         }
 
-        if(accountLogged.role == 'dispatcher'){
+        if (accountLogged.role == 'dispatcher') {
           Navigator.pushReplacement(
             context,
             CupertinoPageRoute(
@@ -92,7 +95,6 @@ class _LoginPageState extends State<LoginPage> {
             ),
           );
         }
-
       } else {
         showErrorDialog(context, 'Login failed');
       }
@@ -101,10 +103,8 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-
   bool _isValidEmail(String email) {
-    String emailPattern =
-        r'^[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$';
+    String emailPattern = r'^[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$';
     RegExp regex = RegExp(emailPattern);
     return regex.hasMatch(email);
   }
@@ -129,7 +129,7 @@ class _LoginPageState extends State<LoginPage> {
         ),
         border: null,
       ),
-      child: ScaffoldMessenger( // Thêm ScaffoldMessenger
+      child: ScaffoldMessenger(
         child: SafeArea(
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.08),
@@ -184,7 +184,8 @@ class _LoginPageState extends State<LoginPage> {
                     controller: emailController,
                     placeholder: 'Email',
                     keyboardType: TextInputType.emailAddress,
-                    padding: const EdgeInsets.symmetric(vertical: 19, horizontal: 16),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 19, horizontal: 16),
                     suffix: Padding(
                       padding: const EdgeInsets.only(right: 8),
                       child: Icon(
@@ -217,7 +218,8 @@ class _LoginPageState extends State<LoginPage> {
                     controller: passwordController,
                     placeholder: 'Password',
                     obscureText: !isPasswordVisible,
-                    padding: const EdgeInsets.symmetric(vertical: 19, horizontal: 16),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 19, horizontal: 16),
                     suffix: GestureDetector(
                       onTap: () {
                         setState(() {
@@ -285,11 +287,10 @@ class _LoginPageState extends State<LoginPage> {
                   SizedBox(height: screenHeight * 0.02),
                   GestureDetector(
                     onTap: () {
-                      // Navigate to register page
                       Navigator.push(
                         context,
                         CupertinoPageRoute(
-                          builder: (context) => RegisterPage(),
+                          builder: (context) => const RegisterPage(),
                         ),
                       );
                     },
@@ -314,7 +315,5 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
     );
-
-
   }
 }

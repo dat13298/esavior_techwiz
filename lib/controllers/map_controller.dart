@@ -7,13 +7,11 @@ import '../services/address_service.dart';
 import '../services/open_route_service.dart';
 import '../views/map/map_screen.dart';
 
-//TODO: add account to this
 Future<void> showMapScreen(BuildContext context, String? address, Account account, Booking? booking) async {
   String endLatitude;
   String endLongitude;
-  LatLng end = LatLng(0.0, 0.0);
+  LatLng end = const LatLng(0.0, 0.0);
   bool isBookingShow = false;
-
 
   if(address!=null){
     endLatitude = await getLatitudeFromAddress(address);
@@ -39,13 +37,10 @@ Future<void> showMapScreen(BuildContext context, String? address, Account accoun
   );
   LatLng currentPosition = LatLng(userPosition.latitude, userPosition.longitude);
 
-  // Tải tuyến đường
   List<LatLng> routePoints = await getRouteCoordinates(currentPosition, end);
 
-  // Tải khoảng cách
   double routeDistance = await getRouteDistance(currentPosition, end);
 
-  // Hiển thị MapScreen
   Navigator.of(context).push(
     MaterialPageRoute(
       builder: (context) => MapScreen(

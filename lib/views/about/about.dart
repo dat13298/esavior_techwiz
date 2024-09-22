@@ -1,23 +1,25 @@
 import 'package:flutter/material.dart';
 
 class AboutPage extends StatelessWidget {
+  const AboutPage({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(  // MaterialApp added here
+    return MaterialApp(
       title: 'eSavior',
       theme: ThemeData(
         primarySwatch: Colors.teal,
       ),
       home: Scaffold(
         appBar: PreferredSize(
-          preferredSize: Size.fromHeight(120.0),
+          preferredSize: const Size.fromHeight(120.0),
           child: ClipRRect(
             borderRadius: const BorderRadius.only(
               bottomLeft: Radius.circular(30),
               bottomRight: Radius.circular(30),
             ),
             child: AppBar(
-              backgroundColor: Color(0xFF10CCC6),
+              backgroundColor: const Color(0xFF10CCC6),
               title: const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -54,8 +56,8 @@ class AboutPage extends StatelessWidget {
                 const SizedBox(height: 10),
                 const Text(
                   "We are a passionate team of young innovators driven by a common goal: to make a positive impact in our communities. With a strong belief in using technology to solve real-world problems, we’ve developed eSavior, an ambulance booking app designed to save time and lives in critical moments.\n "
-                      "Our journey began with the desire to create an efficient, reliable, and user-friendly solution for those in need of emergency medical services. By combining our expertise in technology and our dedication to helping others, we aim to revolutionize the way people access ambulance services, ensuring quick and seamless support when it matters most.\n"
-                      "At NextGen Creators, we believe in the power of youth, innovation, and compassion to drive meaningful change. Our mission is simple: to empower individuals with the tools they need to get help, fast. We are committed to continuous improvement and look forward to shaping a safer, more connected future with eSavior.",
+                  "Our journey began with the desire to create an efficient, reliable, and user-friendly solution for those in need of emergency medical services. By combining our expertise in technology and our dedication to helping others, we aim to revolutionize the way people access ambulance services, ensuring quick and seamless support when it matters most.\n"
+                  "At NextGen Creators, we believe in the power of youth, innovation, and compassion to drive meaningful change. Our mission is simple: to empower individuals with the tools they need to get help, fast. We are committed to continuous improvement and look forward to shaping a safer, more connected future with eSavior.",
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 16),
                 ),
@@ -73,7 +75,8 @@ class AboutPage extends StatelessWidget {
                   runSpacing: 30,
                   children: [
                     buildTeamMember('Huy Pham Dinh', 'assets/huy_pham.png'),
-                    buildTeamMember('Thanh Nguyen Ngoc', 'assets/thanh_nguyen.png'),
+                    buildTeamMember(
+                        'Thanh Nguyen Ngoc', 'assets/thanh_nguyen.png'),
                     buildTeamMember('Hung Ha Quang', 'assets/ha_hung.png'),
                     buildTeamMember('Dat Nguyen', 'assets/dat_nguyen.png'),
                   ],
@@ -109,7 +112,6 @@ class AboutPage extends StatelessWidget {
     );
   }
 
-  // Helper function to build team member widget with square image
   Widget buildTeamMember(String name, String imagePath) {
     return Column(
       children: [
@@ -121,7 +123,7 @@ class AboutPage extends StatelessWidget {
               image: AssetImage(imagePath),
               fit: BoxFit.cover,
             ),
-            borderRadius: BorderRadius.circular(10),  // Add some rounding for smoother edges if desired
+            borderRadius: BorderRadius.circular(10),
             border: Border.all(
               color: Colors.black,
               width: 1,

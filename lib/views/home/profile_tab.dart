@@ -8,6 +8,7 @@ import '../welcome/welcome_page.dart';
 
 class ProfileUserTab extends StatefulWidget {
   final Account account;
+
   const ProfileUserTab({super.key, required this.account});
 
   @override
@@ -15,15 +16,15 @@ class ProfileUserTab extends StatefulWidget {
 }
 
 class _ProfileTabState extends State<ProfileUserTab> {
-
   void _showChangePasswordDialog(BuildContext context) {
-    final TextEditingController _passwordController = TextEditingController();
-    final TextEditingController _newPasswordController = TextEditingController();
-    final TextEditingController _confirmPasswordController = TextEditingController();
+    final TextEditingController passwordController = TextEditingController();
+    final TextEditingController newPasswordController = TextEditingController();
+    final TextEditingController confirmPasswordController =
+        TextEditingController();
 
-    bool _obscureCurrentPassword = true;
-    bool _obscureNewPassword = true;
-    bool _obscureConfirmPassword = true;
+    bool obscureCurrentPassword = true;
+    bool obscureNewPassword = true;
+    bool obscureConfirmPassword = true;
 
     showDialog(
       context: context,
@@ -37,60 +38,61 @@ class _ProfileTabState extends State<ProfileUserTab> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Text('Change Password', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                    const Text('Change Password',
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 20),
-
-                    // Current Password Field
                     TextField(
-                      controller: _passwordController,
+                      controller: passwordController,
                       decoration: InputDecoration(
                         labelText: 'Current Password',
                         suffixIcon: IconButton(
-                          icon: Icon(_obscureCurrentPassword ? Icons.visibility_off : Icons.visibility),
+                          icon: Icon(obscureCurrentPassword
+                              ? Icons.visibility_off
+                              : Icons.visibility),
                           onPressed: () {
                             setState(() {
-                              _obscureCurrentPassword = !_obscureCurrentPassword;
+                              obscureCurrentPassword = !obscureCurrentPassword;
                             });
                           },
                         ),
                       ),
-                      obscureText: _obscureCurrentPassword,
+                      obscureText: obscureCurrentPassword,
                     ),
-
-                    // New Password Field
                     TextField(
-                      controller: _newPasswordController,
+                      controller: newPasswordController,
                       decoration: InputDecoration(
                         labelText: 'New Password',
                         suffixIcon: IconButton(
-                          icon: Icon(_obscureNewPassword ? Icons.visibility_off : Icons.visibility),
+                          icon: Icon(obscureNewPassword
+                              ? Icons.visibility_off
+                              : Icons.visibility),
                           onPressed: () {
                             setState(() {
-                              _obscureNewPassword = !_obscureNewPassword;
+                              obscureNewPassword = !obscureNewPassword;
                             });
                           },
                         ),
                       ),
-                      obscureText: _obscureNewPassword,
+                      obscureText: obscureNewPassword,
                     ),
-
-                    // Confirm Password Field
                     TextField(
-                      controller: _confirmPasswordController,
+                      controller: confirmPasswordController,
                       decoration: InputDecoration(
                         labelText: 'Confirm New Password',
                         suffixIcon: IconButton(
-                          icon: Icon(_obscureConfirmPassword ? Icons.visibility_off : Icons.visibility),
+                          icon: Icon(obscureConfirmPassword
+                              ? Icons.visibility_off
+                              : Icons.visibility),
                           onPressed: () {
                             setState(() {
-                              _obscureConfirmPassword = !_obscureConfirmPassword;
+                              obscureConfirmPassword = !obscureConfirmPassword;
                             });
                           },
                         ),
                       ),
-                      obscureText: _obscureConfirmPassword,
+                      obscureText: obscureConfirmPassword,
                     ),
-
                     const SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -98,40 +100,41 @@ class _ProfileTabState extends State<ProfileUserTab> {
                         TextButton(
                           child: const Text('Cancel'),
                           onPressed: () {
-                            Navigator.of(context).pop(); // Close dialog
+                            Navigator.of(context).pop();
                           },
                         ),
                         ElevatedButton(
                           onPressed: () async {
-                            String currentPassword = _passwordController.text;
-                            String newPassword = _newPasswordController.text;
-                            String confirmPassword = _confirmPasswordController.text;
+                            String currentPassword = passwordController.text;
+                            String newPassword = newPasswordController.text;
+                            String confirmPassword =
+                                confirmPasswordController.text;
 
                             if (newPassword != confirmPassword) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
-                                  content: Text('New password and confirmation do not match!'),
+                                  content: Text(
+                                      'New password and confirmation do not match!'),
                                   backgroundColor: Colors.red,
                                 ),
                               );
                               return;
                             }
-
-                            bool passwordMatches = BCrypt.checkpw(currentPassword, widget.account.passwordHash);
+                            bool passwordMatches = BCrypt.checkpw(
+                                currentPassword, widget.account.passwordHash);
                             if (!passwordMatches) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
-                                  content: Text('Current password is incorrect!'),
+                                  content:
+                                      Text('Current password is incorrect!'),
                                   backgroundColor: Colors.red,
                                 ),
                               );
                               return;
                             }
 
-                            // Hash mật khẩu mới
-                            String hashedNewPassword = BCrypt.hashpw(newPassword, BCrypt.gensalt());
-
-                            // Tạo đối tượng Account mới với mật khẩu được băm
+                            String hashedNewPassword =
+                                BCrypt.hashpw(newPassword, BCrypt.gensalt());
                             Account updatedAccount = Account(
                               fullName: widget.account.fullName,
                               phoneNumber: widget.account.phoneNumber,
@@ -144,16 +147,16 @@ class _ProfileTabState extends State<ProfileUserTab> {
                               status: widget.account.status,
                             );
 
-                            // Cập nhật mật khẩu mới lên Firebase bằng email
-                            await AccountService().updateAccountByEmail(widget.account.email, updatedAccount);
+                            await AccountService().updateAccountByEmail(
+                                widget.account.email, updatedAccount);
 
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
-                                content: Text('Password has been updated successfully!'),
-                                backgroundColor: Colors.green, // Màu xanh lá cây cho thông báo thành công
+                                content: Text(
+                                    'Password has been updated successfully!'),
+                                backgroundColor: Colors.green,
                               ),
                             );
-
                             Navigator.of(context).pop(); // Đóng dialog
                           },
                           child: const Text('Save'),
@@ -170,16 +173,15 @@ class _ProfileTabState extends State<ProfileUserTab> {
     );
   }
 
-
   void _showEditDialog(BuildContext context) {
-    final TextEditingController _nameController = TextEditingController(
-        text: widget.account.fullName);
-    final TextEditingController _phoneController = TextEditingController(
-        text: widget.account.phoneNumber);
-    final TextEditingController _emailController = TextEditingController(
-        text: widget.account.email);
-    final TextEditingController _addressController = TextEditingController(
-        text: widget.account.addressHome);
+    final TextEditingController nameController =
+        TextEditingController(text: widget.account.fullName);
+    final TextEditingController phoneController =
+        TextEditingController(text: widget.account.phoneNumber);
+    final TextEditingController emailController =
+        TextEditingController(text: widget.account.email);
+    final TextEditingController addressController =
+        TextEditingController(text: widget.account.addressHome);
 
     showDialog(
       context: context,
@@ -191,25 +193,26 @@ class _ProfileTabState extends State<ProfileUserTab> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text('Edit Information', style: TextStyle(
-                    fontSize: 20, fontWeight: FontWeight.bold)),
+                const Text('Edit Information',
+                    style:
+                        TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 20),
                 TextField(
-                  controller: _nameController,
+                  controller: nameController,
                   decoration: const InputDecoration(labelText: 'Name'),
                 ),
                 TextField(
-                  controller: _phoneController,
+                  controller: phoneController,
                   decoration: const InputDecoration(labelText: 'Phone Number'),
                   keyboardType: TextInputType.phone,
                 ),
                 TextField(
-                  controller: _emailController,
+                  controller: emailController,
                   decoration: const InputDecoration(labelText: 'Email'),
                   keyboardType: TextInputType.emailAddress,
                 ),
                 TextField(
-                  controller: _addressController,
+                  controller: addressController,
                   decoration: const InputDecoration(labelText: 'Address'),
                 ),
                 const SizedBox(height: 20),
@@ -219,18 +222,16 @@ class _ProfileTabState extends State<ProfileUserTab> {
                     TextButton(
                       child: const Text('Cancel'),
                       onPressed: () {
-                        Navigator.of(context).pop(); // Đóng dialog
+                        Navigator.of(context).pop();
                       },
                     ),
                     ElevatedButton(
                       child: const Text('Save'),
                       onPressed: () async {
-                        String name = _nameController.text;
-                        String phone = _phoneController.text;
-                        String email = _emailController.text;
-                        String address = _addressController.text;
-
-                        // Cập nhật thông tin tài khoản
+                        String name = nameController.text;
+                        String phone = phoneController.text;
+                        String email = emailController.text;
+                        String address = addressController.text;
                         Account updatedAccount = Account(
                           fullName: name,
                           phoneNumber: phone,
@@ -242,27 +243,26 @@ class _ProfileTabState extends State<ProfileUserTab> {
                           feedbacks: widget.account.feedbacks,
                           status: widget.account.status,
                         );
-
                         try {
-                          // Cập nhật tài khoản theo email
-                          await AccountService().updateAccountByEmail(email, updatedAccount);
-
+                          await AccountService()
+                              .updateAccountByEmail(email, updatedAccount);
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content: Text('Information has been updated successfully!'),
+                              content: Text(
+                                  'Information has been updated successfully!'),
                               backgroundColor: Colors.green,
                             ),
                           );
                         } catch (error) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('Failed to update information: $error'),
-                              backgroundColor: Colors.red, // Màu đỏ cho thông báo lỗi
+                              content:
+                                  Text('Failed to update information: $error'),
+                              backgroundColor: Colors.red,
                             ),
                           );
                         }
-
-                        Navigator.of(context).pop(); // Đóng dialog
+                        Navigator.of(context).pop();
                       },
                     ),
                   ],
@@ -275,41 +275,33 @@ class _ProfileTabState extends State<ProfileUserTab> {
     );
   }
 
-
   void _showFeedbackDialog(BuildContext context, String accountId) {
-    final TextEditingController _feedbackController = TextEditingController();
-
+    final TextEditingController feedbackController = TextEditingController();
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return Dialog(
           child: Container(
-            width: MediaQuery
-                .of(context)
-                .size
-                .width * 0.9,
-            height: MediaQuery
-                .of(context)
-                .size
-                .height * 0.6,
+            width: MediaQuery.of(context).size.width * 0.9,
+            height: MediaQuery.of(context).size.height * 0.6,
             padding: const EdgeInsets.all(16.0),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text('Feedback', style: TextStyle(
-                    fontSize: 20, fontWeight: FontWeight.bold)),
+                const Text('Feedback',
+                    style:
+                        TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 20),
                 Expanded(
                   child: TextField(
-                    controller: _feedbackController,
+                    controller: feedbackController,
                     decoration: const InputDecoration(
                       labelText: 'Enter your feedback',
                       border: OutlineInputBorder(),
                     ),
                     maxLines: null,
                     expands: true,
-                    textAlignVertical: TextAlignVertical
-                        .top, // Đặt vị trí con trỏ ở đầu
+                    textAlignVertical: TextAlignVertical.top,
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -324,16 +316,15 @@ class _ProfileTabState extends State<ProfileUserTab> {
                     ),
                     ElevatedButton(
                       onPressed: () async {
-                        String feedbackContent = _feedbackController.text;
-
+                        String feedbackContent = feedbackController.text;
                         if (feedbackContent.isNotEmpty) {
-                          // Gọi hàm addFeedback từ AccountService
-                          await FeedbacksService().addFeedbackByEmail(widget
-                              .account.email, feedbackContent, Timestamp.now());
-
+                          await FeedbacksService().addFeedbackByEmail(
+                              widget.account.email,
+                              feedbackContent,
+                              Timestamp.now());
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                                content: Text('Feedback added successfully!'),
+                              content: Text('Feedback added successfully!'),
                               backgroundColor: Colors.green,
                             ),
                           );
@@ -341,7 +332,7 @@ class _ProfileTabState extends State<ProfileUserTab> {
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                                content: Text('Please enter feedback'),
+                              content: Text('Please enter feedback'),
                               backgroundColor: Colors.red,
                             ),
                           );
@@ -358,7 +349,6 @@ class _ProfileTabState extends State<ProfileUserTab> {
       },
     );
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -392,7 +382,7 @@ class _ProfileTabState extends State<ProfileUserTab> {
           ),
         ),
       ),
-      body: Column( // Thay đổi ở đây
+      body: Column(
         children: [
           Expanded(
             child: SingleChildScrollView(
@@ -439,7 +429,6 @@ class _ProfileTabState extends State<ProfileUserTab> {
                   ),
                   const SizedBox(height: 20),
 
-                  // Edit Profile Button
                   _buildProfileOption(
                     icon: Icons.edit,
                     text: 'Edit profile',
@@ -447,10 +436,7 @@ class _ProfileTabState extends State<ProfileUserTab> {
                       _showEditDialog(context);
                     },
                   ),
-
                   const SizedBox(height: 10),
-
-                  // Change Password Button
                   _buildProfileOption(
                     icon: Icons.lock,
                     text: 'Change password',
@@ -459,8 +445,6 @@ class _ProfileTabState extends State<ProfileUserTab> {
                     },
                   ),
                   const SizedBox(height: 10),
-
-                  // Feedback Button
                   _buildProfileOption(
                     icon: Icons.feedback_outlined,
                     text: 'Feedback',
@@ -475,12 +459,12 @@ class _ProfileTabState extends State<ProfileUserTab> {
           ),
           // Log Out Button
           Padding(
-            padding: const EdgeInsets.all(16.0), // Thêm padding cho nút
+            padding: const EdgeInsets.all(16.0),
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF10CCC6),
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 100, vertical: 15),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 100, vertical: 15),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -488,7 +472,7 @@ class _ProfileTabState extends State<ProfileUserTab> {
               onPressed: () async {
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) => WelcomePage()),
+                  MaterialPageRoute(builder: (context) => const WelcomePage()),
                 );
               },
               child: const Text(

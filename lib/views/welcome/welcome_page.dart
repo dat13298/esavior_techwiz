@@ -1,11 +1,8 @@
-import 'package:esavior_techwiz/services/emergency_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 import '../login/login.dart';
 import '../register/register.dart';
 import 'call_emergency.dart';
-
 
 class WelcomePage extends StatefulWidget {
   const WelcomePage({super.key});
@@ -22,7 +19,6 @@ class _WelcomePageState extends State<WelcomePage> {
   Widget build(BuildContext context) {
     screenHeight = MediaQuery.of(context).size.height;
     screenWidth = MediaQuery.of(context).size.width;
-
     return CupertinoPageScaffold(
       backgroundColor: Colors.white,
       child: SafeArea(
@@ -79,9 +75,6 @@ class _WelcomePageState extends State<WelcomePage> {
                       builder: (context) => CallEmergency(),
                     ),
                   );
-                  setState(() {
-                    // Simulate login error
-                  });
                 },
                 child: Container(
                   width: double.infinity,
@@ -112,10 +105,6 @@ class _WelcomePageState extends State<WelcomePage> {
                       builder: (context) => LoginPage(),
                     ),
                   );
-
-                  setState(() {
-                    // Simulate login error
-                  });
                 },
                 child: Container(
                   width: double.infinity,
@@ -144,7 +133,7 @@ class _WelcomePageState extends State<WelcomePage> {
                   Navigator.push(
                     context,
                     CupertinoPageRoute(
-                      builder: (context) => RegisterPage(),
+                      builder: (context) => const RegisterPage(),
                     ),
                   );
                 },

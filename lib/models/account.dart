@@ -40,7 +40,7 @@ class Account{
           [],
     );
   }
-  // Phương thức chuyển Album thành Map
+
   Map<String, dynamic> toMap() {
     return {
       'email': email,
@@ -54,6 +54,4 @@ class Account{
       'status': status,
     };
   }
-
-
 }

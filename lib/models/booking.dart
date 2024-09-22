@@ -33,21 +33,19 @@ class Booking {
   static Booking fromMap(Map<String, dynamic> map, String id) {
     return Booking(
       id: map['id'] as String? ?? '',
-      carID: map['carID'] as String? ?? '', // Gán giá trị mặc định nếu null
-      startLongitude: (map['startLongitude'] as num?)?.toDouble() ?? 0.0, // Chuyển từ num (int hoặc double) thành double
+      carID: map['carID'] as String? ?? '',
+      startLongitude: (map['startLongitude'] as num?)?.toDouble() ?? 0.0,
       startLatitude: (map['startLatitude'] as num?)?.toDouble() ?? 0.0,
       endLongitude: (map['endLongitude'] as num?)?.toDouble() ?? 0.0,
       endLatitude: (map['endLatitude'] as num?)?.toDouble() ?? 0.0,
-      userPhoneNumber: map['userPhoneNumber'] as String? ?? '', // Gán giá trị mặc định nếu null
+      userPhoneNumber: map['userPhoneNumber'] as String? ?? '',
       dateTime: map['dateTime'] as Timestamp,
-      type: map['type'] as String? ?? 'unknown', // Gán giá trị mặc định
-      cost: (map['cost'] as num?)?.toDouble() ?? 0.0, // Chuyển từ num (int hoặc double) thành double
+      type: map['type'] as String? ?? 'unknown',
+      cost: (map['cost'] as num?)?.toDouble() ?? 0.0,
       status: map['status'] as String? ?? 'unknown',
-      driverPhoneNumber: map['driverPhoneNumber'] as String? ?? '', // Gán giá trị mặc định nếu null
+      driverPhoneNumber: map['driverPhoneNumber'] as String? ?? '',
     );
   }
-
-
 
   Map<String, dynamic> toMap(){
     return{
@@ -67,9 +65,7 @@ class Booking {
   }
 
   String get formattedDateTime {
-    // Chuyển đổi Timestamp thành DateTime
     DateTime formatDateTime = dateTime.toDate();
-    // Định dạng ngày giờ
     return DateFormat('dd-MM-yyyy HH:mm:ss').format(formatDateTime);
   }
 

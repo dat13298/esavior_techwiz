@@ -1,10 +1,9 @@
-
-
 import 'package:esavior_techwiz/models/account.dart';
 import 'package:flutter/material.dart';
 
 class Notifications extends StatefulWidget {
   final Account account;
+
   const Notifications({super.key, required this.account});
 
   @override
@@ -14,7 +13,7 @@ class Notifications extends StatefulWidget {
 class _NotificationsState extends State<Notifications> {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(  // MaterialApp added here
+    return MaterialApp(
       title: 'eSavior',
       theme: ThemeData(
         primarySwatch: Colors.teal,
@@ -28,7 +27,7 @@ class _NotificationsState extends State<Notifications> {
               bottomRight: Radius.circular(30),
             ),
             child: AppBar(
-              automaticallyImplyLeading: false, // Bỏ nút back
+              automaticallyImplyLeading: false,
               backgroundColor: const Color(0xFF10CCC6),
               title: const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -70,20 +69,17 @@ class _NotificationsState extends State<Notifications> {
                   style: TextStyle(fontSize: 16),
                 ),
                 const SizedBox(height: 16),
-
                 const Text(
                   "Our journey began with the desire to create an efficient, reliable, and user-friendly solution for those in need of emergency medical services. By combining our expertise in technology and our dedication to helping others, we aim to revolutionize the way people access ambulance services, ensuring quick and seamless support when it matters most.",
                   textAlign: TextAlign.justify,
                   style: TextStyle(fontSize: 16),
                 ),
                 const SizedBox(height: 16),
-
                 const Text(
                   "At NextGen Creators, we believe in the power of youth, innovation, and compassion to drive meaningful change. Our mission is simple: to empower individuals with the tools they need to get help, fast. We are committed to continuous improvement and look forward to shaping a safer, more connected future with eSavior.",
                   textAlign: TextAlign.justify,
                   style: TextStyle(fontSize: 16),
                 ),
-
                 const SizedBox(height: 20),
                 const Text(
                   'Team members',
@@ -96,24 +92,26 @@ class _NotificationsState extends State<Notifications> {
                 Column(
                   children: [
                     Center(
-                      child: buildTeamMember('Dat Nguyen - Leader', 'assets/dat_nguyen.png'),
+                      child: buildTeamMember(
+                          'Dat Nguyen - Leader', 'assets/dat_nguyen.png'),
                     ),
-                    SizedBox(height: 30),
+                    const SizedBox(height: 30),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        buildTeamMember('Thanh Nguyen Ngoc', 'assets/thanh_nguyen.png'),
-                        SizedBox(width: 50),
+                        buildTeamMember(
+                            'Thanh Nguyen Ngoc', 'assets/thanh_nguyen.png'),
+                        const SizedBox(width: 50),
                         buildTeamMember('Hung Ha Quang', 'assets/ha_hung.png'),
                       ],
                     ),
-                    SizedBox(height: 30),
+                    const SizedBox(height: 30),
                     Center(
-                      child: buildTeamMember('Huy Pham Dinh', 'assets/huy_pham.png'),
+                      child: buildTeamMember(
+                          'Huy Pham Dinh', 'assets/huy_pham.png'),
                     ),
                   ],
                 ),
-
                 const SizedBox(height: 10),
               ],
             ),
@@ -123,6 +121,7 @@ class _NotificationsState extends State<Notifications> {
       debugShowCheckedModeBanner: false,
     );
   }
+
   Widget buildTeamMember(String name, String imagePath) {
     return Column(
       children: [
@@ -134,7 +133,7 @@ class _NotificationsState extends State<Notifications> {
               image: AssetImage(imagePath),
               fit: BoxFit.cover,
             ),
-            borderRadius: BorderRadius.circular(10),  // Add some rounding for smoother edges if desired
+            borderRadius: BorderRadius.circular(10),
             border: Border.all(
               color: Colors.black,
               width: 1,
@@ -152,6 +151,4 @@ class _NotificationsState extends State<Notifications> {
       ],
     );
   }
-
-
 }
