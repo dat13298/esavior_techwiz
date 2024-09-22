@@ -11,7 +11,7 @@ import '../../services/address_service.dart';
 class BookingHistory extends StatefulWidget {
   final Account currentAccount;
 
-  const BookingHistory({super.key, required this.currentAccount});
+  const BookingHistory({Key? key, required this.currentAccount}) : super(key: key);
 
   @override
   State<BookingHistory> createState() => _BookingHistoryState();
@@ -29,23 +29,16 @@ class _BookingHistoryState extends State<BookingHistory> {
 
   Future<void> fetchBookingList() async {
     try {
-      if (kDebugMode) {
-        print("Fetching bookings...");
-      }
-      List<Booking> bookings = await BookingService()
-          .getBookingsByPhoneNumber(widget.currentAccount.phoneNumber);
-      if (kDebugMode) {
-        print("Bookings fetched: ${bookings.length}");
-      }
+      print("Fetching bookings...");
+      List<Booking> bookings = await BookingService().getBookingsByPhoneNumber(widget.currentAccount.phoneNumber);
+      print("Bookings fetched: ${bookings.length}");
 
       setState(() {
         bookingList = bookings;
         isLoading = false;
       });
     } catch (e) {
-      if (kDebugMode) {
-        print("Error fetching bookings: $e");
-      }
+      print("Error fetching bookings: $e");
       setState(() {
         isLoading = false;
       });
@@ -59,27 +52,7 @@ class _BookingHistoryState extends State<BookingHistory> {
   Widget _buildBookingItem(Booking booking) {
     DateTime dateTime = _convertTimestampToDateTime(booking.dateTime.seconds);
     String formattedDate = "${dateTime.day}/${dateTime.month}/${dateTime.year}";
-    String formattedTime =
-        "${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}";
-
-    // Cập nhật màu sắc dựa trên trạng thái
-    Color backgroundColor;
-    Color borderColor;
-    Color textColor;
-
-    if (booking.status == "Completed") {
-      backgroundColor = Colors.green.withOpacity(0.1);
-      borderColor = Colors.green;
-      textColor = Colors.green;
-    } else if (booking.status == "Not Yet Confirm") {
-      backgroundColor = Colors.red.withOpacity(0.1);
-      borderColor = Colors.red;
-      textColor = Colors.red;
-    } else {
-      backgroundColor = Colors.orange.withOpacity(0.1);
-      borderColor = Colors.orange;
-      textColor = Colors.orange;
-    }
+    String formattedTime = "${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}";
 
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
@@ -96,9 +69,17 @@ class _BookingHistoryState extends State<BookingHistory> {
         width: 120,
         padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
         decoration: BoxDecoration(
-          color: backgroundColor,
+          color: booking.status == "completed"
+              ? Colors.green.withOpacity(0.1)
+              : booking.status == "waiting"
+              ? Colors.orange.withOpacity(0.1)
+              : Colors.red.withOpacity(0.1),
           border: Border.all(
-            color: borderColor,
+            color: booking.status == "completed"
+                ? Colors.green
+                : booking.status == "waiting"
+                ? Colors.orange
+                : Colors.red,
           ),
           borderRadius: BorderRadius.circular(8),
         ),
@@ -106,7 +87,11 @@ class _BookingHistoryState extends State<BookingHistory> {
           booking.status.toUpperCase(),
           textAlign: TextAlign.center,
           style: TextStyle(
-            color: textColor,
+            color: booking.status == "completed"
+                ? Colors.green
+                : booking.status == "waiting"
+                ? Colors.orange
+                : Colors.red,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -114,16 +99,11 @@ class _BookingHistoryState extends State<BookingHistory> {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(
-              builder: (context) => DetailScreen(
-                booking: booking,
-                account: widget.currentAccount,
-              )),
+          MaterialPageRoute(builder: (context) => DetailScreen(booking: booking, account: widget.currentAccount,)),
         );
       },
     );
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -136,7 +116,7 @@ class _BookingHistoryState extends State<BookingHistory> {
             bottomRight: Radius.circular(30),
           ),
           child: AppBar(
-            automaticallyImplyLeading: false,
+            automaticallyImplyLeading: false, // Bỏ nút back
             backgroundColor: const Color(0xFF10CCC6),
             title: const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -160,17 +140,16 @@ class _BookingHistoryState extends State<BookingHistory> {
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : bookingList.isEmpty
-              ? const Center(child: Text('No bookings available'))
-              : ListView.builder(
-                  itemCount: bookingList.length,
-                  itemBuilder: (context, index) {
-                    return Card(
-                      margin: const EdgeInsets.symmetric(
-                          vertical: 5, horizontal: 8),
-                      child: _buildBookingItem(bookingList[index]),
-                    );
-                  },
-                ),
+          ? const Center(child: Text('No bookings available'))
+          : ListView.builder(
+        itemCount: bookingList.length,
+        itemBuilder: (context, index) {
+          return Card(
+            margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
+            child: _buildBookingItem(bookingList[index]),
+          );
+        },
+      ),
     );
   }
 }
@@ -179,7 +158,7 @@ class DetailScreen extends StatefulWidget {
   final Booking booking;
   final Account account;
 
-  const DetailScreen({super.key, required this.booking, required this.account});
+  const DetailScreen({Key? key, required this.booking, required this.account}) : super(key: key);
 
   @override
   _DetailScreenState createState() => _DetailScreenState();
@@ -194,11 +173,9 @@ class _DetailScreenState extends State<DetailScreen> {
   @override
   void initState() {
     super.initState();
-    DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(
-        widget.booking.dateTime.seconds * 1000);
+    DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(widget.booking.dateTime.seconds * 1000);
     formattedDate = "${dateTime.day}/${dateTime.month}/${dateTime.year}";
-    formattedTime =
-        "${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}";
+    formattedTime = "${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}";
     _convertAddressToDisplay();
   }
 
@@ -231,36 +208,25 @@ class _DetailScreenState extends State<DetailScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Title: ${widget.booking.type}',
-                        style: const TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold)),
+                    Text('Title: ${widget.booking.type}', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 10),
-                    Text('Date: $formattedDate',
-                        style: const TextStyle(fontSize: 16)),
+                    Text('Date: $formattedDate', style: const TextStyle(fontSize: 16)),
                     const SizedBox(height: 5),
-                    Text('Time: $formattedTime',
-                        style: const TextStyle(fontSize: 16)),
+                    Text('Time: $formattedTime', style: const TextStyle(fontSize: 16)),
                     const SizedBox(height: 5),
-                    Text('Status: ${widget.booking.status}',
-                        style: const TextStyle(fontSize: 16)),
+                    Text('Status: ${widget.booking.status}', style: const TextStyle(fontSize: 16)),
                     const SizedBox(height: 5),
-                    Text('Driver Phone: ${widget.booking.driverPhoneNumber}',
-                        style: const TextStyle(fontSize: 16)),
+                    Text('Driver Phone: ${widget.booking.driverPhoneNumber}', style: const TextStyle(fontSize: 16)),
                     const SizedBox(height: 5),
-                    Text('User Phone: ${widget.booking.userPhoneNumber}',
-                        style: const TextStyle(fontSize: 16)),
+                    Text('User Phone: ${widget.booking.userPhoneNumber}', style: const TextStyle(fontSize: 16)),
                     const SizedBox(height: 10),
-                    const Text('Start Address:',
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold)),
+                    const Text('Start Address:', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                     Text(
                       startAddress ?? 'Loading...',
                       style: const TextStyle(fontSize: 16),
                     ),
                     const SizedBox(height: 10),
-                    const Text('End Address:',
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold)),
+                    const Text('End Address:', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                     Text(
                       endAddress ?? 'Loading...',
                       style: const TextStyle(fontSize: 16),
@@ -275,12 +241,10 @@ class _DetailScreenState extends State<DetailScreen> {
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
-                        showMapScreen(
-                            context, null, widget.account, widget.booking);
+                        showMapScreen(context, null, widget.account, widget.booking);
                       },
                       style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 12),
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                         backgroundColor: const Color(0xFF10CCC6),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
@@ -297,13 +261,11 @@ class _DetailScreenState extends State<DetailScreen> {
                     Expanded(
                       child: ElevatedButton(
                         onPressed: () {
-                          BookingService().updateBookingStatus(
-                              widget.booking.id, "Completed");
+                          BookingService().updateBookingStatus(widget.booking.id, "Completed");
                           Navigator.pop(context);
                         },
                         style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 12),
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                           backgroundColor: Colors.green,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
@@ -323,25 +285,23 @@ class _DetailScreenState extends State<DetailScreen> {
       ),
     );
   }
-
   Future<void> _convertAddressToDisplay() async {
-    if (kDebugMode) {
-      print(
-        "Start Latitude: ${widget.booking.startLatitude}, Start Longitude: ${widget.booking.startLongitude}");
-    }
-    if (kDebugMode) {
-      print(
-        "End Latitude: ${widget.booking.endLatitude}, End Longitude: ${widget.booking.endLongitude}");
-    }
-
-    String startAddress = await getAddressFromLatlon(
-        LatLng(widget.booking.startLatitude!, widget.booking.startLongitude!));
-    String endAddress = await getAddressFromLatlon(
-        LatLng(widget.booking.endLatitude!, widget.booking.endLongitude!));
-
+    print("Start Latitude: ${widget.booking.startLatitude}, Start Longitude: ${widget.booking.startLongitude}");
+    print("End Latitude: ${widget.booking.endLatitude}, End Longitude: ${widget.booking.endLongitude}");
+    String startAddr = await getAddressFromLatlon(LatLng(widget.booking.startLatitude!, widget.booking.startLongitude!));
+    String endAddr = await getAddressFromLatlon(LatLng(widget.booking.endLatitude!, widget.booking.endLongitude!));
     setState(() {
-      startAddress = startAddress;
-      endAddress = endAddress;
+      startAddress = startAddr;
+      endAddress = endAddr;
     });
   }
 }
+
+
+
+
+
+
+
+
+
