@@ -188,7 +188,7 @@ class _DriverHomeTabStateState extends State<DriverHomeTab> {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => DetailScreen(booking: booking)),
+          MaterialPageRoute(builder: (context) => DetailScreen(booking: booking, account: widget.account,)),
         );
       },
     );
