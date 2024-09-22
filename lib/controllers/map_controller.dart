@@ -23,6 +23,10 @@ Future<void> showMapScreen(BuildContext context, String? address, Account accoun
     end = LatLng(21.035000, 105.825649);
   }
 
+  if(booking != null && account.role == 'user'){
+    isBookingShow = true;
+  }
+
   //get current location
   Position userPosition = await Geolocator.getCurrentPosition(
     desiredAccuracy: LocationAccuracy.bestForNavigation,
