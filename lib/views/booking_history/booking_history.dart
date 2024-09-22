@@ -61,6 +61,26 @@ class _BookingHistoryState extends State<BookingHistory> {
     String formattedDate = "${dateTime.day}/${dateTime.month}/${dateTime.year}";
     String formattedTime =
         "${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}";
+
+    // Cập nhật màu sắc dựa trên trạng thái
+    Color backgroundColor;
+    Color borderColor;
+    Color textColor;
+
+    if (booking.status == "Completed") {
+      backgroundColor = Colors.green.withOpacity(0.1);
+      borderColor = Colors.green;
+      textColor = Colors.green;
+    } else if (booking.status == "Not Yet Confirm") {
+      backgroundColor = Colors.red.withOpacity(0.1);
+      borderColor = Colors.red;
+      textColor = Colors.red;
+    } else {
+      backgroundColor = Colors.orange.withOpacity(0.1);
+      borderColor = Colors.orange;
+      textColor = Colors.orange;
+    }
+
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
       leading: Icon(
@@ -76,17 +96,9 @@ class _BookingHistoryState extends State<BookingHistory> {
         width: 120,
         padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
         decoration: BoxDecoration(
-          color: booking.status == "completed"
-              ? Colors.green.withOpacity(0.1)
-              : booking.status == "waiting"
-                  ? Colors.orange.withOpacity(0.1)
-                  : Colors.red.withOpacity(0.1),
+          color: backgroundColor,
           border: Border.all(
-            color: booking.status == "completed"
-                ? Colors.green
-                : booking.status == "waiting"
-                    ? Colors.orange
-                    : Colors.red,
+            color: borderColor,
           ),
           borderRadius: BorderRadius.circular(8),
         ),
@@ -94,11 +106,7 @@ class _BookingHistoryState extends State<BookingHistory> {
           booking.status.toUpperCase(),
           textAlign: TextAlign.center,
           style: TextStyle(
-            color: booking.status == "completed"
-                ? Colors.green
-                : booking.status == "waiting"
-                    ? Colors.orange
-                    : Colors.red,
+            color: textColor,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -108,13 +116,14 @@ class _BookingHistoryState extends State<BookingHistory> {
           context,
           MaterialPageRoute(
               builder: (context) => DetailScreen(
-                    booking: booking,
-                    account: widget.currentAccount,
-                  )),
+                booking: booking,
+                account: widget.currentAccount,
+              )),
         );
       },
     );
   }
+
 
   @override
   Widget build(BuildContext context) {
