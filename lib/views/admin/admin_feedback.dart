@@ -34,6 +34,7 @@ class _FeedBackTabState extends State<FeedBackTab> {
       appBar: CustomAppBar(
         title: 'Feedback Manager',
         subtitle: 'All feedbacks',
+        showBackButton: false,
       ),
       body: Column(
         children: [
