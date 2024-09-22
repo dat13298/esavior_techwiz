@@ -7,8 +7,8 @@ class City{
   final String name;
   final List<Hospital> hospitals;
   final List<Car> cars;
-  final String cost_emergency;
-  final String cost_non_emergency;
+  final String costEmergency;
+  final String costNonEmergency;
 
 
   City({
@@ -16,8 +16,8 @@ class City{
     required this.name,
     required this.hospitals,
     required this.cars,
-    required this.cost_emergency,
-    required this.cost_non_emergency,
+    required this.costEmergency,
+    required this.costNonEmergency,
   });
 
   static City fromMap(Map<String, dynamic> map) {
@@ -32,23 +32,19 @@ class City{
           ?.map((carsMap) =>
           Car.fromMap(carsMap as Map<String,dynamic>))
           .toList() ?? [],
-      cost_emergency: map['cost_emergency'] as String? ?? '',
-      cost_non_emergency: map['cost_non_emergency'] as String? ?? '',
+      costEmergency: map['costEmergency'] as String? ?? '',
+      costNonEmergency: map['costNonEmergency'] as String? ?? '',
     );
   }
 
-
-  // Phương thức chuyển Album thành Map
   Map<String, dynamic> toMap() {
     return {
       'id': id,
       'name': name,
       'hospitals': hospitals,
-      'cost_emergency': cost_emergency,
-      'cost_non_emergency': cost_non_emergency,
+      'costEmergency': costEmergency,
+      'costNonEmergency': costNonEmergency,
       'cars': cars,
     };
   }
-
-
 }

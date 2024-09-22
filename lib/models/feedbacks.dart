@@ -20,7 +20,6 @@ class Feedbacks{
     );
   }
 
-  // Phương thức chuyển Album thành Map
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -30,9 +29,7 @@ class Feedbacks{
   }
 
   String get formattedDateTime {
-    // Chuyển đổi Timestamp thành DateTime
     DateTime dateTime = datetime.toDate();
-    // Định dạng ngày giờ
     return DateFormat('dd-MM-yyyy HH:mm:ss').format(dateTime);
   }
 }

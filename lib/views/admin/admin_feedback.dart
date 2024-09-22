@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../models/feedbacks.dart';
 import '../../services/account_service.dart';
-import 'customAppBar.dart';
+import 'custom_app_bar.dart';
 
 class FeedBackTab extends StatefulWidget {
-  const FeedBackTab({Key? key}) : super(key: key);
+  const FeedBackTab({super.key});
 
   @override
   _FeedBackTabState createState() => _FeedBackTabState();
@@ -18,7 +18,6 @@ class _FeedBackTabState extends State<FeedBackTab> {
   @override
   void initState() {
     super.initState();
-    // Gọi method từ AccountService
     _feedbackStream = AccountService().getAllFeedBack();
   }
 
@@ -31,7 +30,7 @@ class _FeedBackTabState extends State<FeedBackTab> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(
+      appBar: const CustomAppBar(
         title: 'Feedback Manager',
         subtitle: 'All feedbacks',
         showBackButton: false,
@@ -69,22 +68,20 @@ class _FeedBackTabState extends State<FeedBackTab> {
                 if (!snapshot.hasData || snapshot.data!.isEmpty) {
                   return const Center(child: Text('No feedbacks found'));
                 }
-
                 List<Feedbacks> feedbackList = snapshot.data!;
-
-                // Nếu có từ tìm kiếm, lọc kết quả
                 if (_searchTerm.isNotEmpty) {
                   feedbackList = feedbackList
-                      .where((feedback) => feedback.content.contains(_searchTerm))
+                      .where(
+                          (feedback) => feedback.content.contains(_searchTerm))
                       .toList();
                 }
-
                 return ListView.builder(
                   itemCount: feedbackList.length,
                   itemBuilder: (context, index) {
                     final feedback = feedbackList[index];
                     return Card(
-                      margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+                      margin: const EdgeInsets.symmetric(
+                          vertical: 4.0, horizontal: 8.0),
                       child: ListTile(
                         title: Text('ID: ${feedback.id}'),
                         subtitle: Text('Message: ${feedback.content}'),

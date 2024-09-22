@@ -4,7 +4,6 @@ class Hospital{
   final String address;
   final String cityID;
 
-
   Hospital({
     required this.id,
     required this.name,
@@ -21,7 +20,6 @@ class Hospital{
     );
   }
 
-  // Phương thức chuyển Album thành Map
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -30,5 +28,4 @@ class Hospital{
       'cityID':cityID,
     };
   }
-
 }

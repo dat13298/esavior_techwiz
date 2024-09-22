@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
 import 'email_password.dart';
 
 class PhoneAddressPage extends StatefulWidget {
@@ -36,7 +36,6 @@ class _PhoneAddressPageState extends State<PhoneAddressPage> {
       } else {
         _phoneError = null;
       }
-
       String addressText = _addressController.text.trim();
       if (addressText.isEmpty) {
         _addressError = 'Address cannot be empty';
@@ -45,7 +44,6 @@ class _PhoneAddressPageState extends State<PhoneAddressPage> {
       } else {
         _addressError = null;
       }
-
       _isButtonEnabled = _phoneError == null && _addressError == null;
     });
   }
@@ -65,7 +63,9 @@ class _PhoneAddressPageState extends State<PhoneAddressPage> {
           ),
         );
       } catch (e) {
-        print('Error: $e');
+        if (kDebugMode) {
+          print('Error: $e');
+        }
       }
     }
   }
@@ -109,8 +109,6 @@ class _PhoneAddressPageState extends State<PhoneAddressPage> {
               child: Column(
                 children: [
                   SizedBox(height: screenHeight * 0.1),
-
-                  // Nút back
                   Align(
                     alignment: Alignment.centerLeft,
                     child: GestureDetector(
@@ -124,7 +122,6 @@ class _PhoneAddressPageState extends State<PhoneAddressPage> {
                       ),
                     ),
                   ),
-
                   Expanded(
                     child: SingleChildScrollView(
                       child: Padding(

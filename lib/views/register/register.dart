@@ -21,9 +21,9 @@ class _RegisterPageState extends State<RegisterPage> {
 
   void _checkFields() {
     final fullName = _fullNameController.text.trim();
-
-
-    if (fullName.isEmpty || fullName.length > 40 || !RegExp(r"^[a-zA-Z\s]+$").hasMatch(fullName)) {
+    if (fullName.isEmpty ||
+        fullName.length > 40 ||
+        !RegExp(r"^[a-zA-Z\s]+$").hasMatch(fullName)) {
       setState(() {
         _fullNameError = 'Invalid full name!';
         _isButtonEnabled = false;
@@ -41,8 +41,6 @@ class _RegisterPageState extends State<RegisterPage> {
       setState(() {
         _currentStep++;
       });
-
-
       Navigator.push(
         context,
         CupertinoPageRoute(
@@ -80,7 +78,8 @@ class _RegisterPageState extends State<RegisterPage> {
       child: RawKeyboardListener(
         focusNode: _focusNode,
         onKey: (RawKeyEvent event) {
-          if (event is RawKeyDownEvent && event.logicalKey == LogicalKeyboardKey.enter) {
+          if (event is RawKeyDownEvent &&
+              event.logicalKey == LogicalKeyboardKey.enter) {
             _handleContinue();
           }
         },
@@ -110,22 +109,22 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                     ),
                   ),
-
                   Expanded(
                     child: SingleChildScrollView(
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 50.0),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 0.0, vertical: 50.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: List.generate(3, (index) {
-                                return _buildStepIndicator(isActive: index <= _currentStep);
+                                return _buildStepIndicator(
+                                    isActive: index <= _currentStep);
                               }),
                             ),
                             SizedBox(height: screenHeight * 0.05),
-
                             const Text(
                               'Enter your full name',
                               style: TextStyle(
@@ -138,7 +137,8 @@ class _RegisterPageState extends State<RegisterPage> {
                             CupertinoTextField(
                               controller: _fullNameController,
                               keyboardType: TextInputType.name,
-                              padding: const EdgeInsets.symmetric(vertical: 19, horizontal: 16),
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 19, horizontal: 16),
                               cursorColor: Colors.black,
                               decoration: BoxDecoration(
                                 border: Border.all(color: Colors.black),
@@ -162,7 +162,6 @@ class _RegisterPageState extends State<RegisterPage> {
                                   ),
                                 ),
                               ),
-
                             const SizedBox(height: 34),
                           ],
                         ),

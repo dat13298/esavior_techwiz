@@ -2,10 +2,11 @@ import 'package:flutter/foundation.dart';
 
 class NotificationProvider with ChangeNotifier {
   String? _message;
-  bool _isAdmin = false; // Trạng thái admin
+  bool _isAdmin = false;
 
   String? get message => _message;
-  bool get isAdmin => _isAdmin; // Getter cho trạng thái admin
+
+  bool get isAdmin => _isAdmin;
 
   void setMessage(String message) {
     _message = message;
@@ -18,8 +19,7 @@ class NotificationProvider with ChangeNotifier {
   }
 
   void setAdminStatus(bool status) {
-    _isAdmin = status; // Cập nhật trạng thái admin
-    print("set duoc roi");
+    _isAdmin = status;
     notifyListeners();
   }
 }

@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -7,17 +6,17 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool showBackButton;
 
   const CustomAppBar({
-    Key? key,
+    super.key,
     required this.title,
     required this.subtitle,
     this.showBackButton = true,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
       automaticallyImplyLeading: showBackButton,
-      backgroundColor: Color(0xFF10CCC6),
+      backgroundColor: const Color(0xFF10CCC6),
       flexibleSpace: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -30,7 +29,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 children: [
                   Text(
                     title,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
@@ -54,5 +53,5 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize => Size.fromHeight(120.0);
+  Size get preferredSize => const Size.fromHeight(120.0);
 }

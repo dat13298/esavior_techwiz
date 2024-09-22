@@ -18,7 +18,6 @@ class Message{
     );
   }
 
-  // Phương thức chuyển Album thành Map
   Map<String, dynamic> toMap() {
     return {
       'id': id,

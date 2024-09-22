@@ -26,7 +26,8 @@ class AccountPage extends StatefulWidget {
 class _AccountPageState extends State<AccountPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
 
   String? _emailError;
   String? _passwordError;
@@ -41,7 +42,6 @@ class _AccountPageState extends State<AccountPage> {
       String password = _passwordController.text.trim();
       String confirmPassword = _confirmPasswordController.text.trim();
 
-      // Validate email
       if (email.isEmpty) {
         _emailError = 'Email cannot be empty';
       } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(email)) {
@@ -51,8 +51,6 @@ class _AccountPageState extends State<AccountPage> {
       } else {
         _emailError = null;
       }
-
-      // Validate passwords
       if (password.isEmpty || confirmPassword.isEmpty) {
         _passwordError = 'Password cannot be empty';
         _passwordsMatch = true;
@@ -69,7 +67,6 @@ class _AccountPageState extends State<AccountPage> {
         _passwordError = null;
         _passwordsMatch = true;
       }
-
       _isButtonEnabled =
           _emailError == null && _passwordError == null && _passwordsMatch;
     });
@@ -91,12 +88,11 @@ class _AccountPageState extends State<AccountPage> {
           role: "user",
           status: " ",
         );
-
         await AccountService().addAccount(newAccount);
 
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => LoginPage()),
+          MaterialPageRoute(builder: (context) => const LoginPage()),
         );
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -154,15 +150,16 @@ class _AccountPageState extends State<AccountPage> {
                 Expanded(
                   child: SingleChildScrollView(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 50.0),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 0.0, vertical: 50.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Step indicator
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: List.generate(3, (index) {
-                              return _buildStepIndicator(isActive: index <= widget.currentStep);
+                              return _buildStepIndicator(
+                                  isActive: index <= widget.currentStep);
                             }),
                           ),
                           SizedBox(height: screenHeight * 0.05),
@@ -178,7 +175,8 @@ class _AccountPageState extends State<AccountPage> {
                           CupertinoTextField(
                             controller: _emailController,
                             keyboardType: TextInputType.emailAddress,
-                            padding: const EdgeInsets.symmetric(vertical: 19, horizontal: 16),
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 19, horizontal: 16),
                             cursorColor: Colors.black,
                             decoration: BoxDecoration(
                               border: Border.all(color: Colors.black),
@@ -212,7 +210,8 @@ class _AccountPageState extends State<AccountPage> {
                             ),
                           ),
                           const SizedBox(height: 5),
-                          _buildPasswordField(_passwordController, _obscurePassword, () {
+                          _buildPasswordField(
+                              _passwordController, _obscurePassword, () {
                             setState(() {
                               _obscurePassword = !_obscurePassword;
                             });
@@ -227,9 +226,11 @@ class _AccountPageState extends State<AccountPage> {
                             ),
                           ),
                           const SizedBox(height: 5),
-                          _buildPasswordField(_confirmPasswordController, _obscureConfirmPassword, () {
+                          _buildPasswordField(_confirmPasswordController,
+                              _obscureConfirmPassword, () {
                             setState(() {
-                              _obscureConfirmPassword = !_obscureConfirmPassword;
+                              _obscureConfirmPassword =
+                                  !_obscureConfirmPassword;
                             });
                           }),
                           if (!_passwordsMatch)
@@ -289,7 +290,8 @@ class _AccountPageState extends State<AccountPage> {
     );
   }
 
-  Widget _buildPasswordField(TextEditingController controller, bool obscureText, VoidCallback toggleVisibility) {
+  Widget _buildPasswordField(TextEditingController controller, bool obscureText,
+      VoidCallback toggleVisibility) {
     return Stack(
       alignment: Alignment.centerRight,
       children: [
@@ -304,12 +306,12 @@ class _AccountPageState extends State<AccountPage> {
           ),
         ),
         Positioned(
-          right: 10, // Khoảng cách 5px từ bên phải
+          right: 10,
           child: GestureDetector(
             onTap: toggleVisibility,
             child: Icon(
               obscureText ? Icons.visibility_off : Icons.visibility,
-              color: Colors.black38, // Màu nhạt hơn
+              color: Colors.black38,
             ),
           ),
         ),

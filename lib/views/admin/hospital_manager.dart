@@ -2,11 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../models/hospital.dart';
 import '../../services/city_service.dart';
-import 'customAppBar.dart';
-
+import 'custom_app_bar.dart';
 
 class HospitalManager extends StatefulWidget {
-  const HospitalManager();
+  const HospitalManager({super.key});
 
   @override
   _HospitalManagerState createState() => _HospitalManagerState();
@@ -16,15 +15,13 @@ class _HospitalManagerState extends State<HospitalManager> {
   final TextEditingController _searchController = TextEditingController();
   String _searchTerm = '';
   List<Hospital> _hospitals = [];
-  String _selectedCity = '';
-  List<String> _cities = [];
+  final List<String> _cities = [];
   final CityService _cityService = CityService();
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(
+      appBar: const CustomAppBar(
         title: 'Hospital Manager',
         subtitle: 'Manage all hospital',
       ),
@@ -36,9 +33,9 @@ class _HospitalManagerState extends State<HospitalManager> {
               controller: _searchController,
               decoration: InputDecoration(
                 labelText: 'Search Hospital',
-                border: OutlineInputBorder(),
+                border: const OutlineInputBorder(),
                 suffixIcon: IconButton(
-                  icon: Icon(Icons.search),
+                  icon: const Icon(Icons.search),
                   onPressed: () {
                     setState(() {
                       _searchHospitals();
@@ -48,26 +45,27 @@ class _HospitalManagerState extends State<HospitalManager> {
               ),
             ),
           ),
-          // Nút thêm bệnh viện
           ElevatedButton(
             onPressed: () {
-              //display form to add hospital
               _showAddHospitalDialog(context);
             },
-            child: Text('Add Hospital'),
+            child: const Text('Add Hospital'),
           ),
-          //display list hospital
           Expanded(
             child: StreamBuilder<List<Hospital>>(
               stream: _cityService.getAllHospital(),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
-                  return Center(child: CircularProgressIndicator());
+                  return const Center(child: CircularProgressIndicator());
                 }
 
                 final filteredHospitals = snapshot.data!.where((hospital) {
-                  final nameMatch = hospital.name.toLowerCase().contains(_searchTerm.toLowerCase());
-                  final addMatch = hospital.address.toLowerCase().contains(_searchTerm.toLowerCase());
+                  final nameMatch = hospital.name
+                      .toLowerCase()
+                      .contains(_searchTerm.toLowerCase());
+                  final addMatch = hospital.address
+                      .toLowerCase()
+                      .contains(_searchTerm.toLowerCase());
                   return nameMatch || addMatch;
                 }).toList();
 
@@ -79,22 +77,21 @@ class _HospitalManagerState extends State<HospitalManager> {
                       title: Text(hospital.name),
                       subtitle: Text(hospital.address),
                       trailing: Row(
-                        mainAxisSize: MainAxisSize.min, // Để đảm bảo Row không chiếm toàn bộ chiều rộng
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           IconButton(
-                          icon: Icon(Icons.edit, color: Colors.blue),
-                          onPressed: () {
-                            _showEditHospitalDialog(hospital);
-                          },
-                        ),
-                        IconButton(
-                          icon: Icon(Icons.delete, color: Colors.red),
-                          onPressed: () {
-                          // Gọi hàm để xóa bệnh viện
-                            _confirmDeleteHospital(hospital);
-                          },
-                        ),
-                       ],
+                            icon: const Icon(Icons.edit, color: Colors.blue),
+                            onPressed: () {
+                              _showEditHospitalDialog(hospital);
+                            },
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.delete, color: Colors.red),
+                            onPressed: () {
+                              _confirmDeleteHospital(hospital);
+                            },
+                          ),
+                        ],
                       ),
                     );
                   },
@@ -107,28 +104,25 @@ class _HospitalManagerState extends State<HospitalManager> {
     );
   }
 
-  // Hàm hiển thị form pop-up để thêm bệnh viện
   void _showAddHospitalDialog(BuildContext context) {
     String? selectedCityId;
     TextEditingController hospitalNameController = TextEditingController();
     TextEditingController hospitalAddressController = TextEditingController();
 
-    // Gọi CityService để lấy danh sách city
     CityService().getCities().then((cities) {
       showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Add Hospital'),
+            title: const Text('Add Hospital'),
             content: StatefulBuilder(
               builder: (context, setState) {
                 return Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // DropdownButton để chọn city
                     DropdownButton<String>(
                       value: selectedCityId,
-                      hint: Text('Select City'),
+                      hint: const Text('Select City'),
                       onChanged: (String? newValue) {
                         setState(() {
                           selectedCityId = newValue!;
@@ -143,11 +137,13 @@ class _HospitalManagerState extends State<HospitalManager> {
                     ),
                     TextField(
                       controller: hospitalNameController,
-                      decoration: InputDecoration(labelText: 'Hospital Name'),
+                      decoration:
+                          const InputDecoration(labelText: 'Hospital Name'),
                     ),
                     TextField(
                       controller: hospitalAddressController,
-                      decoration: InputDecoration(labelText: 'Hospital Address'),
+                      decoration:
+                          const InputDecoration(labelText: 'Hospital Address'),
                     ),
                   ],
                 );
@@ -156,9 +152,9 @@ class _HospitalManagerState extends State<HospitalManager> {
             actions: [
               ElevatedButton(
                 onPressed: () {
-                  //check if choose city or not
-                  if (selectedCityId != null && hospitalNameController.text.isNotEmpty && hospitalAddressController.text.isNotEmpty) {
-                    // add new hospital
+                  if (selectedCityId != null &&
+                      hospitalNameController.text.isNotEmpty &&
+                      hospitalAddressController.text.isNotEmpty) {
                     CityService().addHospital(
                       selectedCityId!,
                       hospitalNameController.text,
@@ -166,19 +162,19 @@ class _HospitalManagerState extends State<HospitalManager> {
                     );
                     Navigator.of(context).pop();
                   } else {
-                    // display alert if not enough infor
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Please fill all the fields')),
+                      const SnackBar(
+                          content: Text('Please fill all the fields')),
                     );
                   }
                 },
-                child: Text('Save'),
+                child: const Text('Save'),
               ),
               ElevatedButton(
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: Text('Cancel'),
+                child: const Text('Cancel'),
               ),
             ],
           );
@@ -191,38 +187,44 @@ class _HospitalManagerState extends State<HospitalManager> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        TextEditingController nameController = TextEditingController(text: hospital.name);
-        TextEditingController addController = TextEditingController(text: hospital.address);
+        TextEditingController nameController =
+            TextEditingController(text: hospital.name);
+        TextEditingController addController =
+            TextEditingController(text: hospital.address);
 
         return AlertDialog(
-          title: Text('Edit Hospital'),
+          title: const Text('Edit Hospital'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 controller: nameController,
-                decoration: InputDecoration(labelText: 'Hospital Name'),
+                decoration: const InputDecoration(labelText: 'Hospital Name'),
               ),
               TextField(
                 controller: addController,
-                decoration: InputDecoration(labelText: 'Address'),
+                decoration: const InputDecoration(labelText: 'Address'),
               ),
-              // Thêm các field khác nếu cần
             ],
           ),
           actions: [
             ElevatedButton(
               onPressed: () {
-                _editHospital(hospital.cityID,hospital.id, nameController.text, addController.text,);
+                _editHospital(
+                  hospital.cityID,
+                  hospital.id,
+                  nameController.text,
+                  addController.text,
+                );
                 Navigator.of(context).pop();
               },
-              child: Text('Save'),
+              child: const Text('Save'),
             ),
             ElevatedButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
           ],
         );
@@ -235,24 +237,24 @@ class _HospitalManagerState extends State<HospitalManager> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Confirm Delete'),
+          title: const Text('Confirm Delete'),
           content: Text('Are you sure you want to delete ${hospital.name}?'),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('No'),
+              child: const Text('No'),
             ),
             ElevatedButton(
               onPressed: () {
                 _deleteHospital(hospital);
                 Navigator.of(context).pop();
               },
-              child: Text('Yes'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,
               ),
+              child: const Text('Yes'),
             ),
           ],
         );
@@ -267,8 +269,9 @@ class _HospitalManagerState extends State<HospitalManager> {
     });
   }
 
-  void _editHospital(String cityID,String hospitalId, String newName, String newAddress) {
-    CityService().updateHospital(cityID,hospitalId, newName, newAddress);
+  void _editHospital(
+      String cityID, String hospitalId, String newName, String newAddress) {
+    CityService().updateHospital(cityID, hospitalId, newName, newAddress);
     print('Hospital $newName updated');
   }
 
@@ -293,17 +296,15 @@ class _HospitalManagerState extends State<HospitalManager> {
 
   Future<void> _searchHospitals() async {
     if (_searchTerm.isEmpty) {
-      // If search term is empty, load all hospitals
       final allHospitals = await _cityService.getAllHospital();
       setState(() {
         _hospitals = allHospitals as List<Hospital>;
       });
     } else {
-      // Perform search
       final nameResults = await _cityService.getHospitalsByName(_searchTerm);
-      final locationResults = await _cityService.getHospitalsByLocation(_searchTerm);
+      final locationResults =
+          await _cityService.getHospitalsByLocation(_searchTerm);
 
-      // Combine and remove duplicates
       final Set<String> uniqueIds = {};
       final List<Hospital> combinedResults = [];
 
@@ -312,11 +313,9 @@ class _HospitalManagerState extends State<HospitalManager> {
           combinedResults.add(hospital);
         }
       }
-
       setState(() {
         _hospitals = combinedResults;
       });
     }
   }
-
 }

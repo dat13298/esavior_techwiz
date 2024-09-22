@@ -1,9 +1,9 @@
 import 'package:esavior_techwiz/services/booking_service.dart';
-import 'package:esavior_techwiz/services/drver_service.dart';
+import 'package:esavior_techwiz/services/driver_service.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../../models/account.dart';
-import '../../services/account_service.dart';
-import 'customAppBar.dart';
+import 'custom_app_bar.dart';
 
 class DriverManager extends StatefulWidget {
   const DriverManager({super.key});
@@ -21,7 +21,7 @@ class DriverManagerState extends State<DriverManager> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(
+      appBar: const CustomAppBar(
         title: 'Driver Manager',
         subtitle: 'Manage all drivers',
       ),
@@ -33,9 +33,9 @@ class DriverManagerState extends State<DriverManager> {
               controller: _searchController,
               decoration: InputDecoration(
                 labelText: 'Search Driver',
-                border: OutlineInputBorder(),
+                border: const OutlineInputBorder(),
                 suffixIcon: IconButton(
-                  icon: Icon(Icons.search),
+                  icon: const Icon(Icons.search),
                   onPressed: () {
                     setState(() {
                       _searchTerm = _searchController.text;
@@ -47,30 +47,32 @@ class DriverManagerState extends State<DriverManager> {
           ),
           ElevatedButton(
             onPressed: () {
-              //display form to add driver
               _showAddDriverDialog(context);
             },
-            child: Text('Add Driver'),
+            child: const Text('Add Driver'),
           ),
           Expanded(
             child: StreamBuilder<List<Account>>(
               stream: _driverService.getAllDriver(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
+                  return const Center(child: CircularProgressIndicator());
                 }
                 if (snapshot.hasError) {
                   return Center(child: Text("Error: ${snapshot.error}"));
                 }
                 if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Center(child: Text("No drivers found"));
+                  return const Center(child: Text("No drivers found"));
                 }
                 final filteredDrivers = snapshot.data!.where((driver) {
-                  final nameMatch = driver.fullName.toLowerCase().contains(_searchTerm.toLowerCase());
-                  final phoneMatch = driver.phoneNumber.toLowerCase().contains(_searchTerm.toLowerCase());
+                  final nameMatch = driver.fullName
+                      .toLowerCase()
+                      .contains(_searchTerm.toLowerCase());
+                  final phoneMatch = driver.phoneNumber
+                      .toLowerCase()
+                      .contains(_searchTerm.toLowerCase());
                   return nameMatch || phoneMatch;
                 }).toList();
-
                 return ListView.builder(
                   itemCount: filteredDrivers.length,
                   itemBuilder: (context, index) {
@@ -85,23 +87,20 @@ class DriverManagerState extends State<DriverManager> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           IconButton(
-                            icon: Icon(Icons.edit, color: Colors.blue),
+                            icon: const Icon(Icons.edit, color: Colors.blue),
                             onPressed: () {
-                              // Implement edit functionality
                               _showEditDriverDialog(driver);
                             },
                           ),
                           IconButton(
-                            icon: Icon(Icons.delete, color: Colors.red),
+                            icon: const Icon(Icons.delete, color: Colors.red),
                             onPressed: () {
-                              // Implement delete functionality
                               _confirmDeleteDriver(driver);
                             },
                           ),
                         ],
                       ),
                       onTap: () {
-                        // Show the booking history dialog when tapped
                         _showBookingHistory(driver.phoneNumber);
                       },
                     );
@@ -119,31 +118,30 @@ class DriverManagerState extends State<DriverManager> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        TextEditingController nameController = TextEditingController(
-            text: driver.fullName);
-        TextEditingController addHomeController = TextEditingController(
-            text: driver.addressHome);
-        TextEditingController addCompanyController = TextEditingController(
-            text: driver.addressCompany);
+        TextEditingController nameController =
+            TextEditingController(text: driver.fullName);
+        TextEditingController addHomeController =
+            TextEditingController(text: driver.addressHome);
+        TextEditingController addCompanyController =
+            TextEditingController(text: driver.addressCompany);
 
         return AlertDialog(
-          title: Text('Edit Driver'),
+          title: const Text('Edit Driver'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 controller: nameController,
-                decoration: InputDecoration(labelText: 'Driver name'),
+                decoration: const InputDecoration(labelText: 'Driver name'),
               ),
               TextField(
                 controller: addHomeController,
-                decoration: InputDecoration(labelText: 'Home Address'),
+                decoration: const InputDecoration(labelText: 'Home Address'),
               ),
               TextField(
                 controller: addCompanyController,
-                decoration: InputDecoration(labelText: 'Company Address'),
+                decoration: const InputDecoration(labelText: 'Company Address'),
               ),
-              // Display phone number as read-only text
               Text('Phone number: ${driver.phoneNumber}'),
             ],
           ),
@@ -158,13 +156,13 @@ class DriverManagerState extends State<DriverManager> {
                 );
                 Navigator.of(context).pop();
               },
-              child: Text('Save'),
+              child: const Text('Save'),
             ),
             ElevatedButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
           ],
         );
@@ -174,55 +172,57 @@ class DriverManagerState extends State<DriverManager> {
 
   void _showBookingHistory(String phoneNumber) async {
     try {
-      // Assuming getBookingsByDriverPhoneNumber is a method in DriverService
-      final bookings = await _bookingService.getBookingsByDriverPhoneNumber(phoneNumber);
-
+      final bookings =
+          await _bookingService.getBookingsByDriverPhoneNumber(phoneNumber);
       showDialog(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Booking History'),
+            title: const Text('Booking History'),
             content: bookings.isEmpty
-                ? Text('No bookings found for this driver.')
+                ? const Text('No bookings found for this driver.')
                 : SizedBox(
-              width: double.maxFinite,
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: bookings.length,
-                itemBuilder: (context, index) {
-                  final booking = bookings[index];
-                  return ListTile(
-                    title: Text('User phone number: ${booking.userPhoneNumber}'),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Cost: ${booking.cost}'),
-                        Text('Status: ${booking.status}'),
-                        Text('Date: ${booking.formattedDateTime}'),
-                      ],
+                    width: double.maxFinite,
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: bookings.length,
+                      itemBuilder: (context, index) {
+                        final booking = bookings[index];
+                        return ListTile(
+                          title: Text(
+                              'User phone number: ${booking.userPhoneNumber}'),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Cost: ${booking.cost}'),
+                              Text('Status: ${booking.status}'),
+                              Text('Date: ${booking.formattedDateTime}'),
+                            ],
+                          ),
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
-            ),
+                  ),
             actions: [
               ElevatedButton(
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: Text('Close'),
+                child: const Text('Close'),
               ),
             ],
           );
         },
       );
     } catch (e) {
-      print('Error fetching booking history: $e');
-      // Optionally, show an error dialog to the user
+      if (kDebugMode) {
+        print('Error fetching booking history: $e');
+      }
     }
   }
 
-  void _editDriver(String phoneNumber, String newFullName, String newHomeAdd, String newCompAdd) async {
+  void _editDriver(String phoneNumber, String newFullName, String newHomeAdd,
+      String newCompAdd) async {
     try {
       await DriverService().editDriver(
         phoneNumber,
@@ -230,12 +230,15 @@ class DriverManagerState extends State<DriverManager> {
         newHomeAdd: newHomeAdd,
         newCompAdd: newCompAdd,
       );
-      print('Driver $newFullName updated');
+      if (kDebugMode) {
+        print('Driver $newFullName updated');
+      }
     } catch (e) {
-      print('Error updating driver: $e');
+      if (kDebugMode) {
+        print('Error updating driver: $e');
+      }
     }
   }
-
 
   void _showAddDriverDialog(BuildContext context) {
     final TextEditingController nameController = TextEditingController();
@@ -249,34 +252,34 @@ class DriverManagerState extends State<DriverManager> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Add New Driver'),
+          title: const Text('Add New Driver'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 controller: nameController,
-                decoration: InputDecoration(labelText: 'Full Name'),
+                decoration: const InputDecoration(labelText: 'Full Name'),
               ),
               TextField(
                 controller: phoneController,
-                decoration: InputDecoration(labelText: 'Phone Number'),
+                decoration: const InputDecoration(labelText: 'Phone Number'),
               ),
               TextField(
                 controller: emailController,
-                decoration: InputDecoration(labelText: 'Email'),
+                decoration: const InputDecoration(labelText: 'Email'),
               ),
               TextField(
                 controller: addHomeController,
-                decoration: InputDecoration(labelText: 'Home Address'),
+                decoration: const InputDecoration(labelText: 'Home Address'),
               ),
               TextField(
                 controller: addCompanyController,
-                decoration: InputDecoration(labelText: 'Company Address'),
+                decoration: const InputDecoration(labelText: 'Company Address'),
               ),
               TextField(
                 controller: passwordController,
                 obscureText: true,
-                decoration: InputDecoration(labelText: 'Password'),
+                decoration: const InputDecoration(labelText: 'Password'),
               ),
             ],
           ),
@@ -293,13 +296,13 @@ class DriverManagerState extends State<DriverManager> {
                 );
                 Navigator.of(context).pop();
               },
-              child: Text('Save'),
+              child: const Text('Save'),
             ),
             ElevatedButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
           ],
         );
@@ -312,24 +315,24 @@ class DriverManagerState extends State<DriverManager> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Confirm Delete'),
+          title: const Text('Confirm Delete'),
           content: Text('Are you sure you want to delete ${account.fullName}?'),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('No'),
+              child: const Text('No'),
             ),
             ElevatedButton(
               onPressed: () {
                 _deleteDriver(account);
                 Navigator.of(context).pop();
               },
-              child: Text('Yes'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,
               ),
+              child: const Text('Yes'),
             ),
           ],
         );
@@ -340,9 +343,12 @@ class DriverManagerState extends State<DriverManager> {
   void _deleteDriver(Account account) async {
     await DriverService().deleteDriver(account.phoneNumber);
     setState(() {
-      print('Driver ${account.fullName} deleted');
+      if (kDebugMode) {
+        print('Driver ${account.fullName} deleted');
+      }
     });
   }
+
   @override
   void initState() {
     super.initState();

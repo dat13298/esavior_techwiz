@@ -1,10 +1,10 @@
 import 'package:esavior_techwiz/services/emergency_service.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
-
 
 class CallEmergency extends StatefulWidget {
   const CallEmergency({super.key});
@@ -21,57 +21,61 @@ class _CallEmergencyState extends State<CallEmergency> {
   @override
   void initState() {
     super.initState();
-    _initialize();//TODO call dispatcher and get current location
+    _initialize();
   }
 
   Future<void> _initialize() async {
-    await _callDispatcher();///call Dispatcher when widget start
+    await _callDispatcher();
     await _getCurrentLocation();
   }
 
-  /// CALL HOT LINE
   Future<void> _callDispatcher() async {
-    // Yêu cầu quyền gọi điện thoại
     final PermissionStatus status = await Permission.phone.request();
     final PermissionStatus status2 = await Permission.phone.status;
-    print('Phone permission status: $status2');
+    if (kDebugMode) {
+      print('Phone permission status: $status2');
+    }
 
     if (status.isGranted) {
-      final Uri phoneUri = Uri(scheme: 'tel', path: '0915799025'); // HOT LINE
+      final Uri phoneUri = Uri(scheme: 'tel', path: '0915799025');
       try {
         if (await canLaunchUrl(phoneUri)) {
           await launchUrl(phoneUri);
         } else {
-          print('Could not launch $phoneUri');
+          if (kDebugMode) {
+            print('Could not launch $phoneUri');
+          }
         }
       } catch (e) {
-        print('Error: $e');
+        if (kDebugMode) {
+          print('Error: $e');
+        }
       }
     } else {
-      print('Phone permission denied');
+      if (kDebugMode) {
+        print('Phone permission denied');
+      }
     }
   }
 
-
-  /// GET CURRENT LOCATION and INSERT REALTIME
   Future<void> _getCurrentLocation() async {
     try {
       Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.bestForNavigation,
       );
-      // Xử lý vị trí của người dùng ở đây, ví dụ lưu vào biến, gửi đến server, v.v.
-      await _emergencyService.sendLocationToFirebase(position.latitude, position.longitude);
+      await _emergencyService.sendLocationToFirebase(
+          position.latitude, position.longitude);
     } catch (e) {
-      print('Error getting location: $e');
+      if (kDebugMode) {
+        print('Error getting location: $e');
+      }
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
     screenHeight = MediaQuery.of(context).size.height;
     screenWidth = MediaQuery.of(context).size.width;
-
     return CupertinoPageScaffold(
       backgroundColor: Colors.white,
       child: SafeArea(
@@ -101,7 +105,6 @@ class _CallEmergencyState extends State<CallEmergency> {
                   decoration: TextDecoration.none,
                 ),
               ),
-
               SizedBox(height: screenHeight * 0.03),
               Image.asset(
                 'assets/wellcome_page.png',
@@ -138,7 +141,7 @@ class _CallEmergencyState extends State<CallEmergency> {
                   Navigator.push(
                     context,
                     CupertinoPageRoute(
-                      builder: (context) => CallEmergency(),
+                      builder: (context) => const CallEmergency(),
                     ),
                   );
                   setState(() {
@@ -166,7 +169,6 @@ class _CallEmergencyState extends State<CallEmergency> {
                 ),
               ),
               SizedBox(height: screenHeight * 0.125),
-
               SizedBox(height: screenHeight * 0.01),
               GestureDetector(
                 onTap: () {

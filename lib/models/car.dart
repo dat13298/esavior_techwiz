@@ -19,7 +19,7 @@ class Car{
 
   static Car fromMap(Map<String, dynamic> map) {
     return Car(
-      id: map['id'] as String? ?? '', // Giá trị mặc định nếu là null
+      id: map['id'] as String? ?? '',
       name: map['name'] as String? ?? '',
       description: map['description'] as String? ?? '',
       num_seat: map['num_seat'] as String? ?? '',
@@ -29,8 +29,6 @@ class Car{
     );
   }
 
-
-  // Phương thức chuyển Album thành Map
   Map<String, dynamic> toMap() {
     return {
       'id': id,

@@ -1,4 +1,4 @@
-import 'package:esavior_techwiz/services/drver_service.dart';
+import 'package:esavior_techwiz/services/driver_service.dart';
 import 'package:flutter/material.dart';
 import 'package:esavior_techwiz/models/booking.dart';
 import 'package:esavior_techwiz/services/booking_service.dart';
@@ -6,27 +6,26 @@ import 'package:provider/provider.dart';
 
 import '../../models/account.dart';
 import '../../services/emergency_service.dart';
-import '../../services/notificationProvider.dart';
+import '../../services/notification_provider.dart';
 import 'admin_feedback.dart';
 import 'admin_manager.dart';
 import 'admin_profile.dart';
-import 'customAppBar.dart';
+import 'custom_app_bar.dart';
 
 class AdminPage extends StatefulWidget {
   final Account account;
+
   const AdminPage({super.key, required this.account});
 
   @override
   _AdminPageState createState() => _AdminPageState();
 }
 
-class _AdminPageState extends State<AdminPage> with AutomaticKeepAliveClientMixin{
+class _AdminPageState extends State<AdminPage>
+    with AutomaticKeepAliveClientMixin {
   late List<Widget> _tabs;
   int _currentIndex = 0;
-  late Stream<List<Booking>> _bookingStream;
   final EmergencyService _emergencyService = EmergencyService();
-
-
 
   @override
   bool get wantKeepAlive => true;
@@ -34,21 +33,21 @@ class _AdminPageState extends State<AdminPage> with AutomaticKeepAliveClientMixi
   @override
   void initState() {
     super.initState();
-    // _bookingStream = ;
     _tabs = [
-      _buildHomeTab(), // Tab Home
-      const FeedBackTab(), // Tab Activity
-      const ManagerTab(), // Tab Manager
-      ProfileTab(account: widget.account), // Tab Profile
+      _buildHomeTab(),
+      const FeedBackTab(),
+      const ManagerTab(),
+      ProfileTab(account: widget.account),
     ];
-    final notificationProvider = Provider.of<NotificationProvider>(context, listen: false);
+    final notificationProvider =
+        Provider.of<NotificationProvider>(context, listen: false);
     notificationProvider.setAdminStatus(true);
     _emergencyService.listenForUserLocations(context);
-
   }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       body: _tabs[_currentIndex],
       bottomNavigationBar: Container(
@@ -97,7 +96,7 @@ class _AdminPageState extends State<AdminPage> with AutomaticKeepAliveClientMixi
 
   Widget _buildHomeTab() {
     return Scaffold(
-      appBar: CustomAppBar(
+      appBar: const CustomAppBar(
         title: 'eSavior',
         subtitle: 'Management',
         showBackButton: false,
@@ -126,9 +125,9 @@ class _AdminPageState extends State<AdminPage> with AutomaticKeepAliveClientMixi
                 ),
                 padding: const EdgeInsets.symmetric(vertical: 16),
               ),
-              child: Row(
+              child: const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
+                children: [
                   Icon(Icons.add, color: Colors.white),
                   SizedBox(width: 8),
                   Text(
@@ -161,10 +160,7 @@ class _AdminPageState extends State<AdminPage> with AutomaticKeepAliveClientMixi
                   if (!snapshot.hasData || snapshot.data!.isEmpty) {
                     return const Center(child: Text('No bookings found'));
                   }
-
-                  // Get the list of bookings with 'Not Yet Confirm' status
                   final bookings = snapshot.data!;
-
                   return ListView.builder(
                     itemCount: bookings.length,
                     itemBuilder: (context, index) {
@@ -172,10 +168,11 @@ class _AdminPageState extends State<AdminPage> with AutomaticKeepAliveClientMixi
                       return Card(
                         margin: const EdgeInsets.symmetric(vertical: 8.0),
                         child: ListTile(
-                          title: Text('Driver Phone: ${booking.driverPhoneNumber}'),
+                          title: Text(
+                              'Driver Phone: ${booking.driverPhoneNumber}'),
                           subtitle: Text(
                             'User Phone: ${booking.userPhoneNumber}\n'
-                                'Date: ${booking.formattedDateTime}',
+                            'Date: ${booking.formattedDateTime}',
                           ),
                           trailing: Text('Status: ${booking.status}'),
                         ),
@@ -198,8 +195,8 @@ class _AdminPageState extends State<AdminPage> with AutomaticKeepAliveClientMixi
         return AlertDialog(
           title: const Text('Select Booking to Dispatch'),
           content: Container(
-            width: 300, // Đặt chiều rộng tùy ý
-            constraints: const BoxConstraints(maxHeight: 400), // Giới hạn chiều cao tối đa
+            width: 300,
+            constraints: const BoxConstraints(maxHeight: 400),
             child: FutureBuilder<List<Booking>>(
               future: BookingService().getBookingsByStatus('Not Yet Confirm'),
               builder: (context, snapshot) {
@@ -212,12 +209,11 @@ class _AdminPageState extends State<AdminPage> with AutomaticKeepAliveClientMixi
                 if (!snapshot.hasData || snapshot.data!.isEmpty) {
                   return const Center(child: Text('No bookings available'));
                 }
-
                 final bookings = snapshot.data!;
                 return SingleChildScrollView(
                   child: ListView.builder(
-                    shrinkWrap: true, // Để ListView không chiếm hết không gian
-                    physics: const NeverScrollableScrollPhysics(), // Ngăn chặn cuộn
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
                     itemCount: bookings.length,
                     itemBuilder: (context, index) {
                       final booking = bookings[index];
@@ -225,7 +221,6 @@ class _AdminPageState extends State<AdminPage> with AutomaticKeepAliveClientMixi
                         title: Text('User Phone: ${booking.userPhoneNumber}'),
                         subtitle: Text('Date: ${booking.formattedDateTime}'),
                         onTap: () {
-                          // Khi chọn booking, mở danh sách tài xế
                           Navigator.pop(context);
                           showDriversToAssign(context, booking, index);
                         },
@@ -248,10 +243,10 @@ class _AdminPageState extends State<AdminPage> with AutomaticKeepAliveClientMixi
         return AlertDialog(
           title: const Text('Select Driver'),
           content: Container(
-            width: 300, // Đặt chiều rộng tùy ý
-            constraints: const BoxConstraints(maxHeight: 400), // Giới hạn chiều cao tối đa
+            width: 300,
+            constraints: const BoxConstraints(maxHeight: 400),
             child: StreamBuilder<List<Account>>(
-              stream: DriverService().getAllDriver(), // Sử dụng stream để lấy tài xế
+              stream: DriverService().getAllDriver(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
@@ -262,12 +257,11 @@ class _AdminPageState extends State<AdminPage> with AutomaticKeepAliveClientMixi
                 if (!snapshot.hasData || snapshot.data!.isEmpty) {
                   return const Center(child: Text('No drivers available'));
                 }
-
                 final drivers = snapshot.data!;
                 return SingleChildScrollView(
                   child: ListView.builder(
-                    shrinkWrap: true, // Để ListView không chiếm hết không gian
-                    physics: const NeverScrollableScrollPhysics(), // Ngăn chặn cuộn
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
                     itemCount: drivers.length,
                     itemBuilder: (context, index) {
                       final driver = drivers[index];
@@ -275,15 +269,14 @@ class _AdminPageState extends State<AdminPage> with AutomaticKeepAliveClientMixi
                         title: Text(driver.fullName),
                         subtitle: Text(driver.phoneNumber),
                         onTap: () async {
-                          // Cập nhật booking với tài xế được chọn
-                          await BookingService().updateBooking(booking.id, driver.phoneNumber);
-
-                          // Cập nhật trạng thái booking thành "Waiting"
-                          await BookingService().updateBookingStatus(booking.id, 'Waiting');
-
+                          await BookingService()
+                              .updateBooking(booking.id, driver.phoneNumber);
+                          await BookingService()
+                              .updateBookingStatus(booking.id, 'Waiting');
                           Navigator.pop(context);
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Driver assigned successfully!')),
+                            const SnackBar(
+                                content: Text('Driver assigned successfully!')),
                           );
                         },
                       );
@@ -297,9 +290,4 @@ class _AdminPageState extends State<AdminPage> with AutomaticKeepAliveClientMixi
       },
     );
   }
-
-
-
-
-
 }
