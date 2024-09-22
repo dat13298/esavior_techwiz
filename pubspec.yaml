@@ -70,6 +70,10 @@ dev_dependencies:
 flutter_icons:
   android: true
   image_path: "assets/logo_launcher/icon.png"
+  adaptive_icon:
+    background: "assets/logo_launcher/background.png"
+    foreground: "assets/logo_launcher/background.png"
+
 
 # The following section is specific to Flutter packages.
 flutter:
