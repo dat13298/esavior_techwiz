@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:esavior_techwiz/models/account.dart';
 import 'package:esavior_techwiz/models/booking.dart';
 import 'package:esavior_techwiz/services/booking_service.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -22,11 +23,14 @@ class EmergencyService {
       .ref();
   StreamSubscription<Position>? _positionStreamSubscription;
 
-  Future<void> sendLocationToFirebase(double latitude, double longitude) async {
+  Future<void> sendLocationToFirebase(double latitude, double longitude, Account? account) async {
     String locationToken = 'location_${DateTime.now().millisecondsSinceEpoch}';
+    String phone;
+    phone = account != null ? account.phoneNumber : '';
     Map<String, dynamic> locationData = {
       'latitude': latitude,
       'longitude': longitude,
+      'userPhoneNumber': phone,
       'timestamp': ServerValue.timestamp,
       'status': 'not accept',
     };
@@ -58,6 +62,8 @@ class EmergencyService {
       final locationData = event.snapshot.value as Map<dynamic, dynamic>;
       final latitude = locationData['latitude'] as double;
       final longitude = locationData['longitude'] as double;
+      final userPhoneNumber = locationData['phoneNumber']?.toString() ?? 'Don\'t have phone';
+
       final timestamp = locationData['timestamp'] as int;
       final timestampObject = Timestamp.fromMillisecondsSinceEpoch(timestamp);
       final dateTime = DateTime.fromMillisecondsSinceEpoch(timestamp);
@@ -72,6 +78,7 @@ class EmergencyService {
           id: DateTime.now().millisecondsSinceEpoch.toString(),
           endLongitude: longitude,
           endLatitude: latitude,
+          userPhoneNumber: userPhoneNumber,
           dateTime: timestampObject,
           type: "Emergency",
           status: "Not Yet Confirm");

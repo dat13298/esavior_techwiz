@@ -24,9 +24,7 @@ class DriverHomeStage extends State<DriverPage> {
   void initState() {
     super.initState();
     _tabs = [
-      DriverHomeTab(
-        account: widget.account,
-      ),
+      DriverHomeTab(account: widget.account,),
       CarManagerScreen(account: widget.account),
       ProfileUserTab(account: widget.account),
     ];
@@ -173,15 +171,15 @@ class _DriverHomeTabStateState extends State<DriverHomeTab> {
         width: 120,
         padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
         decoration: BoxDecoration(
-          color: booking.status == "completed"
+          color: booking.status == "Completed"
               ? Colors.green.withOpacity(0.1)
-              : booking.status == "waiting"
+              : booking.status == "Waiting"
                   ? Colors.orange.withOpacity(0.1)
                   : Colors.red.withOpacity(0.1),
           border: Border.all(
-            color: booking.status == "completed"
+            color: booking.status == "Completed"
                 ? Colors.green
-                : booking.status == "waiting"
+                : booking.status == "Waiting"
                     ? Colors.orange
                     : Colors.red,
           ),
@@ -191,9 +189,9 @@ class _DriverHomeTabStateState extends State<DriverHomeTab> {
           booking.status.toUpperCase(),
           textAlign: TextAlign.center,
           style: TextStyle(
-            color: booking.status == "completed"
+            color: booking.status == "Completed"
                 ? Colors.green
-                : booking.status == "waiting"
+                : booking.status == "Waiting"
                     ? Colors.orange
                     : Colors.red,
             fontWeight: FontWeight.bold,
