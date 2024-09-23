@@ -18,7 +18,7 @@ class EmergencyService {
   final DatabaseReference _databaseReference = FirebaseDatabase.instanceFor(
           app: Firebase.app(),
           databaseURL:
-              'https://test-42ad6-default-rtdb.asia-southeast1.firebasedatabase.app/' // Thay đổi URL này thành đúng
+              'https://test-42ad6-default-rtdb.asia-southeast1.firebasedatabase.app/'
           )
       .ref();
   StreamSubscription<Position>? _positionStreamSubscription;
