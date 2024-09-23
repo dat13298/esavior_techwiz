@@ -1,5 +1,6 @@
 import 'package:esavior_techwiz/models/hospital.dart';
 import 'package:esavior_techwiz/views/home/profile_tab.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../controllers/map_controller.dart';
 import '../../models/account.dart';
@@ -146,7 +147,12 @@ class _HomeTabStateState extends State<HomeTabState> {
                   ),
                 ),
                 onPressed: () {
-                  const CallEmergency();
+                  Navigator.push(
+                    context,
+                    CupertinoPageRoute(
+                      builder: (context) => const CallEmergency(),
+                    ),
+                  );
                 },
                 child: const Text(
                   'Call emergency',
