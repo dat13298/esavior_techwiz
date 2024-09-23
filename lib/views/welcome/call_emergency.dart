@@ -1,3 +1,4 @@
+import 'package:esavior_techwiz/models/account.dart';
 import 'package:esavior_techwiz/services/emergency_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -7,7 +8,8 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class CallEmergency extends StatefulWidget {
-  const CallEmergency({super.key});
+  final Account? account;
+  const CallEmergency({super.key, this.account});
 
   @override
   State<CallEmergency> createState() => _CallEmergencyState();
@@ -64,7 +66,7 @@ class _CallEmergencyState extends State<CallEmergency> {
         desiredAccuracy: LocationAccuracy.bestForNavigation,
       );
       await _emergencyService.sendLocationToFirebase(
-          position.latitude, position.longitude);
+          position.latitude, position.longitude, widget.account);
     } catch (e) {
       if (kDebugMode) {
         print('Error getting location: $e');
